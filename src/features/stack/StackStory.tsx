@@ -1,6 +1,7 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
+import Lenis from "lenis";
 import { useEffect, useRef, useState } from "react";
 import { profile } from "@/content/profile";
 import type { Stat } from "@/content/stats";
@@ -9,6 +10,7 @@ import { useStill } from "@/lib/motion";
 import { Clock } from "./Clock";
 import { formatStat } from "./format";
 import { buildGrid, COLS, levelsAt, ROWS } from "./grid";
+import { nextStep } from "./steps";
 import s from "./Stack.module.css";
 
 const GRID = buildGrid();
@@ -16,6 +18,19 @@ const CELLS = COLS * ROWS;
 const LEVELS = [0, 1, 2, 3, 4] as const;
 
 type Step = -1 | 0 | 1;
+
+/** glide between steps (s); after landing, input stays swallowed until it has
+    been quiet this long (ms), so a trackpad's momentum tail can't carry on past */
+const STEP_S = 0.9;
+const SETTLE_MS = 250;
+const KEYS: Record<string, 1 | -1> = {
+  ArrowDown: 1,
+  PageDown: 1,
+  " ": 1,
+  ArrowUp: -1,
+  PageUp: -1,
+};
+const TYPING = "input, textarea, select, button, [contenteditable]";
 
 export function StackStory({ stats }: { stats: Stat[] }) {
   const t = useTranslations("Stack");
@@ -29,6 +44,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
   const cardBody = useRef<HTMLDivElement>(null);
   const grid = useRef<HTMLDivElement>(null);
   const values = useRef<(HTMLElement | null)[]>([]);
+  const step1 = useRef<HTMLDivElement>(null);
 
   /* layout: scale the flow to fit the viewport and size the sticky track around it */
   useEffect(() => {
@@ -63,13 +79,6 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const root = document.documentElement.style;
       root.setProperty("--flow-left", `${(st.clientWidth - fw) / 2}px`);
       root.setProperty("--flow-w", `${fw}px`);
-      const list = document.getElementById("stacklist");
-      const start = sec.offsetTop + vh;
-      root.setProperty("--free-top", `${start}px`);
-      root.setProperty(
-        "--free-h",
-        `${Math.max(vh, list ? list.offsetTop + list.offsetHeight - start : vh)}px`,
-      );
     };
     const ro = new ResizeObserver(measure);
     ro.observe(document.documentElement);
@@ -77,6 +86,108 @@ export function StackStory({ stats }: { stats: Stat[] }) {
     measure();
     return () => ro.disconnect();
   }, []);
+
+  /* steps: Lenis owns wheel/touch so the greeting → stack hop is one locked glide.
+     A gesture that would cross a step (or start inside the gap between them) is
+     redirected onto the next step, input is swallowed until it lands and settles,
+     so a fling can't sail past. Keys get the same treatment; anchors bypass it. */
+  const still_ = useRef(still);
+  const lenis = useRef<Lenis | null>(null);
+  useEffect(() => {
+    const sec = section.current;
+    const s1 = step1.current;
+    if (!sec || !s1) return;
+    let busy = false;
+    let lastInput = 0;
+    let anchoring = false;
+    let last = scrollY;
+    const l = new Lenis({
+      autoRaf: true,
+      syncTouch: true,
+      respectReducedMotion: false, // MotionProvider decides, see the still effect below
+      virtualScroll: ({ event }) => {
+        lastInput = Date.now();
+        if (!busy) return true;
+        if (event.cancelable) event.preventDefault();
+        return false;
+      },
+    });
+    lenis.current = l;
+
+    const next = (from: number, to: number) =>
+      nextStep(from, to, sec.offsetTop, sec.offsetTop + s1.offsetTop);
+    const settle = () => {
+      const idle = Date.now() - lastInput;
+      if (idle < SETTLE_MS) return void setTimeout(settle, SETTLE_MS - idle);
+      busy = false;
+      last = l.animatedScroll;
+    };
+    const go = (p: number) => {
+      busy = true;
+      l.scrollTo(p, {
+        lock: true,
+        force: true,
+        duration: STEP_S,
+        immediate: still_.current,
+        onComplete: settle,
+      });
+    };
+
+    l.on("scroll", () => {
+      if (!busy && !anchoring && l.isScrolling !== "native") {
+        const p = next(last, l.targetScroll);
+        if (p !== null) return go(p);
+      }
+      last = l.animatedScroll;
+    });
+
+    const onKey = (e: KeyboardEvent) => {
+      const dir = KEYS[e.key];
+      if (!dir || (e.target as Element).closest(TYPING)) return;
+      lastInput = Date.now();
+      if (busy) return e.preventDefault();
+      const a = l.animatedScroll;
+      const d = e.key.startsWith("Arrow") ? 40 : innerHeight * 0.8;
+      const p = next(a, a + (e.key === " " && e.shiftKey ? -1 : dir) * d);
+      if (p === null) return;
+      e.preventDefault();
+      go(p);
+    };
+    /* own the in-page anchors: Lenis' anchor option doesn't cancel the native jump */
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>(
+        'a[href^="#"]',
+      );
+      const el = a && document.getElementById(a.hash.slice(1));
+      if (!el) return;
+      e.preventDefault();
+      anchoring = true;
+      l.scrollTo(el, {
+        force: true,
+        immediate: still_.current,
+        onComplete: () => {
+          anchoring = false;
+          last = l.animatedScroll;
+          const f = el.closest("section") ?? el;
+          if (!f.hasAttribute("tabindex")) f.tabIndex = -1;
+          f.focus({ preventScroll: true });
+        },
+      });
+    };
+    addEventListener("keydown", onKey);
+    addEventListener("click", onClick);
+    return () => {
+      removeEventListener("keydown", onKey);
+      removeEventListener("click", onClick);
+      l.destroy();
+      lenis.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    still_.current = still;
+    if (lenis.current) lenis.current.options.lerp = still ? 1 : 0.1;
+  }, [still]);
 
   /* scroll → step */
   useEffect(() => {
@@ -174,9 +285,9 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       id="stack"
       aria-label={t("label")}
     >
-      <div className={s.snap} style={{ top: 0 }} aria-hidden="true" />
       <div
-        className={s.snap}
+        ref={step1}
+        className={s.anchor}
         style={{ top: "100vh" }}
         id="stack-step"
         aria-hidden="true"

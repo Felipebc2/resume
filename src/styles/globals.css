@@ -1,13 +1,12 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "lenis/dist/lenis.css";
 
 :root {
   color-scheme: dark;
 }
 
 html {
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
   scrollbar-color: var(--color-line-2) var(--color-bg);
 }
 
@@ -47,9 +46,9 @@ body::before {
   outline-offset: 3px;
   border-radius: 6px;
 }
-
-html[data-still] {
-  scroll-behavior: auto;
+/* sections focused by in-page anchors (for screen readers / Tab order) need no ring */
+section[tabindex="-1"]:focus {
+  outline: none;
 }
 
 html[data-still] *,

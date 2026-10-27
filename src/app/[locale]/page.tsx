@@ -23,12 +23,6 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           }))}
         />
         <StackList />
-        {/* one tall snap area over the stack list, so it scrolls freely under mandatory snap */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute left-0 w-px snap-start"
-          style={{ top: "var(--free-top)", height: "var(--free-h)" }}
-        />
         <ExperiencePlaceholder />
       </main>
     </>

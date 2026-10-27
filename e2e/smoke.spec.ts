@@ -22,7 +22,7 @@ test("nav hides on the hero, drops in on scroll, Stack plays the step", async ({
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
   await expect(nav).not.toHaveAttribute("data-nav", "in");
-  await page.mouse.wheel(0, 600);
+  await page.mouse.wheel(0, 1000); // mobile emulation scales wheel deltas down
   await expect(nav).toHaveAttribute("data-nav", "in");
   await nav.getByRole("link", { name: "Stack" }).click();
   const title = page.getByRole("heading", { name: /This is my/ });

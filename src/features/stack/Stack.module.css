@@ -2,12 +2,11 @@
   position: relative;
   height: 200vh;
 }
-.snap {
+.anchor {
   position: absolute;
   left: 0;
   width: 1px;
   height: 1px;
-  scroll-snap-align: start;
   pointer-events: none;
 }
 .stage {
