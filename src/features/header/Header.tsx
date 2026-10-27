@@ -1,7 +1,6 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { profile } from "@/content/profile";
 import { getVisitors, goatcounterCode } from "@/lib/goatcounter";
-import { MotionToggle } from "./MotionToggle";
 import { Nav } from "./Nav";
 import { Visitors } from "./Visitors";
 import s from "./Header.module.css";
@@ -25,7 +24,6 @@ export async function Header() {
         </a>
         <Nav />
         <div className={s.tools}>
-          <MotionToggle />
           <a
             className={s.pill}
             href={locale === "en" ? "/pt" : "/"}

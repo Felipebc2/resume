@@ -10,15 +10,9 @@ import {
   type ReactNode,
 } from "react";
 
-type Motion = { still: boolean; setStill: (still: boolean) => void };
+const MotionContext = createContext(false);
 
-const MotionContext = createContext<Motion>({
-  still: false,
-  setStill: () => {},
-});
-
-export const useMotion = () => useContext(MotionContext);
-export const useStill = () => useContext(MotionContext).still;
+export const useStill = () => useContext(MotionContext);
 
 const QUERY = "(prefers-reduced-motion: reduce)";
 const subscribe = (cb: () => void) => {
@@ -44,7 +38,7 @@ export function MotionProvider({ children }: { children: ReactNode }) {
   }, [still]);
 
   return (
-    <MotionContext value={{ still, setStill }}>
+    <MotionContext value={still}>
       {children}
       {toast && (
         <div

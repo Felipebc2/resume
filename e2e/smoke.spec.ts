@@ -40,13 +40,13 @@ test("nav hides on the hero, drops in on scroll, Stack plays the step", async ({
 test("reduced motion starts with animations off", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
-  const toggle = page.getByRole("button", { name: /Motion:/ });
-  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-still", "");
   const toast = page.getByRole("status");
   await expect(toast).toBeVisible();
   await toast.getByRole("button", { name: "Turn animations on" }).click();
   await expect(toast).toBeHidden();
-  await expect(toggle).toHaveAttribute("aria-pressed", "true");
+  await expect(html).not.toHaveAttribute("data-still");
 });
 
 test("Portuguese lives under /pt and English has no prefix", async ({

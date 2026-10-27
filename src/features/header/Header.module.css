@@ -175,10 +175,6 @@
 .pill:hover {
   color: var(--color-fg);
 }
-.pill[aria-pressed="false"] {
-  color: var(--color-fg);
-  border-color: var(--color-line-2);
-}
 .pill [aria-current] {
   color: var(--color-fg);
 }

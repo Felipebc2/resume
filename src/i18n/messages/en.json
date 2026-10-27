@@ -14,8 +14,6 @@
       "about": "About",
       "contact": "Contact"
     },
-    "motionOn": "Motion: on",
-    "motionOff": "Motion: off",
     "visitors": "{count, plural, one {visitor} other {visitors}}"
   },
   "Motion": {
