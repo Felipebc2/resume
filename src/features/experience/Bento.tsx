@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { firstEntry, type EntryId } from "@/content/experience";
 import { Deck } from "./Deck";
 import { DotMap } from "./DotMap";
@@ -23,11 +23,8 @@ export function Bento({ now }: { now: number }) {
     firstEntry,
     ...ids.filter((id) => id !== firstEntry),
   ]);
-  const select = useCallback<Select>(
-    (id) =>
-      setOrder((o) => (o[0] === id ? o : [id, ...o.filter((x) => x !== id)])),
-    [],
-  );
+  const select: Select = (id) =>
+    setOrder((o) => (o[0] === id ? o : [id, ...o.filter((x) => x !== id)]));
   const grid = useRef<HTMLDivElement>(null);
   const fit = useRef<HTMLSpanElement>(null);
 

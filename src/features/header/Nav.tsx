@@ -23,9 +23,14 @@ export function Nav() {
   const prog = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const stack = document.getElementById("stack");
-    const exp = document.getElementById("experience");
-    const prj = document.getElementById("projects");
+    /* section → how far up the viewport its top must pass to light its link */
+    const marks = (
+      [
+        ["stack", 0.35],
+        ["experience", 0.5],
+        ["projects", 0.5],
+      ] as const
+    ).map(([id, at]) => [document.getElementById(id), at] as const);
     const el = nav.current;
     const read = () => {
       const vh = innerHeight;
@@ -33,17 +38,11 @@ export function Nav() {
       const max = document.documentElement.scrollHeight - vh;
       if (prog.current)
         prog.current.style.transform = `scaleX(${clamp(scrollY / Math.max(1, max), 0, 1)})`;
-      const expTop = exp?.getBoundingClientRect().top ?? Infinity;
-      const stackTop = stack?.getBoundingClientRect().top ?? Infinity;
-      const prjTop = prj?.getBoundingClientRect().top ?? Infinity;
       setActive(
-        prjTop < vh * 0.5
-          ? 2
-          : expTop < vh * 0.5
-            ? 1
-            : stackTop < vh * 0.35
-              ? 0
-              : -1,
+        marks.findLastIndex(
+          ([sec, at]) =>
+            (sec?.getBoundingClientRect().top ?? Infinity) < vh * at,
+        ),
       );
     };
     read();

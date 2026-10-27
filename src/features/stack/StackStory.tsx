@@ -219,20 +219,21 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const el = values.current[i];
       if (el) el.textContent = formatStat(v, stats[i].format, locale);
     };
-    let raf = 0;
-    const timers: ReturnType<typeof setTimeout>[] = [];
+    const rafs: number[] = [];
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    /* frame(p) gets nothing until `delay` has passed, then p runs 0→1 over `dur` */
     const animate = (
       delay: number,
       dur: number,
       frame: (t: number) => void,
     ) => {
+      const k = rafs.length;
       const t0 = performance.now() + delay;
       const tick = (now: number) => {
-        const p = clamp((now - t0) / dur, 0, 1);
-        frame(p);
-        if (p < 1) raf = requestAnimationFrame(tick);
+        if (now >= t0) frame(clamp((now - t0) / dur, 0, 1));
+        if (now < t0 + dur) rafs[k] = requestAnimationFrame(tick);
       };
-      raf = requestAnimationFrame(tick);
+      rafs[k] = requestAnimationFrame(tick);
     };
 
     if (step === 1) {
@@ -242,36 +243,21 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       } else {
         animate(650, 700, (p) => paint(ease(p)));
         stats.forEach((st, i) =>
-          timers.push(
-            setTimeout(
-              () => {
-                const t0 = performance.now();
-                const tick = (now: number) => {
-                  const p = clamp((now - t0) / 1000, 0, 1);
-                  show(i, st.value * easeOut(p));
-                  if (p < 1) requestAnimationFrame(tick);
-                };
-                requestAnimationFrame(tick);
-              },
-              1050 + i * 60,
-            ),
-          ),
+          animate(1050 + i * 60, 1000, (p) => show(i, st.value * easeOut(p))),
         );
       }
     } else {
-      timers.push(
-        setTimeout(
-          () => {
-            paint(0);
-            stats.forEach((_, i) => show(i, 0));
-          },
-          still ? 0 : 500,
-        ),
+      timer = setTimeout(
+        () => {
+          paint(0);
+          stats.forEach((_, i) => show(i, 0));
+        },
+        still ? 0 : 500,
       );
     }
     return () => {
-      timers.forEach(clearTimeout);
-      cancelAnimationFrame(raf);
+      clearTimeout(timer);
+      rafs.forEach(cancelAnimationFrame);
     };
   }, [step, still, locale, stats]);
 

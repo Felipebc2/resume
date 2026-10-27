@@ -67,7 +67,7 @@ export const procs: Proc[] = entries
         : entry.kind === "work" && entry.end
           ? mi(entry.end)
           : null;
-    return { id: entry.id, pid: 0, start, end, entry };
+    return { id: entry.id, start, end, entry };
   })
   .sort((a, b) => a.start - b.start)
   .map((p, i) => ({ ...p, pid: 1000 + i * 37 }))
