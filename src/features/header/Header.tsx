@@ -1,12 +1,15 @@
 import { getLocale, getTranslations } from "next-intl/server";
 import { profile } from "@/content/profile";
+import { getVisitors, goatcounterCode } from "@/lib/goatcounter";
 import { MotionToggle } from "./MotionToggle";
 import { Nav } from "./Nav";
+import { Visitors } from "./Visitors";
 import s from "./Header.module.css";
 
 export async function Header() {
   const t = await getTranslations("Header");
   const locale = await getLocale();
+  const visitors = await getVisitors();
   return (
     <>
       <a
@@ -32,6 +35,9 @@ export async function Header() {
             {" / "}
             <span aria-current={locale === "pt" ? "true" : undefined}>PT</span>
           </a>
+          {goatcounterCode && (
+            <Visitors code={goatcounterCode} count={visitors} />
+          )}
         </div>
       </header>
     </>

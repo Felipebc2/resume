@@ -28,4 +28,6 @@
 :root {
   --gut-l: max(20px, env(safe-area-inset-left, 0px));
   --gut-r: max(20px, env(safe-area-inset-right, 0px));
+  /* widest the Stack and Experience sections grow */
+  --content-w: 1560px;
 }

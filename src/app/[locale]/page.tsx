@@ -1,9 +1,10 @@
 import type { Locale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { stats } from "@/content/stats";
-import { ExperiencePlaceholder } from "@/features/experience/ExperiencePlaceholder";
+import { Experience } from "@/features/experience/Experience";
 import { Header } from "@/features/header/Header";
 import { Hero } from "@/features/hero/Hero";
+import { ProjectsPlaceholder } from "@/features/projects/ProjectsPlaceholder";
 import { StackList } from "@/features/stack/StackList";
 import { StackStory } from "@/features/stack/StackStory";
 import { getGithubStats } from "@/lib/github";
@@ -23,7 +24,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
           }))}
         />
         <StackList />
-        <ExperiencePlaceholder />
+        <Experience />
+        <ProjectsPlaceholder />
       </main>
     </>
   );

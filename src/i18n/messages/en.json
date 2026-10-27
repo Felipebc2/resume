@@ -15,7 +15,8 @@
       "contact": "Contact"
     },
     "motionOn": "Motion: on",
-    "motionOff": "Motion: off"
+    "motionOff": "Motion: off",
+    "visitors": "{count, plural, one {visitor} other {visitors}}"
   },
   "Motion": {
     "toast": "Your system asked for less motion, so animations start off.",
@@ -77,8 +78,202 @@
     }
   },
   "Experience": {
+    "label": "Experience",
+    "titleA": "My unique way",
+    "titleB": "to show",
+    "titleC": "Experience",
+    "sub": "Hover a commit to open its card. Work lives on <b>main</b>; competitions and events on <b>lab</b>.",
+    "trophyHead": "trophy_shelf/",
+    "trophyHint": "hover to reveal",
+    "gitPrompt": "~/felipe <b>(main)</b> $ git log --graph",
+    "filter": "Filter branch",
+    "filters": {
+      "all": "all",
+      "work": "main",
+      "lab": "lab"
+    },
+    "deckHead": "deck/",
+    "mapHead": "map/",
+    "mapHint": "where it happened",
+    "mapHere": "{title} · {count, plural, one {# entry} other {# entries}} here",
+    "mapUnknown": "{title} · location to confirm",
+    "remote": "remote ↗",
+    "htopLabel": "Currently working on. Use the arrow keys to select a process.",
+    "htopHead": "<b>currently working on</b> — htop",
+    "htopHint": "↑ ↓ select · F4 show all",
+    "showRunning": "Show: running",
+    "showAll": "Show: all",
+    "cpuNote": "CPU meters are decorative",
+    "building": "building",
+    "learning": "learning",
+    "tasks": "Tasks: <b>{total}</b> total, <b>{running}</b> running",
+    "uptime": "Uptime: <b>{y, plural, one {# year} other {# years}}, {m, plural, one {# month} other {# months}}</b> since {since}",
+    "cols": {
+      "pid": "PID",
+      "user": "USER",
+      "state": "STATE",
+      "cpu": "CPU%",
+      "time": "TIME+",
+      "cmd": "COMMAND"
+    },
+    "kinds": {
+      "work": "work",
+      "competition": "competition",
+      "event": "event",
+      "init": "init · academic"
+    },
+    "now": "now",
+    "expected": "(expected)",
+    "rank": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}",
+    "rankPlace": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} place",
+    "duration": "{y, plural, =0 {} other {#y }}{m}m",
+    "places": {
+      "rem": "Remote",
+      "bsb": "Brasília",
+      "bue": "Buenos Aires",
+      "sv": "Silicon Valley"
+    },
+    "links": {
+      "linkedin": "LinkedIn ↗",
+      "github": "GitHub ↗"
+    },
+    "head": {
+      "title": "Open to new roles",
+      "sub": "Full-stack · Software architecture · LLM engineering",
+      "meta": "Remote or relocation",
+      "pts": [
+        "Looking for roles where I can own systems end to end, from architecture to production."
+      ]
+    },
+    "work": {
+      "nexai": {
+        "org": "Nex AI",
+        "role": "Software Architect & Tech Lead",
+        "pts": [
+          "Leads architecture and technical direction of an AI product with multi-agent orchestration and human review gates.",
+          "20+ ADRs and an AWS edge with CloudFront, WAF, ALB and S3."
+        ]
+      },
+      "nexara": {
+        "org": "Nexara",
+        "role": "Head of IT · prev. Digital Marketing Manager",
+        "pts": [
+          "Leads architecture, technical direction and the dev team, also shipping as full-stack.",
+          "Built the Nexara/NexAI website and product mockup in three languages."
+        ]
+      },
+      "mec": {
+        "org": "Ministry of Education",
+        "role": "Full-Stack Developer",
+        "pts": [
+          "Sole developer at the Internal Affairs Office, from requirements to deployment.",
+          "Raw case data turned into KPIs, document redaction and predictive jurimetrics."
+        ]
+      },
+      "jus": {
+        "org": "JusBrasil · IDP Sprint",
+        "role": "Tech Lead & Full-Stack",
+        "pts": [
+          "Asynchronous pipeline that classifies thousands of legal records.",
+          "Cut task time by 99.8% in 12 weeks. 1st place in Innovation."
+        ]
+      },
+      "ize": {
+        "org": "Ize Gestão Empresarial",
+        "role": "Data Intern",
+        "pts": [
+          "Econometric indicators for financial consultancies: ETL with Airflow and scraping with Selenium."
+        ]
+      },
+      "ofc": {
+        "org": "Oficina Consultorias",
+        "role": "IT Support Intern",
+        "pts": ["Network, server and corporate system administration."]
+      }
+    },
+    "lab": {
+      "eko": {
+        "name": "Ekoparty CTF 2026",
+        "detail": "Main CTF · team nop (2 players)",
+        "pts": ["Web3 specialist: 11 solves, 3320 pts, 2 first bloods."]
+      },
+      "ctf6": {
+        "name": "CTF Hackathon, 6th ed.",
+        "detail": "Pwn · Rev · Crypto · Web · Net",
+        "pts": ["Pwn, Rev, Crypto, Jail, Web, Net and Stego challenges."]
+      },
+      "cp": {
+        "name": "Campus Party Hackathon",
+        "detail": "72h build",
+        "pts": ["72-hour build of an incident heat map for women’s safety."]
+      },
+      "rob": {
+        "name": "Brasília+IT Robotics",
+        "detail": "Factory Floor",
+        "pts": ["First place in the Factory Floor category."]
+      },
+      "idph": {
+        "name": "IDP Hackathon, 5th ed.",
+        "detail": "AI platform against food waste",
+        "pts": [
+          "AI platform against restaurant food waste (Flask, Ollama, MongoDB)."
+        ]
+      },
+      "go": {
+        "name": "IDP GO Silicon Valley",
+        "detail": "Google · Meta · Microsoft · Uber",
+        "pts": [
+          "Selected for the program with Google, Meta, Microsoft and Uber."
+        ]
+      }
+    },
+    "degree": {
+      "title": "B.Eng. · IDP",
+      "name": "B.Eng. Software Engineering",
+      "school": "IDP · {n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} semester",
+      "pts": [
+        "Operating Systems, Concurrent Programming, Algorithm Analysis, Software Security & Testing."
+      ]
+    },
+    "trophies": {
+      "eko": {
+        "cap": "4th · Ekoparty CTF",
+        "name": "Ekoparty CTF 2026",
+        "sub": "Buenos Aires · Main CTF"
+      },
+      "jus": {
+        "cap": "1st · JusBrasil Sprint",
+        "name": "JusBrasil Sprint",
+        "sub": "Innovation · −99.8% task time"
+      },
+      "idph": {
+        "cap": "1st · IDP Hackathon",
+        "name": "IDP Hackathon",
+        "sub": "5th ed. · AI vs food waste"
+      },
+      "rob": {
+        "cap": "1st · Robotics",
+        "name": "Brasília+IT Robotics",
+        "sub": "Factory Floor"
+      },
+      "go": {
+        "cap": "Selected · IDP GO",
+        "name": "IDP GO Silicon Valley",
+        "sub": "Google · Meta · Microsoft · Uber"
+      }
+    },
+    "pre": {
+      "head": "HEAD →",
+      "work": "work:",
+      "competition": "comp:",
+      "event": "event:",
+      "init": "init:"
+    },
+    "headKicker": "HEAD → main"
+  },
+  "Projects": {
     "kicker": "next section",
-    "title": "Experience",
+    "title": "Projects",
     "body": "Next page to design."
   }
 }

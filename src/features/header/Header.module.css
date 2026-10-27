@@ -155,6 +155,7 @@
 }
 
 .tools {
+  position: relative;
   justify-self: end;
   display: flex;
   gap: 8px;
@@ -181,6 +182,18 @@
 .pill [aria-current] {
   color: var(--color-fg);
 }
+/* hangs under the language pill without moving the header row */
+.visitors {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 12px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-faint);
+  white-space: nowrap;
+  pointer-events: none;
+}
 
 @media (max-width: 760px) {
   .hdr {
@@ -193,6 +206,9 @@
   }
   .tools {
     grid-area: tools;
+  }
+  .visitors {
+    display: none;
   }
   .nav {
     grid-area: nav;

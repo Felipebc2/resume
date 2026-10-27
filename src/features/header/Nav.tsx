@@ -5,14 +5,14 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { clamp } from "@/lib/math";
 import s from "./Header.module.css";
 
-/** label key → anchor. Sections not built yet point at the Experience placeholder. */
+/** label key → anchor. Sections not built yet point at the Projects placeholder. */
 const LINKS = [
   ["stack", "stack-step"],
   ["experience", "experience"],
-  ["projects", "experience"],
-  ["education", "experience"],
-  ["about", "experience"],
-  ["contact", "experience"],
+  ["projects", "projects"],
+  ["education", "projects"],
+  ["about", "projects"],
+  ["contact", "projects"],
 ] as const;
 
 export function Nav() {
@@ -25,6 +25,7 @@ export function Nav() {
   useEffect(() => {
     const stack = document.getElementById("stack");
     const exp = document.getElementById("experience");
+    const prj = document.getElementById("projects");
     const el = nav.current;
     const read = () => {
       const vh = innerHeight;
@@ -34,7 +35,16 @@ export function Nav() {
         prog.current.style.transform = `scaleX(${clamp(scrollY / Math.max(1, max), 0, 1)})`;
       const expTop = exp?.getBoundingClientRect().top ?? Infinity;
       const stackTop = stack?.getBoundingClientRect().top ?? Infinity;
-      setActive(expTop < vh * 0.5 ? 1 : stackTop < vh * 0.35 ? 0 : -1);
+      const prjTop = prj?.getBoundingClientRect().top ?? Infinity;
+      setActive(
+        prjTop < vh * 0.5
+          ? 2
+          : expTop < vh * 0.5
+            ? 1
+            : stackTop < vh * 0.35
+              ? 0
+              : -1,
+      );
     };
     read();
     addEventListener("scroll", read, { passive: true });
