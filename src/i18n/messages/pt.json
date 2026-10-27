@@ -15,8 +15,7 @@
       "contact": "Contato"
     },
     "motionOn": "Animação: on",
-    "motionOff": "Animação: off",
-    "locale": "EN / PT"
+    "motionOff": "Animação: off"
   },
   "Motion": {
     "toast": "Seu sistema pediu menos movimento, então as animações começaram desligadas.",

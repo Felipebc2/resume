@@ -45,7 +45,11 @@ next-env.d.ts
 .remember/
 .design/
 .claude/
+.husky/
+CLAUDE.md
+AGENTS.md
 
 # playwright
 /playwright-report/
 /test-results/
+playwright.config.ts

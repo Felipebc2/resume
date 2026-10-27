@@ -3,10 +3,10 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
-  partialPrefetching: true,
   turbopack: {
     rules: {
-      "*.css": {
+      // only the Tailwind entry; *.module.css must keep Next's native CSS-modules pipeline
+      "globals.css": {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
