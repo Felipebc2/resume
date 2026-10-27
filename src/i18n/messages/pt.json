@@ -1,1 +1,85 @@
-{ "Home": { "hello": "olá" } }
+{
+  "Meta": {
+    "title": "Felipe Barroso: Desenvolvedor Full-stack",
+    "description": "Desenvolvedor full-stack que constrói produtos web, agentes com LLM e infraestrutura segura, da arquitetura à produção."
+  },
+  "Header": {
+    "skip": "Pular para o conteúdo",
+    "nav": "Seções",
+    "links": {
+      "stack": "Stack",
+      "experience": "Experiência",
+      "projects": "Projetos",
+      "education": "Formação",
+      "about": "Sobre",
+      "contact": "Contato"
+    },
+    "motionOn": "Animação: on",
+    "motionOff": "Animação: off",
+    "locale": "EN / PT"
+  },
+  "Motion": {
+    "toast": "Seu sistema pediu menos movimento, então as animações começaram desligadas.",
+    "enable": "Ligar animações",
+    "dismiss": "Fechar aviso"
+  },
+  "Hero": {
+    "label": "Início",
+    "titleTop": "Born to",
+    "titleEm": "build.",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "cv": "Baixar CV",
+    "contact": "Contato direto",
+    "phone": "Telefone",
+    "whatsapp": "WhatsApp",
+    "email": "E-mail",
+    "media": "Cena 3D de partículas",
+    "seal": "Veja meu código",
+    "sealLabel": "Veja meu código no GitHub",
+    "roles": [
+      "Desenvolvedor Full-stack",
+      "Arquiteto de Software",
+      "Engenheiro de LLM",
+      "Tech Lead"
+    ]
+  },
+  "Stack": {
+    "label": "Stack",
+    "greet": ["Oi,", "eu sou", "Felipe."],
+    "intro": "Projeto e entrego sistemas de ponta a ponta: produtos web, agentes com LLM e infraestrutura segura, da arquitetura à produção.",
+    "titleTop": "Esta é minha",
+    "titleEm": "stack.",
+    "contributions": "contribuições no último ano",
+    "city": "Brasília",
+    "graph": "Gráfico de contribuições que escreve FELIPEBC2",
+    "less": "Menos",
+    "more": "Mais",
+    "results": {
+      "contributions": "contribuições no último ano",
+      "repos": "repositórios públicos no GitHub",
+      "years": "anos construindo em tecnologia",
+      "adrs": "registros de decisão de arquitetura",
+      "jusbrasil": "tempo de tarefa na JusBrasil (1º lugar)",
+      "ctf": "Ekoparty CTF 2026 · Buenos Aires"
+    },
+    "listLabel": "Stack por categoria",
+    "tools": "{count} ferramentas",
+    "categories": {
+      "languages": "Linguagens",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "data": "Dados",
+      "cloud": "Cloud & DevOps",
+      "ai": "IA & LLMs",
+      "security": "Segurança & Baixo nível",
+      "quality": "Qualidade & Ferramentas",
+      "os": "SO & Hardware"
+    }
+  },
+  "Experience": {
+    "kicker": "próxima seção",
+    "title": "Experiência",
+    "body": "Próxima página a desenhar."
+  }
+}

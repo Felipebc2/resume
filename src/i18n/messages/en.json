@@ -1,1 +1,85 @@
-{ "Home": { "hello": "hello" } }
+{
+  "Meta": {
+    "title": "Felipe Barroso: Full-stack Developer",
+    "description": "Full-stack developer building web products, LLM-powered agents and secure infrastructure, from architecture to production."
+  },
+  "Header": {
+    "skip": "Skip to content",
+    "nav": "Sections",
+    "links": {
+      "stack": "Stack",
+      "experience": "Experience",
+      "projects": "Projects",
+      "education": "Education",
+      "about": "About",
+      "contact": "Contact"
+    },
+    "motionOn": "Motion: on",
+    "motionOff": "Motion: off",
+    "locale": "EN / PT"
+  },
+  "Motion": {
+    "toast": "Your system asked for less motion, so animations start off.",
+    "enable": "Turn animations on",
+    "dismiss": "Dismiss notice"
+  },
+  "Hero": {
+    "label": "Intro",
+    "titleTop": "Born to",
+    "titleEm": "build.",
+    "linkedin": "LinkedIn",
+    "github": "GitHub",
+    "cv": "Download CV",
+    "contact": "Direct contact",
+    "phone": "Phone",
+    "whatsapp": "WhatsApp",
+    "email": "Email",
+    "media": "3D particle scene",
+    "seal": "See my code",
+    "sealLabel": "See my code on GitHub",
+    "roles": [
+      "Full-stack Developer",
+      "Software Architect",
+      "LLM Engineer",
+      "Tech Lead"
+    ]
+  },
+  "Stack": {
+    "label": "Stack",
+    "greet": ["Hi,", "I'm", "Felipe."],
+    "intro": "I design and ship systems end to end: web products, LLM-powered agents and secure infrastructure, from architecture to production.",
+    "titleTop": "This is my",
+    "titleEm": "stack.",
+    "contributions": "contributions in the last year",
+    "city": "Brasília",
+    "graph": "Contribution graph that spells FELIPEBC2",
+    "less": "Less",
+    "more": "More",
+    "results": {
+      "contributions": "contributions in the last year",
+      "repos": "public repositories on GitHub",
+      "years": "years building in tech",
+      "adrs": "architecture decision records",
+      "jusbrasil": "task time at JusBrasil (1st place)",
+      "ctf": "Ekoparty CTF 2026 · Buenos Aires"
+    },
+    "listLabel": "Stack by category",
+    "tools": "{count} tools",
+    "categories": {
+      "languages": "Languages",
+      "frontend": "Frontend",
+      "backend": "Backend",
+      "data": "Data",
+      "cloud": "Cloud & DevOps",
+      "ai": "AI & LLMs",
+      "security": "Security & Low-level",
+      "quality": "Quality & Tools",
+      "os": "OS & Hardware"
+    }
+  },
+  "Experience": {
+    "kicker": "next section",
+    "title": "Experience",
+    "body": "Next page to design."
+  }
+}
