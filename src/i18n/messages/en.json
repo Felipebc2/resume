@@ -270,8 +270,399 @@
     "headKicker": "HEAD → main"
   },
   "Projects": {
+    "titleA": "What I've built,",
+    "titleB": "case by case",
+    "titleC": "Projects",
+    "sub": "Open any card for its <b>blueprint</b> and the story behind it. Search by name, stack or year, or press <b>⌘K</b>.",
+    "tbd": "[to fill]",
+    "open": "Open case: {name}",
+    "close": "Close",
+    "media": {
+      "video": "video",
+      "image": "image"
+    },
+    "search": {
+      "placeholder": "Search a project, stack or year…",
+      "label": "Search projects",
+      "filters": {
+        "all": "All",
+        "ai": "AI",
+        "web": "Web",
+        "data": "Data",
+        "mobile": "Mobile",
+        "science": "Science",
+        "other": "Other",
+        "lab": "Lab notes"
+      },
+      "groups": {
+        "projects": "Projects",
+        "lab": "Lab notes"
+      },
+      "empty": "No match. Try \"ai\", \"python\" or \"2025\".",
+      "navigate": "↑ ↓ navigate",
+      "pick": "↵ open",
+      "clear": "esc clear",
+      "count": "{n, plural, one {# result} other {# results}}"
+    },
+    "case": {
+      "blueprint": "Blueprint",
+      "arch": "Architecture of {name}",
+      "hint": "Hover or tab through a part to see why it is there.",
+      "why": "Why {label} — ",
+      "path": "request path · {n} parts",
+      "rev": "rev 01",
+      "steps": {
+        "problem": "Problem",
+        "approach": "Approach",
+        "stack": "Stack",
+        "outcome": "Outcome"
+      },
+      "tip": "click a stack to search for it",
+      "project": "Project"
+    },
+    "auto": {
+      "client": "Client",
+      "notes": "Notes",
+      "entry": "entry",
+      "layer": "layer",
+      "coursework": "coursework"
+    },
+    "lab": {
+      "kind": "Lab note",
+      "line": "{lang} · coursework",
+      "problem": "Coursework for {name} at IDP.",
+      "approach": "Exercises and assignments written in {lang}.",
+      "outcome": "Kept as a public reference repository."
+    },
+    "labs": {
+      "oop": "Object-Oriented Programming",
+      "techniques": "Programming Techniques",
+      "ds": "Data Structures",
+      "paradigms": "Programming Paradigms",
+      "db": "Databases",
+      "ml": "Machine Learning",
+      "stats": "Modeling & Statistics"
+    },
+    "items": {
+      "normai": {
+        "name": "NormAI",
+        "kind": "Product · AI",
+        "badge": "1st · Innovation",
+        "line": "AI-assisted normalization of legal spreadsheets.",
+        "problem": "LLM pipelines generate huge legal reports where the same concept appears written in dozens of different ways, so nothing is ready for analysis.",
+        "approach": "Each project is configured once, with a column dictionary, cleaning rules and AI-assisted classification. Every upload then runs through an async pipeline.",
+        "outcome": "Analysts upload, come back later and download a clean file. Task time down 99.8%, and 1st place in Innovation at the IDP × JusBrasil sprint.",
+        "nodes": {
+          "u": {
+            "label": "Analyst",
+            "sub": "browser",
+            "why": "Uploads raw spreadsheets and comes back later. Nothing blocks the browser."
+          },
+          "fe": {
+            "label": "Next.js",
+            "sub": "frontend · TS",
+            "in": "upload",
+            "why": "Login, projects, dictionary, status and dashboard in one typed app."
+          },
+          "api": {
+            "label": "FastAPI",
+            "sub": "backend · async",
+            "in": "REST",
+            "why": "Async API that queues each upload as a job and reports progress."
+          },
+          "db": {
+            "label": "PostgreSQL",
+            "sub": "projects · rules",
+            "in": "SQL",
+            "why": "Projects keep their dictionary and cleaning rules, so setup happens once."
+          },
+          "ai": {
+            "label": "AI step",
+            "sub": "classification",
+            "in": "job",
+            "why": "Classifies the values rules cannot map, so one concept ends up written one way."
+          }
+        }
+      },
+      "oficina": {
+        "name": "Oficina ES",
+        "kind": "Automation · AI",
+        "line": "Document Q&A orchestrated in n8n.",
+        "problem": "A team needed answers grounded in its own documents, behind real authentication, without building a backend from scratch.",
+        "approach": "n8n workflows handle login, token refresh and an auth guard. Drive documents are chunked and embedded, and an agent answers with vector search and chat memory.",
+        "outcome": "A protected Q&A endpoint over the team’s documents, running on open models, deployed with Docker and Caddy.",
+        "nodes": {
+          "u": {
+            "label": "User",
+            "sub": "chat",
+            "why": "Asks questions in plain language, only after logging in."
+          },
+          "n8n": {
+            "label": "n8n",
+            "sub": "workflows",
+            "in": "question",
+            "why": "Auth, ingestion and the agent are workflows, not a custom backend."
+          },
+          "vec": {
+            "label": "pgvector",
+            "sub": "embeddings",
+            "in": "search",
+            "why": "Documents are chunked and embedded, so answers come from the team’s own files."
+          },
+          "llm": {
+            "label": "Ollama",
+            "sub": "local models",
+            "in": "context",
+            "why": "Open models running locally. Documents never leave the server."
+          },
+          "auth": {
+            "label": "Supabase",
+            "sub": "auth",
+            "in": "token",
+            "why": "Real authentication and sessions in front of the Q&A endpoint."
+          }
+        }
+      },
+      "fluxo": {
+        "name": "NexAI Fluxogram",
+        "kind": "Interactive · Web",
+        "line": "The NexAI workflow, explorable.",
+        "problem": "Executives needed to understand how NexAI turns strategy into product across 14 business verticals, without reading a process manual.",
+        "approach": "An interactive flowchart: Strategy → Requirements → Design Thinking → Development, with each vertical as its own explorable path.",
+        "outcome": "Used to present the product process to non-technical stakeholders in one screen.",
+        "nodes": {
+          "a": {
+            "label": "Strategy",
+            "sub": "business goal",
+            "why": "Every initiative starts from a business goal."
+          },
+          "b": {
+            "label": "Requirements",
+            "sub": "product",
+            "why": "Goals become product requirements before any screen exists."
+          },
+          "c": {
+            "label": "Design Thinking",
+            "sub": "prototype",
+            "why": "Ideas are prototyped and tested with people before code."
+          },
+          "d": {
+            "label": "Development",
+            "sub": "build",
+            "why": "Only validated ideas reach engineering."
+          },
+          "v": {
+            "label": "14 verticals",
+            "sub": "paths",
+            "in": "per vertical",
+            "why": "Each vertical follows the same path, with its own branch."
+          }
+        }
+      },
+      "sharebite": {
+        "name": "ShareBite",
+        "kind": "Hackathon · AI",
+        "badge": "1st place",
+        "line": "Food donation platform built in a weekend.",
+        "problem": "Food that could be donated gets thrown away, partly because donors are not sure it meets ANVISA rules.",
+        "approach": "A Streamlit interface, a Flask API and MongoDB, with an AI agent that checks each donation against ANVISA criteria and interactive impact reports.",
+        "outcome": "Built in 20 hours. 1st place at the 5th IDP Hackathon.",
+        "nodes": {
+          "u": {
+            "label": "Streamlit",
+            "sub": "donor UI",
+            "why": "Donors and receivers use one simple interface."
+          },
+          "api": {
+            "label": "Flask",
+            "sub": "API",
+            "in": "donate",
+            "why": "A small API keeps donations, requests and matches in one place."
+          },
+          "db": {
+            "label": "MongoDB",
+            "sub": "donations",
+            "in": "store",
+            "why": "Flexible documents for donations that vary a lot in shape."
+          },
+          "rep": {
+            "label": "Reports",
+            "sub": "impact",
+            "why": "Interactive reports show how much food was saved."
+          },
+          "ai": {
+            "label": "AI check",
+            "sub": "ANVISA rules",
+            "in": "validate",
+            "why": "An agent checks each donation against ANVISA criteria before it is listed."
+          }
+        }
+      },
+      "orbitas": {
+        "name": "Órbitas",
+        "kind": "Science · Python",
+        "line": "Planetary orbits with Fourier series.",
+        "problem": "How close can a short Fourier series get to a real planetary orbit?",
+        "approach": "A simulation for every planet from Mercury to Neptune, comparing the approximation with the reference orbit, with tests and notebooks.",
+        "outcome": "An interactive CLI: pick a planet and watch the approximation converge.",
+        "nodes": {
+          "a": {
+            "label": "Planet data",
+            "sub": "reference",
+            "why": "Reference orbits for every planet, Mercury to Neptune."
+          },
+          "b": {
+            "label": "Fourier series",
+            "sub": "N terms",
+            "why": "Each orbit approximated by a short sum of sines and cosines."
+          },
+          "c": {
+            "label": "NumPy",
+            "sub": "simulation",
+            "why": "Compares the approximation with the reference, term by term."
+          },
+          "d": {
+            "label": "Matplotlib",
+            "sub": "plots",
+            "in": "error",
+            "why": "Shows the error shrinking as terms are added."
+          },
+          "e": {
+            "label": "CLI",
+            "sub": "pick a planet",
+            "why": "Choose a planet and see it converge."
+          }
+        }
+      },
+      "veritas": {
+        "name": "Veritas",
+        "kind": "Mobile",
+        "line": "Follow public projects from your phone.",
+        "problem": "Public project data is scattered across official sources and hard to follow from a phone.",
+        "approach": "A cross-platform app with its own backend that groups projects and sends alerts when something changes.",
+        "outcome": "iOS and Android app from one TypeScript codebase, with setup guide and security policy in the repository.",
+        "nodes": {
+          "a": {
+            "label": "React Native",
+            "sub": "iOS · Android",
+            "why": "One TypeScript codebase for iOS and Android."
+          },
+          "b": {
+            "label": "Backend",
+            "sub": "API",
+            "why": "Collects and groups public project data for the app."
+          },
+          "c": {
+            "label": "Public data",
+            "sub": "official sources",
+            "in": "sync",
+            "why": "Official sources, normalized so projects can be followed over time."
+          },
+          "d": {
+            "label": "Alerts",
+            "sub": "push",
+            "in": "notify",
+            "why": "Notifications when a followed project changes."
+          }
+        }
+      },
+      "contratus": {
+        "name": "Contratus AI",
+        "kind": "AI · Web",
+        "line": "Ask questions about contracts.",
+        "problem": "Reading a long contract to answer one question takes too long.",
+        "approach": "RAG over contracts: documents are split into chunks, indexed as vectors and retrieved to ground every answer.",
+        "outcome": "Upload a contract and ask questions in a chat, with answers grounded in the right clauses.",
+        "nodes": {
+          "a": {
+            "label": "SvelteKit",
+            "sub": "chat UI",
+            "why": "Upload a contract and ask questions in a chat."
+          },
+          "b": {
+            "label": "FastAPI",
+            "sub": "RAG service",
+            "in": "question",
+            "why": "Chunks contracts and handles retrieval and answers."
+          },
+          "c": {
+            "label": "Pinecone",
+            "sub": "vector index",
+            "in": "retrieve",
+            "why": "Vector index, so answers come from the right clauses."
+          },
+          "d": {
+            "label": "LLM",
+            "sub": "answers",
+            "in": "context",
+            "why": "Answers only from the retrieved passages."
+          }
+        }
+      },
+      "airq": {
+        "name": "Air Quality Pipeline",
+        "kind": "Data",
+        "line": "Event-driven data pipeline.",
+        "problem": "Air quality readings arrive continuously and need to be processed without losing events.",
+        "approach": "An event-driven pipeline: Kafka streams readings, Celery workers process them over Redis and RabbitMQ, results go to MinIO and a dashboard.",
+        "outcome": "Each stage scales on its own, and a Streamlit dashboard shows the processed data.",
+        "nodes": {
+          "a": {
+            "label": "Sources",
+            "sub": "readings",
+            "why": "Air quality readings arrive as events."
+          },
+          "b": {
+            "label": "Kafka",
+            "sub": "event stream",
+            "in": "events",
+            "why": "Decouples producers from processing, so nothing is lost."
+          },
+          "c": {
+            "label": "Celery",
+            "sub": "workers",
+            "in": "consume",
+            "why": "Workers process and aggregate readings, with Redis and RabbitMQ underneath."
+          },
+          "d": {
+            "label": "MinIO",
+            "sub": "object store",
+            "in": "store",
+            "why": "Processed data stored as objects, S3-compatible."
+          },
+          "e": {
+            "label": "Streamlit",
+            "sub": "dashboard",
+            "why": "Dashboard over the processed data, served with Flask."
+          }
+        }
+      },
+      "slot1": {
+        "name": "Project A"
+      },
+      "slot2": {
+        "name": "Project B"
+      },
+      "slot3": {
+        "name": "Project C"
+      }
+    },
+    "ba": {
+      "label": "NormAI before and after",
+      "kicker": "NormAI · Before / After",
+      "title": "Same product. My design.",
+      "body": "Rebuilt in my own tone: calmer, clearer, nicer to use. Drag to compare.",
+      "before": "Before",
+      "after": "After",
+      "slider": "Compare before and after",
+      "headline": "Upload. Come back. Done.",
+      "notesBefore": "Dense screens, every option visible at once, little hierarchy. It worked, but it was tiring to use.",
+      "notesAfter": "Same features, fewer decisions per screen: clear steps, generous spacing and one obvious next action."
+    }
+  },
+  "Next": {
     "kicker": "next section",
-    "title": "Projects",
+    "title": "Education",
     "body": "Next page to design."
   }
 }

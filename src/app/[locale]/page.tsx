@@ -4,7 +4,8 @@ import { stats } from "@/content/stats";
 import { Experience } from "@/features/experience/Experience";
 import { Header } from "@/features/header/Header";
 import { Hero } from "@/features/hero/Hero";
-import { ProjectsPlaceholder } from "@/features/projects/ProjectsPlaceholder";
+import { NextPlaceholder } from "@/features/next/NextPlaceholder";
+import { Projects } from "@/features/projects/Projects";
 import { StackList } from "@/features/stack/StackList";
 import { StackStory } from "@/features/stack/StackStory";
 import { getGithubStats } from "@/lib/github";
@@ -25,7 +26,8 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         />
         <StackList />
         <Experience />
-        <ProjectsPlaceholder />
+        <Projects />
+        <NextPlaceholder />
       </main>
     </>
   );

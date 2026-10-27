@@ -274,8 +274,399 @@
     "headKicker": "HEAD → main"
   },
   "Projects": {
+    "titleA": "O que eu construí,",
+    "titleB": "caso a caso",
+    "titleC": "Projetos",
+    "sub": "Abra qualquer card para ver o <b>blueprint</b> e a história por trás. Busque por nome, stack ou ano, ou aperte <b>⌘K</b>.",
+    "tbd": "[preencher]",
+    "open": "Abrir case: {name}",
+    "close": "Fechar",
+    "media": {
+      "video": "vídeo",
+      "image": "imagem"
+    },
+    "search": {
+      "placeholder": "Busque um projeto, stack ou ano…",
+      "label": "Buscar projetos",
+      "filters": {
+        "all": "Todos",
+        "ai": "IA",
+        "web": "Web",
+        "data": "Dados",
+        "mobile": "Mobile",
+        "science": "Ciência",
+        "other": "Outros",
+        "lab": "Notas de lab"
+      },
+      "groups": {
+        "projects": "Projetos",
+        "lab": "Notas de lab"
+      },
+      "empty": "Nada encontrado. Tente \"ia\", \"python\" ou \"2025\".",
+      "navigate": "↑ ↓ navegar",
+      "pick": "↵ abrir",
+      "clear": "esc limpar",
+      "count": "{n, plural, one {# resultado} other {# resultados}}"
+    },
+    "case": {
+      "blueprint": "Blueprint",
+      "arch": "Arquitetura de {name}",
+      "hint": "Passe o mouse ou navegue com tab por uma parte para ver por que ela está ali.",
+      "why": "Por que {label} — ",
+      "path": "caminho da requisição · {n} partes",
+      "rev": "rev 01",
+      "steps": {
+        "problem": "Problema",
+        "approach": "Abordagem",
+        "stack": "Stack",
+        "outcome": "Resultado"
+      },
+      "tip": "clique numa stack para buscá-la",
+      "project": "Projeto"
+    },
+    "auto": {
+      "client": "Cliente",
+      "notes": "Notas",
+      "entry": "entrada",
+      "layer": "camada",
+      "coursework": "disciplina"
+    },
+    "lab": {
+      "kind": "Nota de lab",
+      "line": "{lang} · disciplina",
+      "problem": "Trabalhos da disciplina {name} no IDP.",
+      "approach": "Exercícios e trabalhos escritos em {lang}.",
+      "outcome": "Mantido como repositório público de referência."
+    },
+    "labs": {
+      "oop": "Programação Orientada a Objetos",
+      "techniques": "Técnicas de Programação",
+      "ds": "Estruturas de Dados",
+      "paradigms": "Paradigmas de Programação",
+      "db": "Bancos de Dados",
+      "ml": "Aprendizado de Máquina",
+      "stats": "Modelagem e Estatística"
+    },
+    "items": {
+      "normai": {
+        "name": "NormAI",
+        "kind": "Produto · IA",
+        "badge": "1º · Inovação",
+        "line": "Normalização de planilhas jurídicas com apoio de IA.",
+        "problem": "Pipelines de LLM geram relatórios jurídicos enormes em que o mesmo conceito aparece escrito de dezenas de formas diferentes, então nada fica pronto para análise.",
+        "approach": "Cada projeto é configurado uma vez, com dicionário de colunas, regras de limpeza e classificação assistida por IA. A partir daí, cada upload passa por um pipeline assíncrono.",
+        "outcome": "Analistas fazem o upload, voltam depois e baixam um arquivo limpo. Tempo da tarefa 99,8% menor e 1º lugar em Inovação no sprint IDP × JusBrasil.",
+        "nodes": {
+          "u": {
+            "label": "Analista",
+            "sub": "navegador",
+            "why": "Envia planilhas brutas e volta depois. Nada trava o navegador."
+          },
+          "fe": {
+            "label": "Next.js",
+            "sub": "frontend · TS",
+            "in": "upload",
+            "why": "Login, projetos, dicionário, status e dashboard num único app tipado."
+          },
+          "api": {
+            "label": "FastAPI",
+            "sub": "backend · async",
+            "in": "REST",
+            "why": "API assíncrona que enfileira cada upload como job e informa o progresso."
+          },
+          "db": {
+            "label": "PostgreSQL",
+            "sub": "projetos · regras",
+            "in": "SQL",
+            "why": "Os projetos guardam dicionário e regras de limpeza, então a configuração acontece uma vez só."
+          },
+          "ai": {
+            "label": "Etapa de IA",
+            "sub": "classificação",
+            "in": "job",
+            "why": "Classifica os valores que as regras não conseguem mapear, para que cada conceito fique escrito de um jeito só."
+          }
+        }
+      },
+      "oficina": {
+        "name": "Oficina ES",
+        "kind": "Automação · IA",
+        "line": "Perguntas e respostas sobre documentos, orquestradas no n8n.",
+        "problem": "Um time precisava de respostas baseadas nos próprios documentos, com autenticação de verdade, sem construir um backend do zero.",
+        "approach": "Workflows no n8n cuidam de login, renovação de token e um auth guard. Documentos do Drive viram chunks e embeddings, e um agente responde com busca vetorial e memória de conversa.",
+        "outcome": "Um endpoint protegido de perguntas e respostas sobre os documentos do time, rodando com modelos abertos e publicado com Docker e Caddy.",
+        "nodes": {
+          "u": {
+            "label": "Usuário",
+            "sub": "chat",
+            "why": "Faz perguntas em linguagem natural, só depois de fazer login."
+          },
+          "n8n": {
+            "label": "n8n",
+            "sub": "workflows",
+            "in": "pergunta",
+            "why": "Auth, ingestão e o agente são workflows, não um backend próprio."
+          },
+          "vec": {
+            "label": "pgvector",
+            "sub": "embeddings",
+            "in": "busca",
+            "why": "Os documentos viram chunks e embeddings, então as respostas vêm dos arquivos do próprio time."
+          },
+          "llm": {
+            "label": "Ollama",
+            "sub": "modelos locais",
+            "in": "contexto",
+            "why": "Modelos abertos rodando localmente. Os documentos nunca saem do servidor."
+          },
+          "auth": {
+            "label": "Supabase",
+            "sub": "auth",
+            "in": "token",
+            "why": "Autenticação e sessões de verdade na frente do endpoint."
+          }
+        }
+      },
+      "fluxo": {
+        "name": "NexAI Fluxogram",
+        "kind": "Interativo · Web",
+        "line": "O workflow da NexAI, explorável.",
+        "problem": "Executivos precisavam entender como a NexAI transforma estratégia em produto em 14 verticais de negócio, sem ler um manual de processos.",
+        "approach": "Um fluxograma interativo: Estratégia → Requisitos → Design Thinking → Desenvolvimento, com cada vertical como um caminho próprio para explorar.",
+        "outcome": "Usado para apresentar o processo de produto a stakeholders não técnicos numa só tela.",
+        "nodes": {
+          "a": {
+            "label": "Estratégia",
+            "sub": "objetivo de negócio",
+            "why": "Toda iniciativa começa de um objetivo de negócio."
+          },
+          "b": {
+            "label": "Requisitos",
+            "sub": "produto",
+            "why": "Objetivos viram requisitos de produto antes de existir qualquer tela."
+          },
+          "c": {
+            "label": "Design Thinking",
+            "sub": "protótipo",
+            "why": "Ideias são prototipadas e testadas com pessoas antes do código."
+          },
+          "d": {
+            "label": "Desenvolvimento",
+            "sub": "construção",
+            "why": "Só ideias validadas chegam à engenharia."
+          },
+          "v": {
+            "label": "14 verticais",
+            "sub": "caminhos",
+            "in": "por vertical",
+            "why": "Cada vertical segue o mesmo caminho, com seu próprio ramo."
+          }
+        }
+      },
+      "sharebite": {
+        "name": "ShareBite",
+        "kind": "Hackathon · IA",
+        "badge": "1º lugar",
+        "line": "Plataforma de doação de alimentos feita num fim de semana.",
+        "problem": "Comida que poderia ser doada vai para o lixo, em parte porque quem doa não tem certeza se ela atende às regras da ANVISA.",
+        "approach": "Uma interface em Streamlit, uma API em Flask e MongoDB, com um agente de IA que confere cada doação contra os critérios da ANVISA e relatórios de impacto interativos.",
+        "outcome": "Feito em 20 horas. 1º lugar no 5º Hackathon do IDP.",
+        "nodes": {
+          "u": {
+            "label": "Streamlit",
+            "sub": "UI do doador",
+            "why": "Doadores e receptores usam uma interface simples."
+          },
+          "api": {
+            "label": "Flask",
+            "sub": "API",
+            "in": "doar",
+            "why": "Uma API pequena mantém doações, pedidos e matches num só lugar."
+          },
+          "db": {
+            "label": "MongoDB",
+            "sub": "doações",
+            "in": "salvar",
+            "why": "Documentos flexíveis para doações com formatos muito variados."
+          },
+          "rep": {
+            "label": "Relatórios",
+            "sub": "impacto",
+            "why": "Relatórios interativos mostram quanta comida foi salva."
+          },
+          "ai": {
+            "label": "Checagem IA",
+            "sub": "regras ANVISA",
+            "in": "validar",
+            "why": "Um agente confere cada doação contra os critérios da ANVISA antes de ela ser listada."
+          }
+        }
+      },
+      "orbitas": {
+        "name": "Órbitas",
+        "kind": "Ciência · Python",
+        "line": "Órbitas planetárias com séries de Fourier.",
+        "problem": "Quão perto uma série de Fourier curta consegue chegar de uma órbita planetária real?",
+        "approach": "Uma simulação para cada planeta, de Mercúrio a Netuno, comparando a aproximação com a órbita de referência, com testes e notebooks.",
+        "outcome": "Uma CLI interativa: escolha um planeta e veja a aproximação convergir.",
+        "nodes": {
+          "a": {
+            "label": "Dados dos planetas",
+            "sub": "referência",
+            "why": "Órbitas de referência para todos os planetas, de Mercúrio a Netuno."
+          },
+          "b": {
+            "label": "Série de Fourier",
+            "sub": "N termos",
+            "why": "Cada órbita aproximada por uma soma curta de senos e cossenos."
+          },
+          "c": {
+            "label": "NumPy",
+            "sub": "simulação",
+            "why": "Compara a aproximação com a referência, termo a termo."
+          },
+          "d": {
+            "label": "Matplotlib",
+            "sub": "gráficos",
+            "in": "erro",
+            "why": "Mostra o erro diminuindo conforme os termos são adicionados."
+          },
+          "e": {
+            "label": "CLI",
+            "sub": "escolha um planeta",
+            "why": "Escolha um planeta e veja a série convergir."
+          }
+        }
+      },
+      "veritas": {
+        "name": "Veritas",
+        "kind": "Mobile",
+        "line": "Acompanhe projetos públicos pelo celular.",
+        "problem": "Dados de projetos públicos ficam espalhados em fontes oficiais e são difíceis de acompanhar pelo celular.",
+        "approach": "Um app multiplataforma com backend próprio que agrupa os projetos e envia alertas quando algo muda.",
+        "outcome": "App para iOS e Android a partir de uma única base em TypeScript, com guia de setup e política de segurança no repositório.",
+        "nodes": {
+          "a": {
+            "label": "React Native",
+            "sub": "iOS · Android",
+            "why": "Uma única base em TypeScript para iOS e Android."
+          },
+          "b": {
+            "label": "Backend",
+            "sub": "API",
+            "why": "Coleta e agrupa dados de projetos públicos para o app."
+          },
+          "c": {
+            "label": "Dados públicos",
+            "sub": "fontes oficiais",
+            "in": "sync",
+            "why": "Fontes oficiais, normalizadas para que os projetos possam ser acompanhados ao longo do tempo."
+          },
+          "d": {
+            "label": "Alertas",
+            "sub": "push",
+            "in": "notificar",
+            "why": "Notificações quando um projeto acompanhado muda."
+          }
+        }
+      },
+      "contratus": {
+        "name": "Contratus AI",
+        "kind": "IA · Web",
+        "line": "Faça perguntas sobre contratos.",
+        "problem": "Ler um contrato longo para responder uma única pergunta leva tempo demais.",
+        "approach": "RAG sobre contratos: os documentos são divididos em chunks, indexados como vetores e recuperados para fundamentar cada resposta.",
+        "outcome": "Envie um contrato e faça perguntas num chat, com respostas baseadas nas cláusulas certas.",
+        "nodes": {
+          "a": {
+            "label": "SvelteKit",
+            "sub": "UI de chat",
+            "why": "Envie um contrato e faça perguntas num chat."
+          },
+          "b": {
+            "label": "FastAPI",
+            "sub": "serviço RAG",
+            "in": "pergunta",
+            "why": "Divide os contratos em chunks e cuida da recuperação e das respostas."
+          },
+          "c": {
+            "label": "Pinecone",
+            "sub": "índice vetorial",
+            "in": "recuperar",
+            "why": "Índice vetorial, para que as respostas venham das cláusulas certas."
+          },
+          "d": {
+            "label": "LLM",
+            "sub": "respostas",
+            "in": "contexto",
+            "why": "Responde só a partir dos trechos recuperados."
+          }
+        }
+      },
+      "airq": {
+        "name": "Pipeline de Qualidade do Ar",
+        "kind": "Dados",
+        "line": "Pipeline de dados orientado a eventos.",
+        "problem": "Leituras de qualidade do ar chegam o tempo todo e precisam ser processadas sem perder eventos.",
+        "approach": "Um pipeline orientado a eventos: o Kafka transmite as leituras, workers Celery as processam sobre Redis e RabbitMQ, e os resultados vão para o MinIO e para um dashboard.",
+        "outcome": "Cada etapa escala de forma independente, e um dashboard em Streamlit mostra os dados processados.",
+        "nodes": {
+          "a": {
+            "label": "Fontes",
+            "sub": "leituras",
+            "why": "Leituras de qualidade do ar chegam como eventos."
+          },
+          "b": {
+            "label": "Kafka",
+            "sub": "fluxo de eventos",
+            "in": "eventos",
+            "why": "Desacopla os produtores do processamento, então nada se perde."
+          },
+          "c": {
+            "label": "Celery",
+            "sub": "workers",
+            "in": "consumir",
+            "why": "Workers processam e agregam as leituras, com Redis e RabbitMQ por baixo."
+          },
+          "d": {
+            "label": "MinIO",
+            "sub": "object store",
+            "in": "salvar",
+            "why": "Dados processados guardados como objetos, compatível com S3."
+          },
+          "e": {
+            "label": "Streamlit",
+            "sub": "dashboard",
+            "why": "Dashboard sobre os dados processados, servido com Flask."
+          }
+        }
+      },
+      "slot1": {
+        "name": "Projeto A"
+      },
+      "slot2": {
+        "name": "Projeto B"
+      },
+      "slot3": {
+        "name": "Projeto C"
+      }
+    },
+    "ba": {
+      "label": "NormAI antes e depois",
+      "kicker": "NormAI · Antes / Depois",
+      "title": "Mesmo produto. Meu design.",
+      "body": "Refeito no meu tom: mais calmo, mais claro, mais agradável de usar. Arraste para comparar.",
+      "before": "Antes",
+      "after": "Depois",
+      "slider": "Comparar antes e depois",
+      "headline": "Envie. Volte. Pronto.",
+      "notesBefore": "Telas densas, todas as opções visíveis ao mesmo tempo, pouca hierarquia. Funcionava, mas cansava.",
+      "notesAfter": "Mesmas funções, menos decisões por tela: passos claros, espaçamento generoso e uma próxima ação óbvia."
+    }
+  },
+  "Next": {
     "kicker": "próxima seção",
-    "title": "Projetos",
+    "title": "Formação",
     "body": "Próxima página a desenhar."
   }
 }
