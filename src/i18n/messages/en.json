@@ -45,7 +45,7 @@
   "Stack": {
     "label": "Stack",
     "greet": ["Hi,", "I'm", "Felipe."],
-    "intro": "I design and ship systems end to end: web products, LLM-powered agents and secure infrastructure, from architecture to production.",
+    "intro": "I'm a software engineer and tech lead working across full-stack, software architecture, UI/UX and LLMs. I build products end to end, turning ideas into reality.",
     "titleTop": "This is my",
     "titleEm": "stack.",
     "contributions": "contributions in the last year",
