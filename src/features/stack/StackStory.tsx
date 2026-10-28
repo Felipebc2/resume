@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Lenis from "lenis";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { profile } from "@/content/profile";
 import type { Stat } from "@/content/stats";
 import { clamp, ease, easeOut } from "@/lib/math";
@@ -196,6 +196,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       if (!r) return;
       const vh = innerHeight;
       setStep(r.top > vh * 0.5 ? -1 : -r.top < vh * 0.5 ? 0 : 1);
+      stage.current?.style.setProperty("--lift", `${clamp(r.top, 0, vh)}px`);
       document.documentElement.toggleAttribute(
         "data-scrolled",
         -r.top > vh + 4,
@@ -284,7 +285,9 @@ export function StackStory({ stats }: { stats: Stat[] }) {
             {greet.map((w, i) => (
               <span key={i}>
                 {i > 0 && " "}
-                <span className={s.w}>{w}</span>
+                <span className={s.w} style={{ "--i": i } as CSSProperties}>
+                  {w}
+                </span>
               </span>
             ))}
           </h2>

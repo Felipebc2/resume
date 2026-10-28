@@ -26,6 +26,9 @@
   gap: 22px;
   padding: 0 var(--gut-r) 0 var(--gut-l);
   text-align: center;
+  /* held at the viewport centre while the section rises (StackStory sets --lift),
+     so the hero leaves over a greeting that is already in place */
+  transform: translateY(calc(-1 * var(--lift, 0px)));
 }
 .greet h2 {
   margin: 0;
@@ -48,7 +51,7 @@
 .w,
 .greet p {
   opacity: 0;
-  transform: translateY(46px);
+  transform: translateY(24px);
   filter: blur(10px);
   transition:
     opacity 0.4s ease,
@@ -65,11 +68,8 @@
     transform 0.9s var(--ease-out-soft),
     filter 0.7s ease;
 }
-.s0 .w:nth-child(2) {
-  transition-delay: 0.09s;
-}
-.s0 .w:nth-child(3) {
-  transition-delay: 0.18s;
+.s0 .w {
+  transition-delay: calc(var(--i) * 90ms);
 }
 .s0 .greet p {
   transition-delay: 0.38s;

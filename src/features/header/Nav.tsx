@@ -26,7 +26,7 @@ export function Nav() {
     const el = nav.current;
     const read = () => {
       const vh = innerHeight;
-      if (el) el.dataset.nav = scrollY > vh * 0.4 ? "in" : "out";
+      if (el) el.dataset.nav = scrollY > vh * 0.6 ? "in" : "out";
       const max = document.documentElement.scrollHeight - vh;
       if (prog.current)
         prog.current.style.transform = `scaleX(${clamp(scrollY / Math.max(1, max), 0, 1)})`;

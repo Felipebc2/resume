@@ -1,28 +1,23 @@
 "use client";
 
 import { useEffect, useRef, type ReactNode } from "react";
-import { ramp } from "@/lib/math";
+import { clamp } from "@/lib/math";
 import { useStill } from "@/lib/motion";
 import s from "./Hero.module.css";
 
-/** Parallax + fade of the hero copy while the hero scrolls away. */
+/** Publishes how far the hero has scrolled away (`--p`, 0→1) on its section;
+    Hero.module.css turns it into the focus pull onto the greeting. */
 export function HeroLeft({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const still = useStill();
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (still) {
-      el.style.transform = "";
-      el.style.opacity = "";
-      return;
-    }
+    const hero = ref.current?.closest("section");
+    if (!hero) return;
     const read = () => {
-      const vh = innerHeight;
-      const hy = Math.min(scrollY, vh);
-      el.style.transform = `translateY(${hy * 0.22}px)`;
-      el.style.opacity = String(1 - ramp(hy, vh * 0.15, vh * 0.8));
+      const p = still ? 0 : clamp(scrollY / hero.offsetHeight, 0, 1);
+      hero.style.setProperty("--p", p.toFixed(4));
+      hero.toggleAttribute("data-leaving", p > 0);
     };
     read();
     addEventListener("scroll", read, { passive: true });
