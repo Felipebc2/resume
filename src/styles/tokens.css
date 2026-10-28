@@ -70,6 +70,7 @@
   --section-y: clamp(96px, 12vh, 140px);
   --container: 1560px;
 
+  --r-2xs: 2px; /* tiny squares: commit-grid cells */
   --r-xs: 6px;
   --r-s: 12px;
   --r-m: 18px;

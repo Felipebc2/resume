@@ -2,19 +2,34 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Lenis from "lenis";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type CSSProperties,
+} from "react";
 import { profile } from "@/content/profile";
 import type { Stat } from "@/content/stats";
 import { clamp, ease, easeOut } from "@/lib/math";
 import { useStill } from "@/lib/motion";
 import { Clock } from "./Clock";
 import { formatStat } from "./format";
-import { buildGrid, COLS, levelsAt, ROWS } from "./grid";
+import { buildGrid, levelsAt, twinkle } from "./grid";
 import { inGap, nextStep, push, type Push } from "./steps";
 import s from "./Stack.module.css";
 
-const GRID = buildGrid();
-const CELLS = COLS * ROWS;
+/* finer on desktop; phones keep the coarse grid so cells stay a few px wide */
+const GRIDS = { coarse: buildGrid("coarse"), fine: buildGrid("fine") };
+/* the graph keeps breathing: every TICK ms a few commits flicker a shade for FLICKER ms */
+const TICK = 140;
+const FLICKER = 700;
+const WIDE = "(min-width: 761px)";
+const onWide = (cb: () => void) => {
+  const mq = matchMedia(WIDE);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
 const LEVELS = [0, 1, 2, 3, 4] as const;
 
 type Step = -1 | 0 | 1;
@@ -38,6 +53,12 @@ export function StackStory({ stats }: { stats: Stat[] }) {
   const locale = useLocale();
   const still = useStill();
   const [step, setStep] = useState<Step>(-1);
+  const wide = useSyncExternalStore(
+    onWide,
+    () => matchMedia(WIDE).matches,
+    () => true,
+  );
+  const G = wide ? GRIDS.fine : GRIDS.coarse;
 
   const section = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
@@ -251,12 +272,44 @@ export function StackStory({ stats }: { stats: Stat[] }) {
     return () => removeEventListener("scroll", read);
   }, []);
 
+  /* once open, random commits flicker a shade and settle back (only while on screen) */
+  useEffect(() => {
+    const box = grid.current;
+    if (step !== 1 || still || !box) return;
+    const cells = box.children;
+    const lit = new Map<HTMLElement, ReturnType<typeof setTimeout>>();
+    const id = setInterval(() => {
+      const r = box.getBoundingClientRect();
+      if (document.hidden || r.bottom < 0 || r.top > innerHeight) return;
+      for (let n = 0; n < 3; n++) {
+        const i = Math.floor(Math.random() * G.level.length);
+        const el = cells[i] as HTMLElement;
+        if (lit.has(el) || el.dataset.l !== String(G.level[i])) continue; // still drawing
+        el.dataset.l = String(twinkle(G, i));
+        lit.set(
+          el,
+          setTimeout(() => {
+            el.dataset.l = String(G.level[i]);
+            lit.delete(el);
+          }, FLICKER),
+        );
+      }
+    }, TICK);
+    return () => {
+      clearInterval(id);
+      lit.forEach((t, el) => {
+        clearTimeout(t);
+        el.dataset.l = String(G.level[[...cells].indexOf(el)]);
+      });
+    };
+  }, [step, still, G]);
+
   /* step → grid draw + count-up */
   useEffect(() => {
     const cells = grid.current?.children;
     const paint = (d: number) => {
       if (!cells) return;
-      levelsAt(GRID, d).forEach((lv, i) => {
+      levelsAt(G, d).forEach((lv, i) => {
         (cells[i] as HTMLElement).dataset.l = String(lv);
       });
     };
@@ -304,7 +357,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       clearTimeout(timer);
       rafs.forEach(cancelAnimationFrame);
     };
-  }, [step, still, locale, stats]);
+  }, [step, still, locale, stats, G]);
 
   const greet = t.raw("greet") as string[];
   const stepClass = step === 0 ? s.s0 : step === 1 ? s.s1 : "";
@@ -361,10 +414,11 @@ export function StackStory({ stats }: { stats: Stat[] }) {
                   <div
                     ref={grid}
                     className={s.grid}
+                    style={{ "--cols": G.cols } as CSSProperties}
                     role="img"
                     aria-label={t("graph")}
                   >
-                    {Array.from({ length: CELLS }, (_, i) => (
+                    {Array.from({ length: G.cols * G.rows }, (_, i) => (
                       <i key={i} />
                     ))}
                   </div>
