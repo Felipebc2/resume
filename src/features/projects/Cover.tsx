@@ -10,19 +10,12 @@ const hash = (str: string) => {
   for (const c of str) h = Math.imul(h ^ c.charCodeAt(0), 16777619);
   return h >>> 0;
 };
-/* mulberry32 */
-const rng = (a: number) => () => {
-  a = (a + 0x6d2b79f5) | 0;
-  let t = Math.imul(a ^ (a >>> 15), 1 | a);
-  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-};
-
 /** a dot field seeded by the project id, on a 600 × 260 canvas at 2x */
 function paint(c: HTMLCanvasElement, id: string) {
   const ctx = c.getContext("2d");
   if (!ctx) return;
-  const r = rng(hash(id));
+  let a = (hash(id) % 2147483646) + 1;
+  const r = () => (a = (a * 16807) % 2147483647) / 2147483647;
   const ox = r(),
     oy = r(),
     fq = 2 + r() * 4,

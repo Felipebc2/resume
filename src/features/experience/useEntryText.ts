@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { profile } from "@/content/profile";
-import { mi, span, spans, type Entry } from "./entries";
+import { mi, span, type Entry } from "./entries";
 
 export type Card = {
   k: string;
@@ -76,7 +76,7 @@ export function useEntryText(now: number) {
           s:
             t(`lab.${e.id}.detail`) +
             (e.rank ? ` · ${t("rankPlace", { rank: e.rank })}` : ""),
-          m: spans(e) ? period(e.date, e.end) : fmt(e.date),
+          m: e.end ? period(e.date, e.end) : fmt(e.date),
           pts: t.raw(`lab.${e.id}.pts`) as string[],
         };
       case "init":

@@ -9,6 +9,7 @@ import { entries } from "./entries";
 import { GitLog } from "./GitLog";
 import { Htop } from "./Htop";
 import { Trophies } from "./Trophies";
+import { useRepaint } from "./useFrames";
 import s from "./Experience.module.css";
 
 export type Select = (id: EntryId) => void;
@@ -26,6 +27,7 @@ export function Bento({ now }: { now: number }) {
   const select: Select = (id) =>
     setOrder((o) => (o[0] === id ? o : [id, ...o.filter((x) => x !== id)]));
   const grid = useRef<HTMLDivElement>(null);
+  const head = useRef<HTMLElement>(null);
   const fit = useRef<HTMLSpanElement>(null);
 
   /* cells rise in as they enter; the git graph draws once its cell shows.
@@ -49,26 +51,19 @@ export function Bento({ now }: { now: number }) {
   }, []);
 
   /* keep EXPERIENCE inside its column whatever the font metrics or locale */
-  useEffect(() => {
+  useRepaint(head, () => {
     const c = fit.current;
-    const cell = c?.closest("header");
-    if (!c || !cell) return;
-    const run = () => {
-      c.style.fontSize = "";
-      const max = parseFloat(getComputedStyle(c).fontSize);
-      const avail = cell.clientWidth - 4;
-      if (c.scrollWidth > avail)
-        c.style.fontSize = `${Math.floor((max * avail) / c.scrollWidth)}px`;
-    };
-    const ro = new ResizeObserver(run);
-    ro.observe(cell);
-    document.fonts?.ready.then(run);
-    return () => ro.disconnect();
-  }, []);
+    if (!c || !head.current) return;
+    c.style.fontSize = "";
+    const max = parseFloat(getComputedStyle(c).fontSize);
+    const avail = head.current.clientWidth - 4;
+    if (c.scrollWidth > avail)
+      c.style.fontSize = `${Math.floor((max * avail) / c.scrollWidth)}px`;
+  });
 
   return (
     <div ref={grid} className={s.bento}>
-      <header className={`${s.xb} ${s.title}`}>
+      <header ref={head} className={`${s.xb} ${s.title}`}>
         <h2 id="experience-title" className={s.xt}>
           <span className={s.a}>{t("titleA")}</span>
           <span className={s.b}>{t("titleB")}</span>

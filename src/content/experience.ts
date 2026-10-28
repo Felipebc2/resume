@@ -24,8 +24,8 @@ export type Work = {
 export type Lab = {
   id: LabId;
   type: "competition" | "event" | "role" | "research";
-  /** competitions and events are one month; roles and research run from date to end (none = running) */
   date: string;
+  /** roles and research only; competitions and events are one month */
   end?: string;
   place?: Place;
   art: string;

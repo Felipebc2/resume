@@ -17,19 +17,19 @@ export const ROWS = 11;
  * `level` is each cell's final shade (0–4); `key` is when it lights up during the
  * 0→1 draw, so letters sweep left to right while the noise fills in at random.
  */
-export function buildGrid(word = "FELIPEBC2", seed = 7) {
+export function buildGrid() {
   const n = COLS * ROWS;
   const level = new Uint8Array(n);
   const key = new Float32Array(n);
   const letter = new Uint8Array(n);
-  [...word].forEach((ch, li) =>
+  [..."FELIPEBC2"].forEach((ch, li) =>
     FONT[ch].forEach((row, y) =>
       [...row].forEach((v, x) => {
         if (v === "#") letter[(2 + y) * COLS + 3 + li * 6 + x] = 1;
       }),
     ),
   );
-  let s = seed;
+  let s = 7;
   const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i < n; i++) {
     if (letter[i]) {

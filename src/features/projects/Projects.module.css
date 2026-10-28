@@ -742,10 +742,31 @@ button.chip:hover {
   border: 1px solid var(--line);
   border-radius: 22px;
   overflow: hidden;
-  user-select: none;
-  touch-action: pan-y;
-  cursor: ew-resize;
   background: #0f0f11;
+}
+/* invisible native range over the whole compare: drag, click and arrow keys for free */
+/* 22px past each side so the 44px thumb's centre spans the full width */
+.range {
+  position: absolute;
+  top: 0;
+  left: -22px;
+  z-index: 6;
+  width: calc(100% + 44px);
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  appearance: none;
+  cursor: ew-resize;
+  touch-action: pan-y;
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 44px;
+  height: 100vh;
+}
+.range::-moz-range-thumb {
+  width: 44px;
+  height: 100vh;
 }
 .layer {
   position: absolute;
@@ -780,7 +801,7 @@ button.chip:hover {
   width: 2px;
   margin-left: -1px;
   background: var(--color-fg);
-  outline: none;
+  pointer-events: none;
 }
 .handle span {
   position: absolute;
@@ -798,7 +819,7 @@ button.chip:hover {
   font-weight: 600;
   box-shadow: 0 6px 20px rgb(0 0 0 / 0.5);
 }
-.handle:focus-visible span {
+.range:focus-visible + .handle span {
   outline: 2px solid var(--color-fg);
   outline-offset: 4px;
 }

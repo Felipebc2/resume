@@ -4,19 +4,7 @@ type M = typeof messages.Projects;
 /** prose lives under Projects.items.<id> and Projects.labs.<id> */
 export type ProjectId = keyof M["items"];
 export type LabId = keyof M["labs"];
-export type Cat =
-  | "ai"
-  | "web"
-  | "data"
-  | "mobile"
-  | "science"
-  | "acad"
-  | "security"
-  | "systems"
-  | "lab";
-export type Filter = "all" | Cat;
-
-export const filters: Filter[] = [
+export const filters = [
   "all",
   "ai",
   "web",
@@ -27,7 +15,9 @@ export const filters: Filter[] = [
   "security",
   "systems",
   "lab",
-];
+] as const;
+export type Filter = (typeof filters)[number];
+export type Cat = Exclude<Filter, "all">;
 
 /** node id → [column, row, parent]. Every node has at most one incoming edge, drawn from its parent. */
 export type Blueprint = Record<

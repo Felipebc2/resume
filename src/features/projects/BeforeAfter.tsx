@@ -1,14 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-  type PointerEvent,
-} from "react";
-import { clamp, easeOut } from "@/lib/math";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { easeOut } from "@/lib/math";
 import { useStill } from "@/lib/motion";
 import s from "./Projects.module.css";
 
@@ -69,13 +63,12 @@ function After({ headline }: { headline: string }) {
   );
 }
 
-/** drag (or arrow-key) the handle to wipe between the old NormAI screen and the redesign */
+/** drag (or arrow-key) the native range to wipe between the old NormAI screen and the redesign */
 export function BeforeAfter() {
   const t = useTranslations("Projects.ba");
   const still = useStill();
   const [x, setX] = useState(still ? 50 : 88);
   const cmp = useRef<HTMLDivElement>(null);
-  const set = (v: number) => setX(clamp(v, 0, 100));
 
   /* first time it is half in view, the handle sweeps from 88% to the middle */
   useEffect(() => {
@@ -104,11 +97,6 @@ export function BeforeAfter() {
     };
   }, [still]);
 
-  const fromE = (e: PointerEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    set(((e.clientX - r.left) / r.width) * 100);
-  };
-
   return (
     <section className={s.ba} aria-label={t("label")}>
       <div className={s.baHead}>
@@ -122,13 +110,6 @@ export function BeforeAfter() {
         ref={cmp}
         className={s.cmp}
         style={{ "--x": `${x}%` } as CSSProperties}
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          fromE(e);
-        }}
-        onPointerMove={(e) => {
-          if (e.currentTarget.hasPointerCapture(e.pointerId)) fromE(e);
-        }}
       >
         <div className={s.layer}>
           <Before />
@@ -138,22 +119,18 @@ export function BeforeAfter() {
         </div>
         <span className={`${s.vlabel} ${s.l}`}>{t("before")}</span>
         <span className={`${s.vlabel} ${s.r}`}>{t("after")}</span>
-        <div
-          className={s.handle}
-          tabIndex={0}
-          role="slider"
+        <input
+          type="range"
+          className={s.range}
+          min={0}
+          max={100}
+          step="any"
+          value={x}
           aria-label={t("slider")}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(x)}
-          onKeyDown={(e) => {
-            const d = { ArrowLeft: -5, ArrowRight: 5 }[e.key];
-            if (!d) return;
-            e.preventDefault();
-            set(x + d);
-          }}
-        >
-          <span aria-hidden="true">⇄</span>
+          onChange={(e) => setX(+e.target.value)}
+        />
+        <div className={s.handle} aria-hidden="true">
+          <span>⇄</span>
         </div>
       </div>
       <div className={s.baNotes}>
