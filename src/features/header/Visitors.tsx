@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
-import { CountUp } from "@/components/ui/CountUp";
+import { CountUp } from "./CountUp";
 import s from "./Header.module.css";
 
 const SEEN = "gc-seen";

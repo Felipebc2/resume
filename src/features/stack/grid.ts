@@ -154,13 +154,7 @@ export function buildGrid(kind: GridKind = "coarse") {
 
 /** A cell's shade while it twinkles: noise steps one level, letters dim a shade. */
 export const twinkle = (g: ReturnType<typeof buildGrid>, i: number) =>
-  g.letter[i]
-    ? 3
-    : g.level[i] === 0
-      ? 1
-      : g.level[i] === 1
-        ? 2
-        : g.level[i] - 1;
+  g.letter[i] ? 3 : g.level[i] < 2 ? g.level[i] + 1 : g.level[i] - 1;
 
 /** Shade of every cell at draw progress `d` (0–1). */
 export const levelsAt = (
