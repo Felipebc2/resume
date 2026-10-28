@@ -5,13 +5,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { clamp } from "@/lib/math";
 import s from "./Header.module.css";
 
-/** label key → anchor. Sections not built yet point at the placeholder after Projects. */
+/** label key → anchor */
 const LINKS = [
   ["stack", "stack-step"],
   ["experience", "experience"],
   ["projects", "projects"],
-  ["about", "next"],
-  ["contact", "next"],
+  ["contact", "contact"],
 ] as const;
 
 export function Nav() {
@@ -28,6 +27,7 @@ export function Nav() {
         ["stack", 0.35],
         ["experience", 0.5],
         ["projects", 0.5],
+        ["contact", 0.5],
       ] as const
     ).map(([id, at]) => [document.getElementById(id), at] as const);
     const el = nav.current;

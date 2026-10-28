@@ -10,7 +10,6 @@
       "stack": "Stack",
       "experience": "Experience",
       "projects": "Projects",
-      "about": "About",
       "contact": "Contact"
     },
     "visitors": "{count, plural, one {visitor} other {visitors}}"
@@ -929,9 +928,24 @@
       "notesAfter": "Same features, fewer decisions per screen: clear steps, generous spacing and one obvious next action."
     }
   },
-  "Next": {
-    "kicker": "next section",
-    "title": "About",
-    "body": "Next page to design."
+  "Contact": {
+    "badge": "Contact",
+    "title": "Let’s build <big>something.</big>",
+    "sub": "Open to remote roles and relocation. The fastest way to reach me is LinkedIn or WhatsApp.",
+    "where": "Based in {city}",
+    "whereSub": "Open to remote · relocation",
+    "cv": "Download CV (PDF) ↓",
+    "about": {
+      "kicker": "About",
+      "zone": "{city} · UTC−3",
+      "title": "Software engineer from {city}, building for anywhere.",
+      "p1": "I’m <b>Felipe</b>, a Software Engineering student at IDP in my final semesters, already shipping in production: Head of IT at <b>Nexara</b>, Software Architect & Tech Lead at <b>Nex AI</b>, and the sole developer at the Ministry of Education’s Internal Affairs Office.",
+      "p2": "I like owning the whole path: requirements, architecture, code, tests and deploy. Lately that means <b>LLM products</b>, data pipelines and calm interfaces. Off the clock: hackathons, CTFs, Linux tinkering and homebrew tabletop RPG campaigns."
+    },
+    "signature": {
+      "label": "Felipe’s signature, drawn by Fourier epicycles",
+      "caption": "my signature · {k} epicycles · same math as Órbitas",
+      "replay": "Replay signature"
+    }
   }
 }

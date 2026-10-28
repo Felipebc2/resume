@@ -1,10 +1,10 @@
 import type { Locale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { stats } from "@/content/stats";
+import { Contact } from "@/features/contact/Contact";
 import { Experience } from "@/features/experience/Experience";
 import { Header } from "@/features/header/Header";
 import { Hero } from "@/features/hero/Hero";
-import { NextPlaceholder } from "@/features/next/NextPlaceholder";
 import { Projects } from "@/features/projects/Projects";
 import { StackList } from "@/features/stack/StackList";
 import { StackStory } from "@/features/stack/StackStory";
@@ -27,7 +27,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         <StackList />
         <Experience />
         <Projects />
-        <NextPlaceholder />
+        <Contact />
       </main>
     </>
   );

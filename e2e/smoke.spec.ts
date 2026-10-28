@@ -33,7 +33,7 @@ test("nav hides on the hero, drops in on scroll, Stack plays the step", async ({
     "aria-current",
     "true",
   );
-  await page.getByRole("link", { name: /felipebc2/ }).click();
+  await page.getByRole("link", { name: "felipebc2/resume" }).click();
   await expect(nav).toHaveAttribute("data-nav", "out");
 });
 

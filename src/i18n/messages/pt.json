@@ -10,7 +10,6 @@
       "stack": "Stack",
       "experience": "Experiência",
       "projects": "Projetos",
-      "about": "Sobre",
       "contact": "Contato"
     },
     "visitors": "{count, plural, one {visitante} other {visitantes}}"
@@ -933,9 +932,24 @@
       "notesAfter": "Mesmas funções, menos decisões por tela: passos claros, espaçamento generoso e uma próxima ação óbvia."
     }
   },
-  "Next": {
-    "kicker": "próxima seção",
-    "title": "Sobre",
-    "body": "Próxima página a desenhar."
+  "Contact": {
+    "badge": "Contato",
+    "title": "Vamos construir <big>algo.</big>",
+    "sub": "Aberto a vagas remotas e a realocação. O jeito mais rápido de falar comigo é pelo LinkedIn ou WhatsApp.",
+    "where": "Baseado em {city}",
+    "whereSub": "Aberto a remoto · realocação",
+    "cv": "Baixar CV (PDF) ↓",
+    "about": {
+      "kicker": "Sobre",
+      "zone": "{city} · UTC−3",
+      "title": "Engenheiro de software de {city}, construindo para qualquer lugar.",
+      "p1": "Sou o <b>Felipe</b>, estudante de Engenharia de Software no IDP nos semestres finais e já entregando em produção: Head de TI na <b>Nexara</b>, Arquiteto de Software e Tech Lead na <b>Nex AI</b> e único desenvolvedor da Corregedoria do Ministério da Educação.",
+      "p2": "Gosto de cuidar do caminho inteiro: requisitos, arquitetura, código, testes e deploy. Ultimamente, isso quer dizer <b>produtos com LLM</b>, pipelines de dados e interfaces calmas. Fora do expediente: hackathons, CTFs, fuçar no Linux e campanhas caseiras de RPG de mesa."
+    },
+    "signature": {
+      "label": "Assinatura do Felipe, desenhada por epiciclos de Fourier",
+      "caption": "minha assinatura · {k} epiciclos · a mesma matemática do Órbitas",
+      "replay": "Redesenhar assinatura"
+    }
   }
 }

@@ -1,10 +1,11 @@
 import { useEffect, useEffectEvent, type RefObject } from "react";
 
-/** Calls `frame(now)` on every animation frame while `ref` is on screen. */
+/** Calls `frame(now)` on every animation frame while `ref` is on screen (at least `threshold` of it). */
 export function useFrames(
   ref: RefObject<Element | null>,
   frame: (now: number) => void,
   onVisible?: (visible: boolean) => void,
+  threshold = 0,
 ) {
   const tick = useEffectEvent(frame);
   const toggle = useEffectEvent((v: boolean) => onVisible?.(v));
@@ -16,17 +17,21 @@ export function useFrames(
       tick(now);
       raf = requestAnimationFrame(loop);
     };
-    const io = new IntersectionObserver(([e]) => {
-      cancelAnimationFrame(raf);
-      toggle(e.isIntersecting);
-      if (e.isIntersecting) raf = requestAnimationFrame(loop);
-    });
+    const io = new IntersectionObserver(
+      ([e]) => {
+        const on = e.isIntersecting && e.intersectionRatio >= threshold;
+        cancelAnimationFrame(raf);
+        toggle(on);
+        if (on) raf = requestAnimationFrame(loop);
+      },
+      { threshold },
+    );
     io.observe(el);
     return () => {
       io.disconnect();
       cancelAnimationFrame(raf);
     };
-  }, [ref]);
+  }, [ref, threshold]);
 }
 
 /** Runs `paint` now, on resize of `ref` and once web fonts are ready (canvas text needs them). */
