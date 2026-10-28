@@ -18,3 +18,22 @@ export function nextStep(from: number, to: number, p0: number, p1: number) {
   }
   return null;
 }
+
+/** Input after landing on a step that adds up past this, in one direction, means "keep going";
+    a trackpad's momentum tail is far smaller by then. */
+export const PASS_PX = 150;
+
+export type Push = { dir: number; px: number };
+
+/** Accumulates post-landing input per direction; `pass` once it reads as a person still scrolling. */
+export function push(prev: Push, deltaY: number) {
+  const dir = Math.sign(deltaY);
+  const px = dir === prev.dir ? prev.px + Math.abs(deltaY) : Math.abs(deltaY);
+  return { dir, px, pass: px > PASS_PX };
+}
+
+/** Stopping inside the gap between the steps leaves the story half-way: the nearest step, else null. */
+export function inGap(at: number, p0: number, p1: number) {
+  if (at <= p0 + TOL || at >= p1 - TOL) return null;
+  return at - p0 < p1 - at ? p0 : p1;
+}

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { nextStep } from "./steps";
+import { inGap, nextStep, push } from "./steps";
 
 const P0 = 900;
 const P1 = 1800;
@@ -27,4 +27,21 @@ test("leaving a step towards the other one hops the whole gap", () => {
 test("easing into a step does not count as leaving it", () => {
   expect(go(P0 - 2, P0 + 1)).toBeNull();
   expect(go(P1 + 2, P1 - 1)).toBeNull();
+});
+
+test("someone still scrolling after landing passes; a momentum tail doesn't", () => {
+  let p = { dir: 0, px: 0, pass: false };
+  for (const d of [12, 8, 5, 3, 2, 1]) p = push(p, d); // decaying tail
+  expect(p.pass).toBe(false);
+  p = { dir: 0, px: 0, pass: false };
+  for (const d of [100, 100]) p = push(p, d); // two wheel notches
+  expect(p.pass).toBe(true);
+  expect(push({ dir: 1, px: 140 }, -30).px).toBe(30); // turning back starts over
+});
+
+test("stopping in the gap settles on the nearest step", () => {
+  expect(inGap(1100, P0, P1)).toBe(P0);
+  expect(inGap(1600, P0, P1)).toBe(P1);
+  expect(inGap(P0, P0, P1)).toBeNull();
+  expect(inGap(P1 + 100, P0, P1)).toBeNull();
 });

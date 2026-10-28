@@ -10,7 +10,7 @@ import { useStill } from "@/lib/motion";
 import { Clock } from "./Clock";
 import { formatStat } from "./format";
 import { buildGrid, COLS, levelsAt, ROWS } from "./grid";
-import { nextStep } from "./steps";
+import { inGap, nextStep, push, type Push } from "./steps";
 import s from "./Stack.module.css";
 
 const GRID = buildGrid();
@@ -19,8 +19,9 @@ const LEVELS = [0, 1, 2, 3, 4] as const;
 
 type Step = -1 | 0 | 1;
 
-/** glide between steps (s); after landing, input stays swallowed until it has
-    been quiet this long (ms), so a trackpad's momentum tail can't carry on past */
+/** glide between steps (s); after landing, input stays swallowed until it has been
+    quiet this long (ms), so a trackpad's momentum tail can't carry on past. Input
+    that keeps coming past PASS_PX is a person still scrolling: they pass freely. */
 const STEP_S = 0.9;
 const SETTLE_MS = 250;
 const KEYS: Record<string, 1 | -1> = {
@@ -90,7 +91,9 @@ export function StackStory({ stats }: { stats: Stat[] }) {
   /* steps: Lenis owns wheel/touch so the greeting → stack hop is one locked glide.
      A gesture that would cross a step (or start inside the gap between them) is
      redirected onto the next step, input is swallowed until it lands and settles,
-     so a fling can't sail past. Keys get the same treatment; anchors bypass it. */
+     so a fling can't sail past. Someone who keeps scrolling after the landing
+     passes through freely until they stop; stopping inside the gap settles on the
+     nearest step. Keys get the same treatment; anchors bypass it. */
   const still_ = useRef(still);
   const lenis = useRef<Lenis | null>(null);
   useEffect(() => {
@@ -98,6 +101,10 @@ export function StackStory({ stats }: { stats: Stat[] }) {
     const s1 = step1.current;
     if (!sec || !s1) return;
     let busy = false;
+    let landed = false;
+    let passing = false;
+    let run = 0;
+    let acc: Push = { dir: 0, px: 0 };
     let lastInput = 0;
     let anchoring = false;
     let last = scrollY;
@@ -105,36 +112,67 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       autoRaf: true,
       syncTouch: true,
       respectReducedMotion: false, // MotionProvider decides, see the still effect below
-      virtualScroll: ({ event }) => {
+      virtualScroll: ({ deltaY, event }) => {
         lastInput = Date.now();
         if (!busy) return true;
+        if (landed && deltaY) {
+          const p = push(acc, deltaY);
+          acc = p;
+          if (p.pass) {
+            pass();
+            return true;
+          }
+        }
         if (event.cancelable) event.preventDefault();
         return false;
       },
     });
     lenis.current = l;
 
-    const next = (from: number, to: number) =>
-      nextStep(from, to, sec.offsetTop, sec.offsetTop + s1.offsetTop);
-    const settle = () => {
+    const steps = () => [sec.offsetTop, sec.offsetTop + s1.offsetTop] as const;
+    const next = (from: number, to: number) => nextStep(from, to, ...steps());
+    /* calls `done` once input has been quiet for SETTLE_MS, unless another run started */
+    const whenQuiet = (id: number, done: () => void) => {
       const idle = Date.now() - lastInput;
-      if (idle < SETTLE_MS) return void setTimeout(settle, SETTLE_MS - idle);
-      busy = false;
-      last = l.animatedScroll;
+      if (id !== run) return;
+      if (idle < SETTLE_MS)
+        return void setTimeout(() => whenQuiet(id, done), SETTLE_MS - idle);
+      done();
     };
     const go = (p: number) => {
+      const id = ++run;
       busy = true;
+      landed = passing = false;
       l.scrollTo(p, {
         lock: true,
         force: true,
         duration: STEP_S,
         immediate: still_.current,
-        onComplete: settle,
+        onComplete: () => {
+          landed = true;
+          acc = { dir: 0, px: 0 };
+          whenQuiet(id, () => {
+            busy = false;
+            last = l.animatedScroll;
+          });
+        },
+      });
+    };
+    const pass = () => {
+      const id = ++run;
+      busy = false;
+      passing = true;
+      last = l.animatedScroll;
+      whenQuiet(id, () => {
+        passing = false;
+        last = l.animatedScroll;
+        const p = inGap(last, ...steps());
+        if (p !== null) go(p);
       });
     };
 
     l.on("scroll", () => {
-      if (!busy && !anchoring && l.isScrolling !== "native") {
+      if (!busy && !anchoring && !passing && l.isScrolling !== "native") {
         const p = next(last, l.targetScroll);
         if (p !== null) return go(p);
       }
@@ -145,10 +183,16 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const dir = KEYS[e.key];
       if (!dir || (e.target as Element).closest(TYPING)) return;
       lastInput = Date.now();
-      if (busy) return e.preventDefault();
-      const a = l.animatedScroll;
+      if (passing) return;
+      const sign = e.key === " " && e.shiftKey ? -1 : dir;
       const d = e.key.startsWith("Arrow") ? 40 : innerHeight * 0.8;
-      const p = next(a, a + (e.key === " " && e.shiftKey ? -1 : dir) * d);
+      if (busy) {
+        const p = landed ? (acc = push(acc, sign * d)) : null;
+        if (!p?.pass) return e.preventDefault();
+        return pass(); // held key: let this press scroll natively
+      }
+      const a = l.animatedScroll;
+      const p = next(a, a + sign * d);
       if (p === null) return;
       e.preventDefault();
       go(p);
