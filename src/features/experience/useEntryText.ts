@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from "next-intl";
 import { profile } from "@/content/profile";
-import { mi, span, type Entry } from "./entries";
+import { mi, span, spans, type Entry } from "./entries";
 
 export type Card = {
   k: string;
@@ -25,6 +25,10 @@ export function useEntryText(now: number) {
   const fmt = (ym: string) => month(ym, { month: "short", year: "numeric" });
   const short = (ym: string) =>
     `${month(ym, { month: "short" })} ’${ym.slice(2, 4)}`;
+
+  /** "Feb 2026 — Jun 2026 · 5m"; no end runs to now */
+  const period = (start: string, end?: string) =>
+    `${fmt(start)} — ${end ? fmt(end) : t("now")} · ${t("duration", span(mi(start), end ? mi(end) : null, now))}`;
 
   const title = (e: Entry) =>
     e.kind === "head"
@@ -52,13 +56,12 @@ export function useEntryText(now: number) {
           ],
         };
       case "work": {
-        const end = e.end ? fmt(e.end) : t("now");
         return {
           ...base,
           k: `${t("kinds.work")} · ${t(`places.${e.place}`)}`,
           title: t(`work.${e.id}.org`),
           s: t(`work.${e.id}.role`),
-          m: `${fmt(e.start)} — ${end} · ${t("duration", span(mi(e.start), e.end ? mi(e.end) : null, now))}`,
+          m: period(e.start, e.end),
           pts: t.raw(`work.${e.id}.pts`) as string[],
           tags: e.tags,
         };
@@ -73,7 +76,7 @@ export function useEntryText(now: number) {
           s:
             t(`lab.${e.id}.detail`) +
             (e.rank ? ` · ${t("rankPlace", { rank: e.rank })}` : ""),
-          m: fmt(e.date),
+          m: spans(e) ? period(e.date, e.end) : fmt(e.date),
           pts: t.raw(`lab.${e.id}.pts`) as string[],
         };
       case "init":

@@ -97,7 +97,7 @@ function DeckCard({ depth, c }: { depth: number; c: Card }) {
         <div className={s.s}>{c.s}</div>
         <div className={s.m}>{c.m}</div>
         <ul>
-          {c.pts.slice(0, 2).map((p) => (
+          {c.pts.slice(0, 3).map((p) => (
             <li key={p}>{p}</li>
           ))}
         </ul>

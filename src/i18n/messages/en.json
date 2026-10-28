@@ -10,7 +10,6 @@
       "stack": "Stack",
       "experience": "Experience",
       "projects": "Projects",
-      "education": "Education",
       "about": "About",
       "contact": "Contact"
     },
@@ -80,7 +79,7 @@
     "titleA": "My unique way",
     "titleB": "to show",
     "titleC": "Experience",
-    "sub": "Hover a commit to open its card. Work lives on <b>main</b>; competitions and events on <b>lab</b>.",
+    "sub": "Hover a commit to open its card. Work lives on <b>main</b>; competitions, events and academic roles on <b>lab</b>.",
     "trophyHead": "trophy_shelf/",
     "trophyHint": "hover to reveal",
     "gitPrompt": "~/felipe <b>(main)</b> $ git log --graph",
@@ -118,6 +117,8 @@
       "work": "work",
       "competition": "competition",
       "event": "event",
+      "role": "role",
+      "research": "research",
       "init": "init · academic"
     },
     "now": "now",
@@ -223,6 +224,49 @@
         "pts": [
           "Selected for the program with Google, Meta, Microsoft and Uber."
         ]
+      },
+      "ctfw": {
+        "name": "CTF Competitions Workshop",
+        "detail": "IDP extension",
+        "pts": ["Extension workshop on competitive CTF play at IDP."]
+      },
+      "hack3": {
+        "name": "IDP Hackathon, 3rd ed.",
+        "detail": "IDP extension",
+        "pts": ["Hackathon at IDP."]
+      },
+      "ta": {
+        "name": "Teaching Assistant · DevOps",
+        "detail": "Beginner DevOps · Docker",
+        "pts": [
+          "Taught beginners to build, run and ship apps with Docker.",
+          "Ran the hands-on Docker workshop."
+        ]
+      },
+      "fapdf": {
+        "name": "FAPDF Research Project",
+        "detail": "Fourier analysis in astronomy",
+        "pts": [
+          "Research backed by FAPDF: planetary orbits approximated with Fourier series.",
+          "Became Órbitas, in Projects."
+        ]
+      },
+      "demo": {
+        "name": "IDP Demo Day",
+        "detail": "Project showcase",
+        "pts": ["Presented a project at the IDP Demo Day."]
+      },
+      "sprint7": {
+        "name": "IDP Sprint, 7th ed.",
+        "detail": "144-hour sprint",
+        "pts": ["144-hour product sprint at IDP."]
+      },
+      "pod": {
+        "name": "Empreenda BSB Podcast",
+        "detail": "Backstage Manager · later IDP Connect",
+        "pts": [
+          "Ran the backstage of IDP’s entrepreneurship podcast, later renamed IDP Connect (now discontinued)."
+        ]
       }
     },
     "degree": {
@@ -230,7 +274,9 @@
       "name": "B.Eng. Software Engineering",
       "school": "IDP · {n, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} semester",
       "pts": [
-        "Operating Systems, Concurrent Programming, Algorithm Analysis, Software Security & Testing."
+        "Highlights: Operating Systems, Concurrent Programming, Software Architecture, Software Security & Testing, Machine Learning, Big Data & NoSQL.",
+        "Electives: Intro to Cybersecurity, Autonomous AI Agents. Extension: Cloud Computing course.",
+        "Course projects live in Projects, under Academic."
       ]
     },
     "trophies": {
@@ -265,6 +311,8 @@
       "work": "work:",
       "competition": "comp:",
       "event": "event:",
+      "role": "role:",
+      "research": "research:",
       "init": "init:"
     },
     "headKicker": "HEAD → main"
@@ -275,6 +323,8 @@
     "titleC": "Projects",
     "sub": "Open any card for its <b>blueprint</b> and the story behind it. Search by name, stack or year, or press <b>⌘K</b>.",
     "tbd": "[to fill]",
+    "school": "IDP",
+    "acad": "IDP · {course}",
     "open": "Open case: {name}",
     "close": "Close",
     "media": {
@@ -291,6 +341,7 @@
         "data": "Data",
         "mobile": "Mobile",
         "science": "Science",
+        "acad": "Academic",
         "security": "Security",
         "systems": "Systems",
         "lab": "Lab notes"
@@ -329,19 +380,44 @@
     },
     "lab": {
       "kind": "Lab note",
+      "course": "IDP course",
       "line": "{lang} · coursework",
       "problem": "Coursework for {name} at IDP.",
       "approach": "Exercises and assignments written in {lang}.",
       "outcome": "Kept as a public reference repository."
     },
     "labs": {
-      "oop": "Object-Oriented Programming",
-      "techniques": "Programming Techniques",
-      "ds": "Data Structures",
-      "paradigms": "Programming Paradigms",
-      "db": "Databases",
-      "ml": "Machine Learning",
-      "stats": "Modeling & Statistics"
+      "algo": {
+        "name": "Algorithms & Programming Logic"
+      },
+      "ds": {
+        "name": "Data Structures"
+      },
+      "stats": {
+        "name": "Modeling & Statistical Programming",
+        "line": "Python · statistical modeling and a written article"
+      },
+      "db": {
+        "name": "Databases",
+        "line": "SQL · conceptual and physical model of a game roster"
+      },
+      "sdp": {
+        "name": "Software Development Process",
+        "line": "Impress Express · scope, WBS and process for a 3D-printing startup",
+        "approach": "Scope statement, WBS and process model for Impress Express, a 3D-printing startup."
+      },
+      "ml": {
+        "name": "Machine Learning"
+      },
+      "oop": {
+        "name": "Object-Oriented Programming"
+      },
+      "techniques": {
+        "name": "Programming Techniques"
+      },
+      "paradigms": {
+        "name": "Programming Paradigms"
+      }
     },
     "items": {
       "normai": {
@@ -387,6 +463,7 @@
       "oficina": {
         "name": "Oficina ES",
         "kind": "Automation · AI",
+        "acad": "Software Engineering Workshop",
         "line": "Document Q&A orchestrated in n8n.",
         "problem": "A team needed answers grounded in its own documents, behind real authentication, without building a backend from scratch.",
         "approach": "n8n workflows handle login, token refresh and an auth guard. Drive documents are chunked and embedded, and an agent answers with vector search and chat memory.",
@@ -501,6 +578,7 @@
       "orbitas": {
         "name": "Órbitas",
         "kind": "Science · Python",
+        "acad": "FAPDF research",
         "line": "Planetary orbits with Fourier series.",
         "problem": "How close can a short Fourier series get to a real planetary orbit?",
         "approach": "A simulation for every planet from Mercury to Neptune, comparing the approximation with the reference orbit, with tests and notebooks.",
@@ -537,6 +615,7 @@
       "veritas": {
         "name": "Veritas",
         "kind": "Mobile",
+        "acad": "Mobile Solutions Workshop",
         "line": "Follow public projects from your phone.",
         "problem": "Public project data is scattered across official sources and hard to follow from a phone.",
         "approach": "A cross-platform app with its own backend that groups projects and sends alerts when something changes.",
@@ -569,6 +648,7 @@
       "contratus": {
         "name": "Contratus AI",
         "kind": "AI · Web",
+        "acad": "Artificial Intelligence",
         "line": "Ask questions about contracts.",
         "problem": "Reading a long contract to answer one question takes too long.",
         "approach": "RAG over contracts: documents are split into chunks, indexed as vectors and retrieved to ground every answer.",
@@ -602,6 +682,7 @@
       "airq": {
         "name": "Air Quality Pipeline",
         "kind": "Data",
+        "acad": "Big Data & NoSQL",
         "line": "Event-driven data pipeline.",
         "problem": "Air quality readings arrive continuously and need to be processed without losing events.",
         "approach": "An event-driven pipeline: Kafka streams readings, Celery workers process them over Redis and RabbitMQ, results go to MinIO and a dashboard.",
@@ -719,6 +800,7 @@
       "kernel": {
         "name": "OS Internals",
         "kind": "Systems · OS",
+        "acad": "Operating Systems",
         "line": "A bootloader, a patched kernel, a new syscall and x86 assembly.",
         "problem": "Operating systems are usually learned from diagrams. This course asked for the real pieces, built and booted one by one.",
         "approach": "A 512-byte real-mode bootloader that loads a kernel and jumps to it; Linux 6.6 patched, compiled and booted in QEMU on a BusyBox initramfs; a new system call that works with a character driver; and weekly x86 assembly exercises.",
@@ -849,7 +931,7 @@
   },
   "Next": {
     "kicker": "next section",
-    "title": "Education",
+    "title": "About",
     "body": "Next page to design."
   }
 }

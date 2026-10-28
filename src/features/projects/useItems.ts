@@ -32,6 +32,8 @@ export type Item = {
   media?: Project["media"];
   mob: [number, number];
   badge?: string;
+  /** coursework only: "IDP · <course>" after kind and year in the case */
+  acad?: string;
   problem: string;
   approach: string;
   outcome: string;
@@ -44,6 +46,8 @@ type ItemText = {
   kind: string;
   line: string;
   badge?: string;
+  /** course the project came from */
+  acad?: string;
   problem: string;
   approach: string;
   outcome: string;
@@ -53,7 +57,12 @@ type ItemText = {
 /** bento projects, then lab notes; `all` feeds the search */
 export function useItems() {
   const t = useTranslations("Projects");
-  const texts = useMessages().Projects.items as Record<string, ItemText>;
+  const msgs = useMessages().Projects;
+  const texts = msgs.items as Record<string, ItemText>;
+  const labTexts = msgs.labs as Record<
+    string,
+    { name: string; line?: string; approach?: string }
+  >;
   return useMemo(() => {
     /* no drawn blueprint: Client (or Notes) → up to three stack parts, in a row */
     const auto = (stack: string[], lab: boolean): Node[] => {
@@ -79,6 +88,7 @@ export function useItems() {
       return {
         ...p,
         ...m,
+        acad: m.acad && t("acad", { course: m.acad }),
         nodes: bp
           ? Object.entries(bp).map(([id, [col, row, from]]) => ({
               ...nodes![id],
@@ -91,26 +101,27 @@ export function useItems() {
       };
     });
 
-    const ls: Item[] = labs.map(({ id, lang }) => {
-      const name = t(`labs.${id}`);
+    const ls: Item[] = labs.map(({ id, lang, year }) => {
+      const { name, line, approach } = labTexts[id];
       return {
         id,
         name,
         kind: t("lab.kind"),
-        line: t("lab.line", { lang }),
-        year: "IDP",
+        line: line ?? t("lab.line", { lang }),
+        year,
+        acad: t("lab.course"),
         art: lang.toUpperCase(),
-        cat: ["lab"],
+        cat: ["lab", "acad"],
         stack: [lang],
         mob: [1, 1],
         lab: true,
         problem: t("lab.problem", { name }),
-        approach: t("lab.approach", { lang }),
+        approach: approach ?? t("lab.approach", { lang }),
         outcome: t("lab.outcome"),
         nodes: auto([lang], true),
       };
     });
 
     return { projects: ps, all: [...ps, ...ls] };
-  }, [t, texts]);
+  }, [t, texts, labTexts]);
 }

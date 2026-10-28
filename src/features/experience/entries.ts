@@ -44,6 +44,9 @@ export const entries: Entry[] = [
   { ...academic, kind: "init" },
 ];
 
+/** roles and research span months; competitions and events take one */
+export const spans = (l: Lab) => l.type === "role" || l.type === "research";
+
 export const entryDate = (e: Entry) =>
   e.kind === "lab" ? e.date : e.kind === "head" ? null : e.start;
 
@@ -61,12 +64,9 @@ export const procs: Proc[] = entries
   .filter((e) => e.kind !== "head")
   .map((entry) => {
     const start = mi(entryDate(entry)!);
+    const last = entry.kind === "init" ? undefined : entry.end;
     const end =
-      entry.kind === "lab"
-        ? start
-        : entry.kind === "work" && entry.end
-          ? mi(entry.end)
-          : null;
+      entry.kind === "lab" && !spans(entry) ? start : last ? mi(last) : null;
     return { id: entry.id, start, end, entry };
   })
   .sort((a, b) => a.start - b.start)

@@ -10,7 +10,6 @@ const LINKS = [
   ["stack", "stack-step"],
   ["experience", "experience"],
   ["projects", "projects"],
-  ["education", "next"],
   ["about", "next"],
   ["contact", "next"],
 ] as const;

@@ -23,8 +23,10 @@ export type Work = {
 
 export type Lab = {
   id: LabId;
-  type: "competition" | "event";
+  type: "competition" | "event" | "role" | "research";
+  /** competitions and events are one month; roles and research run from date to end (none = running) */
   date: string;
+  end?: string;
   place?: Place;
   art: string;
   rank?: number;
@@ -94,6 +96,16 @@ export const lab: Lab[] = [
     art: "4TH",
     rank: 4,
   },
+  { id: "ctfw", type: "event", date: "2026-08", place: "bsb", art: "WS" },
+  { id: "hack3", type: "event", date: "2026-03", place: "bsb", art: "HCK" },
+  {
+    id: "ta",
+    type: "role",
+    date: "2026-02",
+    end: "2026-06",
+    place: "bsb",
+    art: "TA",
+  },
   { id: "ctf6", type: "competition", date: "2025-10", art: "CTF" },
   { id: "cp", type: "event", date: "2025-08", art: "CP" },
   {
@@ -105,6 +117,14 @@ export const lab: Lab[] = [
     rank: 1,
   },
   {
+    id: "fapdf",
+    type: "research",
+    date: "2025-08",
+    end: "2026-06",
+    place: "bsb",
+    art: "FAP",
+  },
+  {
     id: "idph",
     type: "competition",
     date: "2025-06",
@@ -112,7 +132,17 @@ export const lab: Lab[] = [
     art: "1ST",
     rank: 1,
   },
+  { id: "demo", type: "event", date: "2025-05", place: "bsb", art: "DD" },
+  { id: "sprint7", type: "event", date: "2025-03", place: "bsb", art: "144" },
   { id: "go", type: "event", date: "2024-07", place: "sv", art: "GO" },
+  {
+    id: "pod",
+    type: "role",
+    date: "2024-02",
+    end: "2024-06",
+    place: "bsb",
+    art: "POD",
+  },
 ];
 
 export const academic = {

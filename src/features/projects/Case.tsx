@@ -160,6 +160,7 @@ export function Case({
         <div className={`${s.ttl} ${s.fade}`}>
           <span className={s.k}>
             {item.kind} · {item.year}
+            {item.acad && ` · ${item.acad}`}
           </span>
           <h2>{item.name}</h2>
         </div>

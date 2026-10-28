@@ -10,7 +10,6 @@
       "stack": "Stack",
       "experience": "Experiência",
       "projects": "Projetos",
-      "education": "Formação",
       "about": "Sobre",
       "contact": "Contato"
     },
@@ -80,7 +79,7 @@
     "titleA": "Meu jeito único",
     "titleB": "de mostrar",
     "titleC": "Experiência",
-    "sub": "Passe o mouse num commit para abrir o card. Trabalho fica na <b>main</b>; competições e eventos na <b>lab</b>.",
+    "sub": "Passe o mouse num commit para abrir o card. Trabalho fica na <b>main</b>; competições, eventos e atuação acadêmica na <b>lab</b>.",
     "trophyHead": "trophy_shelf/",
     "trophyHint": "passe o mouse",
     "gitPrompt": "~/felipe <b>(main)</b> $ git log --graph",
@@ -118,6 +117,8 @@
       "work": "trabalho",
       "competition": "competição",
       "event": "evento",
+      "role": "função",
+      "research": "pesquisa",
       "init": "init · acadêmico"
     },
     "now": "atual",
@@ -227,6 +228,49 @@
         "pts": [
           "Selecionado para o programa com Google, Meta, Microsoft e Uber."
         ]
+      },
+      "ctfw": {
+        "name": "Workshop de Competições CTF",
+        "detail": "Extensão IDP",
+        "pts": ["Workshop de extensão sobre CTF competitivo no IDP."]
+      },
+      "hack3": {
+        "name": "Hackathon IDP, 3ª ed.",
+        "detail": "Extensão IDP",
+        "pts": ["Hackathon no IDP."]
+      },
+      "ta": {
+        "name": "Monitor · DevOps",
+        "detail": "DevOps para iniciantes · Docker",
+        "pts": [
+          "Ensinei iniciantes a construir, rodar e publicar apps com Docker.",
+          "Conduzi o workshop prático de Docker."
+        ]
+      },
+      "fapdf": {
+        "name": "Projeto de pesquisa FAPDF",
+        "detail": "Análise de Fourier na astronomia",
+        "pts": [
+          "Pesquisa com apoio da FAPDF: órbitas planetárias aproximadas por séries de Fourier.",
+          "Virou o Órbitas, em Projetos."
+        ]
+      },
+      "demo": {
+        "name": "Demo Day IDP",
+        "detail": "Mostra de projetos",
+        "pts": ["Apresentei um projeto no Demo Day do IDP."]
+      },
+      "sprint7": {
+        "name": "Sprint IDP, 7ª ed.",
+        "detail": "Sprint de 144 horas",
+        "pts": ["Sprint de produto de 144 horas no IDP."]
+      },
+      "pod": {
+        "name": "Podcast Empreenda BSB",
+        "detail": "Gestor de bastidores · depois IDP Connect",
+        "pts": [
+          "Cuidei dos bastidores do podcast de empreendedorismo do IDP, depois renomeado IDP Connect (hoje descontinuado)."
+        ]
       }
     },
     "degree": {
@@ -234,7 +278,9 @@
       "name": "Engenharia de Software",
       "school": "IDP · {n}º semestre",
       "pts": [
-        "Sistemas Operacionais, Programação Concorrente, Análise de Algoritmos, Segurança e Testes de Software."
+        "Destaques: Sistemas Operacionais, Programação Concorrente, Arquitetura de Software, Segurança e Testes de Software, Aprendizado de Máquina, Big Data e NoSQL.",
+        "Optativas: Intro à Cibersegurança, Agentes Autônomos de IA. Extensão: Computação em Nuvem.",
+        "Projetos das disciplinas: em Projetos, filtro Acadêmico."
       ]
     },
     "trophies": {
@@ -269,6 +315,8 @@
       "work": "work:",
       "competition": "comp:",
       "event": "event:",
+      "role": "role:",
+      "research": "research:",
       "init": "init:"
     },
     "headKicker": "HEAD → main"
@@ -279,6 +327,8 @@
     "titleC": "Projetos",
     "sub": "Abra qualquer card para ver o <b>blueprint</b> e a história por trás. Busque por nome, stack ou ano, ou aperte <b>⌘K</b>.",
     "tbd": "[preencher]",
+    "school": "IDP",
+    "acad": "IDP · {course}",
     "open": "Abrir case: {name}",
     "close": "Fechar",
     "media": {
@@ -295,6 +345,7 @@
         "data": "Dados",
         "mobile": "Mobile",
         "science": "Ciência",
+        "acad": "Acadêmico",
         "security": "Segurança",
         "systems": "Sistemas",
         "lab": "Notas de lab"
@@ -333,19 +384,44 @@
     },
     "lab": {
       "kind": "Nota de lab",
+      "course": "Disciplina do IDP",
       "line": "{lang} · disciplina",
       "problem": "Trabalhos da disciplina {name} no IDP.",
       "approach": "Exercícios e trabalhos escritos em {lang}.",
       "outcome": "Mantido como repositório público de referência."
     },
     "labs": {
-      "oop": "Programação Orientada a Objetos",
-      "techniques": "Técnicas de Programação",
-      "ds": "Estruturas de Dados",
-      "paradigms": "Paradigmas de Programação",
-      "db": "Bancos de Dados",
-      "ml": "Aprendizado de Máquina",
-      "stats": "Modelagem e Estatística"
+      "algo": {
+        "name": "Algoritmos e Lógica de Programação"
+      },
+      "ds": {
+        "name": "Estruturas de Dados"
+      },
+      "stats": {
+        "name": "Modelagem e Programação Estatística",
+        "line": "Python · modelagem estatística e um artigo escrito"
+      },
+      "db": {
+        "name": "Bancos de Dados",
+        "line": "SQL · modelo conceitual e físico do elenco de um jogo"
+      },
+      "sdp": {
+        "name": "Processo de Desenvolvimento de Software",
+        "line": "Impress Express · escopo, EAP e processo de uma startup de impressão 3D",
+        "approach": "Declaração de escopo, EAP e modelo de processo da Impress Express, uma startup de impressão 3D."
+      },
+      "ml": {
+        "name": "Aprendizado de Máquina"
+      },
+      "oop": {
+        "name": "Programação Orientada a Objetos"
+      },
+      "techniques": {
+        "name": "Técnicas de Programação"
+      },
+      "paradigms": {
+        "name": "Paradigmas de Programação"
+      }
     },
     "items": {
       "normai": {
@@ -391,6 +467,7 @@
       "oficina": {
         "name": "Oficina ES",
         "kind": "Automação · IA",
+        "acad": "Oficina de Engenharia de Software",
         "line": "Perguntas e respostas sobre documentos, orquestradas no n8n.",
         "problem": "Um time precisava de respostas baseadas nos próprios documentos, com autenticação de verdade, sem construir um backend do zero.",
         "approach": "Workflows no n8n cuidam de login, renovação de token e um auth guard. Documentos do Drive viram chunks e embeddings, e um agente responde com busca vetorial e memória de conversa.",
@@ -505,6 +582,7 @@
       "orbitas": {
         "name": "Órbitas",
         "kind": "Ciência · Python",
+        "acad": "Pesquisa FAPDF",
         "line": "Órbitas planetárias com séries de Fourier.",
         "problem": "Quão perto uma série de Fourier curta consegue chegar de uma órbita planetária real?",
         "approach": "Uma simulação para cada planeta, de Mercúrio a Netuno, comparando a aproximação com a órbita de referência, com testes e notebooks.",
@@ -541,6 +619,7 @@
       "veritas": {
         "name": "Veritas",
         "kind": "Mobile",
+        "acad": "Oficina de Soluções Móveis",
         "line": "Acompanhe projetos públicos pelo celular.",
         "problem": "Dados de projetos públicos ficam espalhados em fontes oficiais e são difíceis de acompanhar pelo celular.",
         "approach": "Um app multiplataforma com backend próprio que agrupa os projetos e envia alertas quando algo muda.",
@@ -573,6 +652,7 @@
       "contratus": {
         "name": "Contratus AI",
         "kind": "IA · Web",
+        "acad": "Inteligência Artificial",
         "line": "Faça perguntas sobre contratos.",
         "problem": "Ler um contrato longo para responder uma única pergunta leva tempo demais.",
         "approach": "RAG sobre contratos: os documentos são divididos em chunks, indexados como vetores e recuperados para fundamentar cada resposta.",
@@ -606,6 +686,7 @@
       "airq": {
         "name": "Pipeline de Qualidade do Ar",
         "kind": "Dados",
+        "acad": "Big Data e NoSQL",
         "line": "Pipeline de dados orientado a eventos.",
         "problem": "Leituras de qualidade do ar chegam o tempo todo e precisam ser processadas sem perder eventos.",
         "approach": "Um pipeline orientado a eventos: o Kafka transmite as leituras, workers Celery as processam sobre Redis e RabbitMQ, e os resultados vão para o MinIO e para um dashboard.",
@@ -723,6 +804,7 @@
       "kernel": {
         "name": "Por dentro do SO",
         "kind": "Sistemas · SO",
+        "acad": "Sistemas Operacionais",
         "line": "Um bootloader, um kernel modificado, uma syscall nova e assembly x86.",
         "problem": "Sistemas operacionais costumam ser aprendidos por diagramas. Esta disciplina pediu as peças de verdade, construídas e bootadas uma a uma.",
         "approach": "Um bootloader de 512 bytes em modo real que carrega um kernel e salta para ele; o Linux 6.6 com patch, compilado e bootado no QEMU sobre um initramfs com BusyBox; uma chamada de sistema nova que trabalha com um char driver; e exercícios semanais de assembly x86.",
@@ -853,7 +935,7 @@
   },
   "Next": {
     "kicker": "próxima seção",
-    "title": "Formação",
+    "title": "Sobre",
     "body": "Próxima página a desenhar."
   }
 }

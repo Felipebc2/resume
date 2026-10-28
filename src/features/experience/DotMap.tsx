@@ -58,7 +58,7 @@ export function DotMap({ active, now }: { active: EntryId; now: number }) {
   useRepaint(box, () => {
     const c = cv.current;
     const r = box.current?.getBoundingClientRect();
-    if (!c || !r) return;
+    if (!c || !r?.width || !r.height) return;
     const dpr = Math.min(devicePixelRatio || 1, 2);
     c.width = r.width * dpr;
     c.height = r.height * dpr;

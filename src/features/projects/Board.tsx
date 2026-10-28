@@ -34,6 +34,7 @@ export function Board() {
   const grid = useRef<HTMLDivElement>(null);
 
   const q = query.trim();
+  const idp = (it: Item) => (it.acad ? ` · ${t("school")}` : "");
   const view = useMemo(() => {
     const rows = all
       .filter((it) => filter === "all" || it.cat.includes(filter))
@@ -130,6 +131,7 @@ export function Board() {
                 <span className={s.meta}>
                   <span className={s.k}>
                     {it.kind} · {it.year}
+                    {idp(it)}
                   </span>
                   <span className={s.name}>{it.name}</span>
                   <span className={s.line}>{it.line}</span>
@@ -140,7 +142,10 @@ export function Board() {
               <>
                 <span className={s.top}>
                   <span className={s.chip}>{it.kind.split(" · ")[0]}</span>
-                  <span className={s.yr}>{it.year}</span>
+                  <span className={s.yr}>
+                    {it.year}
+                    {idp(it)}
+                  </span>
                 </span>
                 <span className={s.mid}>
                   <span className={s.name}>{it.name}</span>

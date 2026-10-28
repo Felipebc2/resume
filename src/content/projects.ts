@@ -5,7 +5,15 @@ type M = typeof messages.Projects;
 export type ProjectId = keyof M["items"];
 export type LabId = keyof M["labs"];
 export type Cat =
-  "ai" | "web" | "data" | "mobile" | "science" | "security" | "systems" | "lab";
+  | "ai"
+  | "web"
+  | "data"
+  | "mobile"
+  | "science"
+  | "acad"
+  | "security"
+  | "systems"
+  | "lab";
 export type Filter = "all" | Cat;
 
 export const filters: Filter[] = [
@@ -15,6 +23,7 @@ export const filters: Filter[] = [
   "data",
   "mobile",
   "science",
+  "acad",
   "security",
   "systems",
   "lab",
@@ -60,7 +69,7 @@ export const projects: Project[] = [
   },
   {
     id: "oficina",
-    cat: ["ai", "data"],
+    cat: ["ai", "data", "acad"],
     year: "2025",
     art: "RAG",
     media: "image",
@@ -108,8 +117,8 @@ export const projects: Project[] = [
   },
   {
     id: "orbitas",
-    cat: ["science"],
-    year: "2026",
+    cat: ["science", "acad"],
+    year: "2025",
     art: "ƒ(t)",
     media: "video",
     mob: [1, 2],
@@ -124,7 +133,7 @@ export const projects: Project[] = [
   },
   {
     id: "veritas",
-    cat: ["mobile"],
+    cat: ["mobile", "acad"],
     year: "2025",
     art: "VRT",
     mob: [1, 1],
@@ -133,7 +142,7 @@ export const projects: Project[] = [
   },
   {
     id: "contratus",
-    cat: ["ai", "web"],
+    cat: ["ai", "web", "acad"],
     year: "2025",
     art: "CTR",
     mob: [1, 1],
@@ -142,7 +151,7 @@ export const projects: Project[] = [
   },
   {
     id: "airq",
-    cat: ["data"],
+    cat: ["data", "acad"],
     year: "2025",
     art: "AQI",
     mob: [2, 1],
@@ -187,7 +196,7 @@ export const projects: Project[] = [
   },
   {
     id: "kernel",
-    cat: ["systems"],
+    cat: ["systems", "acad"],
     year: "2026",
     art: "BOOT",
     mob: [1, 1],
@@ -233,12 +242,14 @@ export const projects: Project[] = [
 ];
 
 /** IDP coursework repos: searchable, not on the bento */
-export const labs: { id: LabId; lang: string }[] = [
-  { id: "oop", lang: "Java" },
-  { id: "techniques", lang: "C++" },
-  { id: "ds", lang: "C" },
-  { id: "paradigms", lang: "Multi" },
-  { id: "db", lang: "SQL" },
-  { id: "ml", lang: "Python" },
-  { id: "stats", lang: "Python" },
+export const labs: { id: LabId; lang: string; year: string }[] = [
+  { id: "algo", lang: "C", year: "2023" },
+  { id: "ds", lang: "C", year: "2024" },
+  { id: "stats", lang: "Python", year: "2024" },
+  { id: "db", lang: "SQL", year: "2024" },
+  { id: "sdp", lang: "Docs", year: "2024" },
+  { id: "ml", lang: "Python", year: "2024" },
+  { id: "oop", lang: "Java", year: "2024" },
+  { id: "techniques", lang: "C++", year: "2024" },
+  { id: "paradigms", lang: "Multi", year: "2026" },
 ];
