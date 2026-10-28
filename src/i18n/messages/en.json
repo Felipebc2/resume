@@ -947,5 +947,14 @@
       "caption": "my signature · {k} epicycles · same math as Órbitas",
       "replay": "Replay signature"
     }
+  },
+  "Footer": {
+    "nav": "Footer",
+    "addr": "{city}, DF · Brazil<br></br>UTC−3 · Remote or relocation<br></br>EN · PT-BR",
+    "cta": "Let’s talk on LinkedIn",
+    "open": "Open to work",
+    "top": "Back to top",
+    "copy": "© {year} {name}. All rights reserved.",
+    "source": "Source on GitHub"
   }
 }

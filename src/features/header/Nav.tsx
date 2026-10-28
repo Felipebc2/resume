@@ -2,16 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { sections } from "@/content/sections";
 import { clamp } from "@/lib/math";
 import s from "./Header.module.css";
-
-/** label key → anchor */
-const LINKS = [
-  ["stack", "stack-step"],
-  ["experience", "experience"],
-  ["projects", "projects"],
-  ["contact", "contact"],
-] as const;
 
 export function Nav() {
   const t = useTranslations("Header");
@@ -73,7 +66,7 @@ export function Nav() {
   return (
     <nav ref={nav} className={s.nav} aria-label={t("nav")}>
       <span ref={ind} className={s.ind} aria-hidden="true" />
-      {LINKS.map(([key, href], i) => (
+      {sections.map(([key, href], i) => (
         <a
           key={key}
           href={`#${href}`}

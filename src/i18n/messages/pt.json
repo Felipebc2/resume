@@ -951,5 +951,14 @@
       "caption": "minha assinatura · {k} epiciclos · a mesma matemática do Órbitas",
       "replay": "Redesenhar assinatura"
     }
+  },
+  "Footer": {
+    "nav": "Rodapé",
+    "addr": "{city}, DF · Brasil<br></br>UTC−3 · Remoto ou mudança de cidade<br></br>EN · PT-BR",
+    "cta": "Fale comigo no LinkedIn",
+    "open": "Disponível",
+    "top": "Voltar ao topo",
+    "copy": "© {year} {name}. Todos os direitos reservados.",
+    "source": "Código no GitHub"
   }
 }

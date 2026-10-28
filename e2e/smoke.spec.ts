@@ -29,7 +29,7 @@ test("nav hides on the hero, drops in on scroll, Stack plays the step", async ({
   await expect
     .poll(() => title.evaluate((el) => getComputedStyle(el).opacity))
     .toBe("1");
-  await expect(page.getByRole("link", { name: "Stack" })).toHaveAttribute(
+  await expect(nav.getByRole("link", { name: "Stack" })).toHaveAttribute(
     "aria-current",
     "true",
   );

@@ -9,6 +9,7 @@ export const profile = {
     linkedin: "https://www.linkedin.com/in/felipebc2/",
     github: "https://github.com/Felipebc2",
     cv: "/cv/felipe-barroso-en.pdf",
+    source: "https://github.com/Felipebc2/resume",
   },
   contacts: {
     phone: { href: "tel:+5561999691134", title: "+55 61 99969-1134" },

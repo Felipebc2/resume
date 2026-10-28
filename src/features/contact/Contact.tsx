@@ -4,7 +4,10 @@ import { profile } from "@/content/profile";
 import { Signature } from "./Signature";
 import s from "./Contact.module.css";
 
-const ICON: Record<"linkedin" | "github" | "whatsapp" | "loc", ReactNode> = {
+export const ICON: Record<
+  "linkedin" | "github" | "whatsapp" | "loc",
+  ReactNode
+> = {
   linkedin: (
     <>
       <rect x="3" y="3" width="18" height="18" rx="4" />
