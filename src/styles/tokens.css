@@ -137,12 +137,14 @@ html {
   --shadow-k: 1;
   --inv: 1;
   --icon-b: 1.15;
+  --epicycle-a: 0.25; /* signature circles: quieter on dark */
   color-scheme: dark;
 }
 html[data-mode="light"] {
   --shadow-k: 0.3;
   --inv: 0;
   --icon-b: 0.6;
+  --epicycle-a: 0.45;
   color-scheme: light;
 }
 html[data-theme="lemon"][data-mode="dark"] {

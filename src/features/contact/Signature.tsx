@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { signature } from "@/content/signature";
-import { ms, useStill } from "@/lib/motion";
+import { ms, token, useStill } from "@/lib/motion";
 import { themeColor } from "@/lib/theme";
 import { useFrames, useRepaint } from "../experience/useFrames";
 import { epicycles, tip } from "./fourier";
@@ -65,34 +65,38 @@ export function Signature() {
     r.el = Math.min(dur, r.el + dt);
     const goal = Math.min(M, Math.floor((r.el / dur) * M));
     while (r.step < goal - 1) r.trail.push(at(r.step++));
-    if (r.step < M) {
-      /* the arms: each circle rides on the tip of the one before */
-      const tt = (r.step / N) * 2 * Math.PI;
-      let x = 0,
-        y = 0;
-      ctx.strokeStyle = themeColor("fg", 0.15);
-      ctx.lineWidth = 1;
-      for (let i = 0; i < K; i++) {
-        const e = terms[i],
-          nx = x + e.amp * Math.cos(e.f * tt + e.ph),
-          ny = y + e.amp * Math.sin(e.f * tt + e.ph);
-        ctx.beginPath();
-        ctx.arc(f.cx + x * f.sc, f.cy + y * f.sc, e.amp * f.sc, 0, 2 * Math.PI);
-        ctx.moveTo(f.cx + x * f.sc, f.cy + y * f.sc);
-        ctx.lineTo(f.cx + nx * f.sc, f.cy + ny * f.sc);
-        ctx.stroke();
-        x = nx;
-        y = ny;
-      }
-      const lift = jumps.has(r.step);
-      r.trail.push([x, y, lift]);
-      ctx.fillStyle = themeColor("fg", lift ? 0.35 : 1);
+    /* the arms: each circle rides on the tip of the one before. They stay on
+       at the last point once the pen is done, picked out in the primary colour */
+    const k = Math.min(r.step, M - 1);
+    const tt = (k / N) * 2 * Math.PI;
+    let x = 0,
+      y = 0;
+    ctx.strokeStyle = themeColor(
+      "primary-text",
+      parseFloat(token("--epicycle-a")),
+    );
+    ctx.lineWidth = 1;
+    for (let i = 0; i < K; i++) {
+      const e = terms[i],
+        nx = x + e.amp * Math.cos(e.f * tt + e.ph),
+        ny = y + e.amp * Math.sin(e.f * tt + e.ph);
       ctx.beginPath();
-      ctx.arc(f.cx + x * f.sc, f.cy + y * f.sc, 2.6, 0, 2 * Math.PI);
-      ctx.fill();
-      r.step++;
-      if (r.step >= M) dirty.current = true; // one clean frame without the arms
+      ctx.arc(f.cx + x * f.sc, f.cy + y * f.sc, e.amp * f.sc, 0, 2 * Math.PI);
+      ctx.moveTo(f.cx + x * f.sc, f.cy + y * f.sc);
+      ctx.lineTo(f.cx + nx * f.sc, f.cy + ny * f.sc);
+      ctx.stroke();
+      x = nx;
+      y = ny;
     }
+    const lift = jumps.has(k);
+    if (r.step < M) {
+      r.trail.push([x, y, lift]);
+      r.step++;
+    }
+    ctx.fillStyle = themeColor("primary-text", lift ? 0.35 : 1);
+    ctx.beginPath();
+    ctx.arc(f.cx + x * f.sc, f.cy + y * f.sc, 2.6, 0, 2 * Math.PI);
+    ctx.fill();
     ink(ctx, r.trail, f);
   };
 
