@@ -1,28 +1,30 @@
-import { DEFAULT_THEME, themes, type Theme } from "@/content/themes";
+import { DEFAULT_THEME, themes, type Mode, type Theme } from "@/content/themes";
 
 const KEY = "fbc2-theme";
+const MODE = "fbc2-mode";
 const EVENT = "theme:change";
 
-/** Inline in <head>: applies the saved theme (and language) before the first paint. */
-export const bootScript = `var d=document.documentElement,t,l;try{t=localStorage.getItem("${KEY}");l=localStorage.getItem("fbc2-lang")}catch(e){}d.dataset.theme=${JSON.stringify(themes.map((x) => x.id))}.indexOf(t)<0?"${DEFAULT_THEME}":t;if(l==="pt")d.lang="pt-BR"`;
+/** Inline in <head>: applies the saved theme, mode (else the system's) and language before the first paint. */
+export const bootScript = `var d=document.documentElement,t,m,l;try{t=localStorage.getItem("${KEY}");m=localStorage.getItem("${MODE}");l=localStorage.getItem("fbc2-lang")}catch(e){}d.dataset.theme=${JSON.stringify(themes.map((x) => x.id))}.indexOf(t)<0?"${DEFAULT_THEME}":t;d.dataset.mode=m==="light"||m==="dark"?m:matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";if(l==="pt")d.lang="pt-BR"`;
 
-export const getTheme = () =>
-  (document.documentElement.dataset.theme ?? DEFAULT_THEME) as Theme;
+const root = () => document.documentElement;
+export const getTheme = () => (root().dataset.theme ?? DEFAULT_THEME) as Theme;
+export const getMode = () => (root().dataset.mode ?? "dark") as Mode;
 
 export const onTheme = (cb: () => void) => {
   addEventListener(EVENT, cb);
   return () => removeEventListener(EVENT, cb);
 };
 
-let colors: Record<string, string> | undefined;
-
-export function setTheme(id: Theme, still: boolean) {
+export function setLook(look: { theme?: Theme; mode?: Mode }, still: boolean) {
   try {
-    localStorage.setItem(KEY, id);
+    if (look.theme) localStorage.setItem(KEY, look.theme);
+    if (look.mode) localStorage.setItem(MODE, look.mode);
   } catch {}
   const go = () => {
-    document.documentElement.dataset.theme = id;
-    colors = undefined;
+    if (look.theme) root().dataset.theme = look.theme;
+    if (look.mode) root().dataset.mode = look.mode;
+    for (const k in cache) delete cache[k as Token];
     dispatchEvent(new Event(EVENT));
   };
   if (!still && document.startViewTransition) document.startViewTransition(go);
@@ -30,27 +32,39 @@ export function setTheme(id: Theme, still: boolean) {
 }
 
 type Token =
-  "bg" | "fg" | "dim" | "l1" | "l2" | "l3" | "l4" | "sig" | "action" | "cover";
+  | "bg"
+  | "panel"
+  | "fg"
+  | "dim"
+  | "faint"
+  | "line"
+  | "l1"
+  | "l3"
+  | "cover"
+  | "primary-text"
+  | "secondary-text";
 
-/** Canvas can't read CSS variables, so it asks here. Mono returns each canvas's original colour, so nothing shifts. */
-export function themeColor(token: Token, mono: string) {
-  if (getTheme() === "mono") return mono;
-  if (!colors) {
-    const cs = getComputedStyle(document.documentElement);
-    colors = {};
-    for (const k of [
-      "bg",
-      "fg",
-      "dim",
-      "l1",
-      "l2",
-      "l3",
-      "l4",
-      "sig",
-      "action",
-      "cover",
-    ])
-      colors[k] = cs.getPropertyValue(`--color-${k}`).trim();
+const cache: Partial<Record<Token, number[]>> = {};
+
+/** Canvas can't read CSS variables (and the derived tokens are color-mix()), so a probe resolves them to rgb. */
+export function themeRgb(token: Token) {
+  let c = cache[token];
+  if (!c) {
+    const p = document.createElement("i");
+    p.hidden = true;
+    p.style.color = `var(--color-${token})`;
+    document.body.append(p);
+    const v = getComputedStyle(p).color;
+    p.remove();
+    const n = (v.match(/[\d.]+/g) ?? []).map(Number).slice(0, 3);
+    c = cache[token] = v.startsWith("color(")
+      ? n.map((x) => Math.round(x * 255))
+      : n;
   }
-  return colors[token] || mono;
+  return c;
+}
+
+export function themeColor(token: Token, alpha = 1) {
+  const [r, g, b] = themeRgb(token);
+  return `rgb(${r} ${g} ${b} / ${alpha})`;
 }

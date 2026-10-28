@@ -1,5 +1,19 @@
 export const profile = {
   name: "Felipe Barroso",
+  /** public name for search and sharing (title, Open Graph, JSON-LD) */
+  seo: {
+    name: "Felipe Castro",
+    alternateName: "Felipebc2",
+    jobTitle: "Full-Stack Engineer",
+    knowsAbout: [
+      "Next.js",
+      "FastAPI",
+      "PostgreSQL",
+      "Docker",
+      "Clean Architecture",
+    ],
+    country: "BR",
+  },
   handle: "felipebc2",
   city: "Brasília",
   /** orgs whose public repos count toward the repo stat */

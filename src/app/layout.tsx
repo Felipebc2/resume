@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { getMessages, getTimeZone, getTranslations } from "next-intl/server";
 import { Anton, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { DEFAULT_THEME } from "@/content/themes";
@@ -28,42 +28,39 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Meta");
+  const { name } = profile.seo;
   return {
     metadataBase: new URL(SITE_URL),
-    title: t("title"),
+    title: { default: t("title"), template: `%s · ${name}` },
     description: t("description"),
     alternates: { canonical: "/" },
+    robots: { index: true, follow: true },
     openGraph: {
-      type: "profile",
+      type: "website",
+      siteName: name,
       title: t("title"),
       description: t("description"),
       url: "/",
-      siteName: profile.name,
       locale: "en_US",
+      alternateLocale: ["pt_BR"],
     },
-    twitter: { card: "summary_large_image" },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
   };
 }
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const t = await getTranslations("Meta");
-  const person = {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    name: profile.name,
-    jobTitle: (await getTranslations("Hero")).raw("roles")[0],
-    description: t("description"),
-    url: SITE_URL,
-    email: profile.contacts.email.href,
-    address: { "@type": "PostalAddress", addressLocality: profile.city },
-    sameAs: [profile.links.github, profile.links.linkedin],
-  };
+export const viewport: Viewport = { themeColor: "#090b10" };
 
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // the boot script rewrites data-theme and lang before hydration
+    // the boot script rewrites data-theme, data-mode and lang before hydration
     <html
       lang="en"
       data-theme={DEFAULT_THEME}
+      data-mode="dark"
       suppressHydrationWarning
       className={`${instrument.variable} ${anton.variable} ${geist.variable} ${geistMono.variable} antialiased`}
     >
@@ -71,12 +68,6 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: bootScript }} />
       </head>
       <body>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(person).replace(/</g, "\\u003c"),
-          }}
-        />
         <LangProvider en={await getMessages()} timeZone={await getTimeZone()}>
           <MotionProvider>{children}</MotionProvider>
         </LangProvider>

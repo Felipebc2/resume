@@ -7,8 +7,9 @@ import { useStill } from "@/lib/motion";
 import s from "./Projects.module.css";
 
 /** n skeleton text lines, each row a bit shorter than the one above in a cycle of 3 */
-const Lines = ({ n, w, gap = 7 }: { n: number; w: number; gap?: number }) => (
-  <div style={{ display: "grid", gap }}>
+/** `gap` is a step of the 4px grid (--s-n): the old page is cramped, the new one breathes */
+const Lines = ({ n, w, gap = 2 }: { n: number; w: number; gap?: number }) => (
+  <div style={{ display: "grid", gap: `var(--s-${gap})` }}>
     {Array.from({ length: n }, (_, i) => (
       <div
         key={i}
@@ -27,7 +28,7 @@ function Before() {
           <div
             key={i}
             className={s.mkB}
-            style={{ height: 12, background: "#34343a" }}
+            style={{ height: 12, background: "var(--color-line)" }}
           />
         ))}
       </div>
@@ -38,8 +39,8 @@ function Before() {
         ))}
       </div>
       <div className={s.mkRow} style={{ gridTemplateColumns: "120px 1fr" }}>
-        <Lines n={9} w={90} gap={6} />
-        <Lines n={9} w={96} gap={6} />
+        <Lines n={9} w={90} gap={2} />
+        <Lines n={9} w={96} gap={2} />
       </div>
     </div>
   );
@@ -49,11 +50,11 @@ function After({ headline }: { headline: string }) {
   return (
     <div className={`${s.mock} ${s.new}`}>
       <div className={s.mkH}>{headline}</div>
-      <Lines n={2} w={40} gap={9} />
+      <Lines n={2} w={40} gap={3} />
       <div className={`${s.mkB} ${s.mkBtn}`} />
       <div
         className={s.mkRow}
-        style={{ gridTemplateColumns: "2fr 1fr 1fr", gap: 14 }}
+        style={{ gridTemplateColumns: "2fr 1fr 1fr", gap: "var(--s-4)" }}
       >
         {[0, 1, 2].map((i) => (
           <div key={i} className={`${s.mkB} ${s.mkCard}`} />

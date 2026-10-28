@@ -12,6 +12,18 @@ import {
 
 const MotionContext = createContext(false);
 
+const root = () => getComputedStyle(document.documentElement);
+/** Motion tokens for WAAPI and rAF, read from tokens.css so JS shares the CSS scale: `ms("--d-3")` → 400. */
+export const ms = (t: `--d-${1 | 2 | 3 | 4 | 5}`) => {
+  // the CSS minifier rewrites 1100ms as 1.1s, so honour the unit
+  const v = root().getPropertyValue(t).trim();
+  return parseFloat(v) * (v.endsWith("ms") ? 1 : 1000);
+};
+export const ease = (t: "--ease-out" | "--ease-inout" | "--ease-pop") =>
+  root().getPropertyValue(t).trim();
+/** any other token, e.g. a radius for a keyframe */
+export const token = (t: `--${string}`) => root().getPropertyValue(t).trim();
+
 export const useStill = () => useContext(MotionContext);
 
 const QUERY = "(prefers-reduced-motion: reduce)";
@@ -43,13 +55,13 @@ export function MotionProvider({ children }: { children: ReactNode }) {
       {toast && (
         <div
           role="status"
-          className="fixed bottom-[calc(20px+env(safe-area-inset-bottom,0px))] left-1/2 z-70 flex w-[min(520px,calc(100%-32px))] -translate-x-1/2 items-center gap-3.5 rounded-[18px] border border-line-2 bg-block/92 py-3.5 pr-4 pl-5 text-sm text-[#d6d6dc]"
+          className="fixed bottom-[calc(20px+env(safe-area-inset-bottom,0px))] left-1/2 z-70 flex w-[min(520px,calc(100%-32px))] -translate-x-1/2 items-center gap-(--s-4) rounded-(--r-m) border border-line-2 bg-block/92 py-(--s-4) pr-(--s-4) pl-(--s-5) text-(length:--t-body-s) text-fg"
         >
           <p className="m-0 flex-1">{t("toast")}</p>
           <button
             type="button"
             onClick={() => setStill(false)}
-            className="cursor-pointer rounded-full bg-fg px-4 py-2.25 font-semibold whitespace-nowrap text-black"
+            className="cursor-pointer rounded-(--r-pill) bg-fg px-(--s-4) py-(--s-2) font-semibold whitespace-nowrap text-bg"
           >
             {t("enable")}
           </button>
@@ -57,7 +69,7 @@ export function MotionProvider({ children }: { children: ReactNode }) {
             type="button"
             onClick={() => setDismissed(true)}
             aria-label={t("dismiss")}
-            className="cursor-pointer px-1.5 py-1 text-lg text-dim"
+            className="cursor-pointer px-(--s-2) py-(--s-1) text-(length:--t-body-l) text-dim"
           >
             <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
               <path

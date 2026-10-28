@@ -19,7 +19,7 @@ export function Header({
     <>
       <a
         href="#stack"
-        className="fixed top-[-60px] left-4 z-90 rounded-lg bg-fg px-3 py-2 text-black focus:top-[calc(12px+env(safe-area-inset-top,0px))]"
+        className="fixed top-[-60px] left-4 z-90 rounded-(--r-xs) bg-fg px-(--s-3) py-(--s-2) text-bg focus:top-[calc(12px+env(safe-area-inset-top,0px))]"
       >
         {t("skip")}
       </a>

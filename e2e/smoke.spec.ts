@@ -22,7 +22,8 @@ test("nav hides on the hero, drops in on scroll, Stack plays the step", async ({
   await page.goto("/");
   const nav = page.getByRole("navigation", { name: "Sections" });
   await expect(nav).not.toHaveAttribute("data-nav", "in");
-  await page.mouse.wheel(0, 1000); // mobile emulation scales wheel deltas down
+  // mobile emulation scales wheel deltas down; this one still crosses the greeting, so it glides there
+  await page.mouse.wheel(0, 2500);
   await expect(nav).toHaveAttribute("data-nav", "in");
   await nav.getByRole("link", { name: "Stack" }).click();
   const title = page.getByRole("heading", { name: /This is my/ });
@@ -54,13 +55,18 @@ test("settings switch the theme and the language in place", async ({
 }) => {
   await page.goto("/");
   const html = page.locator("html");
-  await expect(html).toHaveAttribute("data-theme", "blue");
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "electric");
+  await expect(html).toHaveAttribute("data-mode", "light"); // follows the system until chosen
   await page.getByRole("button", { name: "Settings" }).click();
   const menu = page.getByRole("dialog", { name: "Settings" });
   await menu.getByRole("button", { name: /^Theme:/ }).click();
-  await menu.getByRole("radio", { name: /Ink & Ember/ }).click();
-  await expect(html).toHaveAttribute("data-theme", "ember");
-  await menu.getByRole("switch").click();
+  await menu.getByRole("radio", { name: /Midnight/ }).click();
+  await expect(html).toHaveAttribute("data-theme", "midnight");
+  await menu.getByRole("switch", { name: /^Mode/ }).click();
+  await expect(html).toHaveAttribute("data-mode", "dark");
+  await menu.getByRole("switch", { name: /^Language/ }).click();
   await expect(html).toHaveAttribute("lang", "pt-BR");
   await expect(
     page.getByRole("navigation", { name: "Seções" }).getByRole("link", {
@@ -71,6 +77,7 @@ test("settings switch the theme and the language in place", async ({
   await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();
   await page.reload();
-  await expect(html).toHaveAttribute("data-theme", "ember");
+  await expect(html).toHaveAttribute("data-theme", "midnight");
+  await expect(html).toHaveAttribute("data-mode", "dark");
   await expect(html).toHaveAttribute("lang", "pt-BR");
 });

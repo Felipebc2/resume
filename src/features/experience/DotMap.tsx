@@ -70,7 +70,7 @@ export function DotMap({ active, now }: { active: EntryId; now: number }) {
     const { cell, ox, oy } = project(v, 0, 0);
     const o = land.getContext("2d")!;
     o.scale(dpr, dpr);
-    o.fillStyle = themeColor("l1", "#36363c");
+    o.fillStyle = themeColor("l1");
     const rr = Math.max(0.7, cell * 0.28);
     BITS.forEach((row, y) => {
       for (let x = 0; x < LAND.W; x++)
@@ -103,9 +103,7 @@ export function DotMap({ active, now }: { active: EntryId; now: number }) {
         const my =
           Math.min(home.y, q.y) - Math.hypot(q.x - home.x, q.y - home.y) * 0.35;
         const hl = hot === p;
-        ctx.strokeStyle = hl
-          ? themeColor("l4", "#f4f4f5")
-          : themeColor("l3", "#7d7d83");
+        ctx.strokeStyle = hl ? themeColor("secondary-text") : themeColor("l3");
         ctx.lineWidth = hl ? 1.8 : 1.1;
         ctx.setLineDash([4, 5]);
         ctx.lineDashOffset = still ? 0 : -time / 60;
@@ -126,8 +124,8 @@ export function DotMap({ active, now }: { active: EntryId; now: number }) {
       const sc = v.w / 700;
       ctx.setLineDash([2, 6]);
       ctx.strokeStyle = remote
-        ? "rgba(244,244,245,.9)"
-        : "rgba(233,233,234,.28)";
+        ? themeColor("secondary-text", 0.9)
+        : themeColor("fg", 0.28);
       ctx.lineWidth = 1;
       [30, 52].forEach((r0, n) => {
         const r = r0 * sc + (still ? 0 : ((time / 50 + n * 13) % 26) * 0.3);
@@ -140,28 +138,26 @@ export function DotMap({ active, now }: { active: EntryId; now: number }) {
       PINS.forEach((p) => {
         const q = project(v, pins[p].lat, pins[p].lon);
         const hl = hot === p;
-        ctx.fillStyle = hl
-          ? themeColor("fg", "#fff")
-          : themeColor("l3", "#c9c9ce");
+        ctx.fillStyle = hl ? themeColor("secondary-text") : themeColor("dim");
         ctx.beginPath();
         ctx.arc(q.x, q.y, hl ? 5 : 3.5, 0, 6.283);
         ctx.fill();
         if (hl) {
           const pulse = still ? 0.5 : (time / 1300) % 1;
-          ctx.strokeStyle = `rgba(244,244,245,${1 - pulse})`;
+          ctx.strokeStyle = themeColor("secondary-text", 1 - pulse);
           ctx.beginPath();
           ctx.arc(q.x, q.y, 6 + pulse * 16, 0, 6.283);
           ctx.stroke();
         }
         const name = t(`places.${p}`);
         ctx.font = `500 ${hl ? 12 : 11}px ${font}`;
-        ctx.fillStyle = hl ? "#fff" : "#8e8e94";
+        ctx.fillStyle = themeColor(hl ? "fg" : "dim");
         const w = ctx.measureText(name).width;
         ctx.fillText(name, q.x + w + 14 > v.w ? q.x - w - 9 : q.x + 9, q.y - 8);
       });
       if (remote) {
         ctx.font = `500 11px ${font}`;
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = themeColor("fg");
         ctx.fillText(t("remote"), home.x + 40 * sc, home.y + 44 * sc);
       }
     },

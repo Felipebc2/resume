@@ -23,7 +23,7 @@
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 22px;
+  gap: var(--s-5);
   padding: 0 var(--gut-r) 0 var(--gut-l);
   text-align: center;
   /* held at the viewport centre while the section rises (StackStory sets --lift),
@@ -35,15 +35,15 @@
   font-family: var(--font-serif);
   font-weight: 400;
   font-style: italic;
-  font-size: clamp(56px, 9vw, 150px);
-  line-height: 0.95;
+  font-size: var(--t-moment);
+  line-height: var(--lh-display);
   letter-spacing: -0.01em;
 }
 .greet p {
   margin: 0;
   max-width: 44ch;
-  color: #bdbdc2;
-  font-size: clamp(17px, 1.5vw, 21px);
+  color: color-mix(in srgb, var(--color-fg) 44%, var(--color-dim));
+  font-size: var(--t-body-l);
 }
 .w {
   display: inline-block;
@@ -54,9 +54,9 @@
   transform: translateY(24px);
   filter: blur(10px);
   transition:
-    opacity 0.4s ease,
-    transform 0.4s ease,
-    filter 0.4s ease;
+    opacity var(--d-3) var(--ease-out),
+    transform var(--d-3) var(--ease-out),
+    filter var(--d-3) var(--ease-out);
 }
 .s0 .w,
 .s0 .greet p {
@@ -64,9 +64,9 @@
   transform: none;
   filter: none;
   transition:
-    opacity 0.7s ease,
-    transform 0.9s var(--ease-out-soft),
-    filter 0.7s ease;
+    opacity var(--d-4) var(--ease-out),
+    transform var(--d-4) var(--ease-out),
+    filter var(--d-4) var(--ease-out);
 }
 .s0 .w {
   transition-delay: calc(var(--i) * 90ms);
@@ -88,25 +88,25 @@
   position: absolute;
   left: 50%;
   top: 0;
-  width: min(var(--content-w), calc(100% - 40px));
+  width: min(var(--container), calc(100% - 40px));
   display: flex;
   flex-direction: column;
-  gap: clamp(14px, 2.6vh, 26px);
+  gap: clamp(var(--s-4), 2.6vh, var(--s-5));
   transform-origin: top center;
 }
 .stitle {
   margin: 0;
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(40px, 5.4vw, 84px);
-  line-height: 1;
+  font-size: var(--t-title);
+  line-height: var(--lh-title);
   opacity: 0;
   transform: translateY(34px);
   filter: blur(8px);
   transition:
-    opacity 0.35s,
-    transform 0.35s,
-    filter 0.35s;
+    opacity var(--d-3) var(--ease-out),
+    transform var(--d-3) var(--ease-out),
+    filter var(--d-3) var(--ease-out);
 }
 .stitle em {
   font-style: normal;
@@ -120,26 +120,26 @@
   transform: none;
   filter: none;
   transition:
-    opacity 0.6s 0.15s,
-    transform 0.75s 0.15s var(--ease-out-soft),
-    filter 0.6s 0.15s;
+    opacity var(--d-4) 0.15s var(--ease-out),
+    transform var(--d-4) 0.15s var(--ease-out),
+    filter var(--d-4) 0.15s var(--ease-out);
 }
 
 .card {
   overflow: hidden;
-  border: 1px solid #c8c8cc;
-  border-radius: 20px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
-  background: rgb(229, 229, 231);
-  color: #111113;
+  border: 1px solid color-mix(in srgb, var(--color-fg) 58%, var(--color-dim));
+  border-radius: var(--r-m);
+  box-shadow: 0 30px 80px rgb(0 0 0 / calc(0.45 * var(--shadow-k)));
+  background: color-mix(in srgb, var(--color-fg) 95%, var(--color-dim));
+  color: color-mix(in srgb, var(--color-panel) 38%, var(--color-bg));
   opacity: 0;
   transform: translateY(42vh) scale(0.94);
   transition:
-    opacity 0.35s,
-    transform 0.45s ease,
-    background-color 0.3s,
-    color 0.3s,
-    border-color 0.3s;
+    opacity var(--d-3) var(--ease-out),
+    transform var(--d-3) var(--ease-out),
+    background-color var(--d-2) var(--ease-out),
+    color var(--d-2) var(--ease-out),
+    border-color var(--d-2) var(--ease-out);
 }
 .s1 .card {
   opacity: 1;
@@ -148,20 +148,20 @@
   color: var(--color-fg);
   border-color: var(--color-line);
   transition:
-    opacity 0.4s 0.2s,
-    transform 0.7s 0.2s var(--ease-out-soft),
-    background-color 0.5s 0.5s,
-    color 0.5s 0.5s,
-    border-color 0.5s 0.5s;
+    opacity var(--d-3) 0.2s var(--ease-out),
+    transform var(--d-4) 0.2s var(--ease-out),
+    background-color var(--d-3) 0.5s var(--ease-out),
+    color var(--d-3) 0.5s var(--ease-out),
+    border-color var(--d-3) 0.5s var(--ease-out);
 }
 .cardTop {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 8px 20px;
-  padding: 16px 22px;
+  gap: var(--s-2) var(--s-5);
+  padding: var(--s-4) var(--s-5);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--t-body-s);
 }
 .cardTop b {
   font-weight: 500;
@@ -175,13 +175,13 @@
   height: 7px;
   margin-right: 8px;
   vertical-align: 1px;
-  border-radius: 50%;
+  border-radius: var(--r-pill);
   background: currentColor;
 }
 .cardBody {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.35s ease;
+  transition: grid-template-rows var(--d-3) var(--ease-out);
 }
 .cardBody > div {
   min-height: 0;
@@ -189,28 +189,28 @@
 }
 .s1 .cardBody {
   grid-template-rows: 1fr;
-  transition: grid-template-rows 0.6s 0.45s var(--ease-out-soft);
+  transition: grid-template-rows var(--d-4) 0.45s var(--ease-out);
 }
 .cardInner {
-  padding: 4px 22px 18px;
+  padding: var(--s-1) var(--s-5) var(--s-4);
 }
 .grid {
   display: grid;
   gap: var(--gap, 3px);
   grid-template-columns: repeat(59, minmax(0, 1fr));
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity var(--d-2) var(--ease-out);
 }
 .s1 .grid {
   opacity: 1;
-  transition: opacity 0.35s 0.65s;
+  transition: opacity var(--d-3) 0.65s var(--ease-out);
 }
 .grid i {
   display: block;
   aspect-ratio: 1;
-  border-radius: 22%;
+  border-radius: var(--r-s);
   background: var(--color-l0);
-  transition: background-color 0.28s ease;
+  transition: background-color var(--d-2) var(--ease-out);
 }
 .grid i[data-l="1"] {
   background: var(--color-l1);
@@ -229,22 +229,22 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px 20px;
+  gap: var(--s-2) var(--s-5);
   margin-top: 14px;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-mono);
   color: var(--color-dim);
 }
 .legend {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--s-1);
 }
 .legend i {
   display: block;
   width: 11px;
   height: 11px;
-  border-radius: 3px;
+  border-radius: var(--r-xs);
 }
 
 .results {
@@ -253,25 +253,25 @@
   margin: 0;
   border: 1px solid var(--color-line);
   border-top: 0;
-  transition: border-color 0.3s;
+  transition: border-color var(--d-2) var(--ease-out);
 }
 .stage:not(.s1) .results {
   border-color: transparent;
 }
 .s1 .results {
-  transition: border-color 0.5s 1s;
+  transition: border-color var(--d-3) 1s var(--ease-out);
 }
 .res {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  padding: 16px 18px 16px 18px;
+  padding: var(--s-4) var(--s-4) var(--s-4) var(--s-4);
   border-top: 1px solid var(--color-line);
   opacity: 0;
   transform: translateY(26px);
   transition:
-    opacity 0.3s,
-    transform 0.3s;
+    opacity var(--d-2) var(--ease-out),
+    transform var(--d-2) var(--ease-out);
 }
 .res + .res {
   border-left: 1px solid var(--color-line);
@@ -279,8 +279,8 @@
 .res dd {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(32px, 3.4vw, 54px);
-  line-height: 1;
+  font-size: var(--t-sec-a);
+  line-height: var(--lh-title);
   letter-spacing: 0.01em;
   font-variant-numeric: tabular-nums;
 }
@@ -288,16 +288,16 @@
   order: 1;
   margin-top: 8px;
   font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: var(--t-mono);
+  line-height: var(--lh-body);
   color: var(--color-dim);
 }
 .s1 .res {
   opacity: 1;
   transform: none;
   transition:
-    opacity 0.6s,
-    transform 0.7s var(--ease-out-soft);
+    opacity var(--d-4) var(--ease-out),
+    transform var(--d-4) var(--ease-out);
 }
 .s1 .res:nth-child(1) {
   transition-delay: 1s;
@@ -332,15 +332,15 @@
   }
   .cardTop,
   .cardInner {
-    padding-left: 14px;
-    padding-right: 14px;
+    padding-left: var(--s-4);
+    padding-right: var(--s-4);
   }
   .results {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .res {
-    padding-left: 14px;
-    padding-right: 14px;
+    padding-left: var(--s-4);
+    padding-right: var(--s-4);
   }
   .res:nth-child(odd) {
     border-left: 0;

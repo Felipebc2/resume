@@ -9,7 +9,7 @@ import {
   type Ref,
 } from "react";
 import { flushSync } from "react-dom";
-import { useStill } from "@/lib/motion";
+import { ease, ms, token, useStill } from "@/lib/motion";
 import { Blueprint } from "./Blueprint";
 import { Cover } from "./Cover";
 import type { Item, Node as Part } from "./useItems";
@@ -17,7 +17,6 @@ import s from "./Projects.module.css";
 
 export type CaseHandle = { close: (then?: () => void) => void };
 
-const EASE = "cubic-bezier(.2,.8,.2,1)";
 const STEPS = ["problem", "approach", "stack", "outcome"] as const;
 
 /** transform that lays `to` exactly over `from` (transform-origin 0 0) */
@@ -68,13 +67,13 @@ export function Case({
     if (!still) {
       el.animate(
         [
-          { transform: flip(origin, el), borderRadius: "20px" },
-          { transform: "none", borderRadius: "24px" },
+          { transform: flip(origin, el), borderRadius: token("--r-m") },
+          { transform: "none", borderRadius: token("--r-l") },
         ],
-        { duration: 540, easing: EASE },
+        { duration: ms("--d-3"), easing: ease("--ease-out") },
       );
       el.animate([{ opacity: 0 }, { opacity: 1 }], {
-        duration: 350,
+        duration: ms("--d-3"),
         pseudoElement: "::backdrop",
       });
       el.querySelectorAll(`.${s.fade}`).forEach((f, i) =>
@@ -84,14 +83,14 @@ export function Case({
             { opacity: 1, transform: "none" },
           ],
           {
-            duration: 380,
+            duration: ms("--d-3"),
             delay: 300 + i * 90,
-            easing: EASE,
+            easing: ease("--ease-out"),
             fill: "backwards",
           },
         ),
       );
-      timer = setTimeout(() => setDrawn(true), 420);
+      timer = setTimeout(() => setDrawn(true), ms("--d-3"));
     }
     return () => {
       clearTimeout(timer);
@@ -108,21 +107,21 @@ export function Case({
     if (still || !origin.isConnected) return el.close();
     el.querySelectorAll(`.${s.fade}`).forEach((f) =>
       f.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: 150,
+        duration: ms("--d-1"),
         fill: "forwards",
       }),
     );
     el.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: 350,
+      duration: ms("--d-3"),
       fill: "forwards",
       pseudoElement: "::backdrop",
     });
     el.animate(
       [
         { transform: "none" },
-        { transform: flip(origin, el), borderRadius: "20px" },
+        { transform: flip(origin, el), borderRadius: token("--r-m") },
       ],
-      { duration: 440, easing: EASE, fill: "forwards" },
+      { duration: ms("--d-3"), easing: ease("--ease-out"), fill: "forwards" },
     ).onfinish = () => el.close();
   };
   useImperativeHandle(ref, () => ({ close }));

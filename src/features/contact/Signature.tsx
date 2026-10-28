@@ -3,15 +3,14 @@
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { signature } from "@/content/signature";
-import { useStill } from "@/lib/motion";
+import { ms, useStill } from "@/lib/motion";
 import { themeColor } from "@/lib/theme";
 import { useFrames, useRepaint } from "../experience/useFrames";
 import { epicycles, tip } from "./fourier";
 import s from "./Contact.module.css";
 
-/** epicycles drawn, and how long the pen takes */
+/** epicycles drawn (the pen takes --d-5) */
 const K = 40;
-const DUR = 1500;
 
 type Pt = [x: number, y: number, lift: boolean];
 let series: ReturnType<typeof epicycles> | undefined;
@@ -26,7 +25,7 @@ export function Signature() {
   const dirty = useRef(true);
 
   const ink = (ctx: CanvasRenderingContext2D, pts: Pt[], f: Frame) => {
-    ctx.strokeStyle = themeColor("sig", "#e9e9ea");
+    ctx.strokeStyle = themeColor("secondary-text");
     ctx.lineWidth = 1.8;
     ctx.lineCap = ctx.lineJoin = "round";
     ctx.beginPath();
@@ -50,7 +49,7 @@ export function Signature() {
     const W = c.clientWidth,
       H = c.clientHeight;
     const f = { sc: Math.min(W, H) * 0.86, cx: W / 2, cy: H / 2 };
-    ctx.fillStyle = themeColor("bg", "#0c0c0d");
+    ctx.fillStyle = themeColor("bg");
     ctx.fillRect(0, 0, W, H);
     const at = (i: number): Pt => [...tip(terms, K, i, N), jumps.has(i)];
 
@@ -62,15 +61,16 @@ export function Signature() {
       );
 
     const r = run.current;
-    r.el = Math.min(DUR, r.el + dt);
-    const goal = Math.min(M, Math.floor((r.el / DUR) * M));
+    const dur = ms("--d-5");
+    r.el = Math.min(dur, r.el + dt);
+    const goal = Math.min(M, Math.floor((r.el / dur) * M));
     while (r.step < goal - 1) r.trail.push(at(r.step++));
     if (r.step < M) {
       /* the arms: each circle rides on the tip of the one before */
       const tt = (r.step / N) * 2 * Math.PI;
       let x = 0,
         y = 0;
-      ctx.strokeStyle = "rgba(233,233,234,.15)";
+      ctx.strokeStyle = themeColor("fg", 0.15);
       ctx.lineWidth = 1;
       for (let i = 0; i < K; i++) {
         const e = terms[i],
@@ -86,11 +86,12 @@ export function Signature() {
       }
       const lift = jumps.has(r.step);
       r.trail.push([x, y, lift]);
-      ctx.fillStyle = lift ? "rgba(255,255,255,.35)" : "#fff";
+      ctx.fillStyle = themeColor("fg", lift ? 0.35 : 1);
       ctx.beginPath();
       ctx.arc(f.cx + x * f.sc, f.cy + y * f.sc, 2.6, 0, 2 * Math.PI);
       ctx.fill();
       r.step++;
+      if (r.step >= M) dirty.current = true; // one clean frame without the arms
     }
     ink(ctx, r.trail, f);
   };

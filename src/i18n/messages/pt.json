@@ -1,7 +1,7 @@
 {
   "Meta": {
-    "title": "Felipe Barroso: Desenvolvedor Full-stack",
-    "description": "Desenvolvedor full-stack que constrói produtos web, agentes com LLM e infraestrutura segura, da arquitetura à produção."
+    "title": "Felipe Castro - Full-Stack Engineer",
+    "description": "Engenheiro full-stack que constrói produtos de ponta a ponta com Next.js, FastAPI e Clean Architecture. Born to build."
   },
   "Header": {
     "skip": "Pular para o conteúdo",
@@ -27,11 +27,14 @@
     "langName": "Português",
     "saved": "salvo neste dispositivo",
     "themes": {
-      "mono": "o wireframe, só cinza",
-      "blue": "padrão · ação + dados",
-      "ember": "quente, editorial",
-      "acid": "preto e branco, uma faísca"
-    }
+      "lemon": "limão e lavanda",
+      "deep": "berinjela e calêndula",
+      "electric": "padrão · azul e grafite",
+      "midnight": "pedra e carmim"
+    },
+    "mode": "Modo",
+    "dark": "Escuro",
+    "light": "Claro"
   },
   "Hero": {
     "label": "Início",

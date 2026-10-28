@@ -90,9 +90,7 @@ export function Trophies({
       const on = burst === i;
       const ctx = cv.getContext("2d")!;
       ctx.clearRect(0, 0, size, size);
-      ctx.fillStyle = on
-        ? "rgba(233,233,234,.25)"
-        : themeColor("fg", "#e9e9ea");
+      ctx.fillStyle = on ? themeColor("fg", 0.25) : themeColor("fg");
       const sz = Math.max(1.5, size / 62);
       for (const p of pts) {
         const tx = on ? p.bx : p.tx;

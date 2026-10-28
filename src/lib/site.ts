@@ -1,4 +1,4 @@
-/** Public origin. Set NEXT_PUBLIC_SITE_URL in Vercel once the domain exists. */
+/** Public origin, used as metadataBase. TODO(domain): set NEXT_PUBLIC_SITE_URL once the domain is decided. */
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_PROJECT_PRODUCTION_URL

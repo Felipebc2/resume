@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useStill } from "@/lib/motion";
+import { ease, ms, useStill } from "@/lib/motion";
 import { padRoles } from "./roles";
 import s from "./Hero.module.css";
 
@@ -28,9 +28,9 @@ export function RoleRoller({ roles }: { roles: string[] }) {
         el.animate(
           [{ transform: "translateY(0)" }, { transform: "translateY(-115%)" }],
           {
-            duration: 200,
+            duration: ms("--d-2"),
             delay: i * 25,
-            easing: "cubic-bezier(.5,0,.75,0)",
+            easing: ease("--ease-inout"),
             fill: "forwards",
           },
         ).onfinish = () => {
@@ -38,8 +38,8 @@ export function RoleRoller({ roles }: { roles: string[] }) {
           el.animate(
             [{ transform: "translateY(115%)" }, { transform: "translateY(0)" }],
             {
-              duration: 260,
-              easing: "cubic-bezier(.2,.8,.2,1)",
+              duration: ms("--d-2"),
+              easing: ease("--ease-out"),
               fill: "forwards",
             },
           );

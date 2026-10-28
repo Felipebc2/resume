@@ -121,11 +121,17 @@ export function Footer({ year }: { year: number }) {
             <linearGradient id="ft-word" x1="0" y1="0" x2="0" y2="1">
               <stop
                 offset="0"
-                style={{ stopColor: "var(--color-fg)", stopOpacity: 0.22 }}
+                style={{
+                  stopColor: "var(--color-primary-text)",
+                  stopOpacity: 0.3,
+                }}
               />
               <stop
                 offset="1"
-                style={{ stopColor: "var(--color-fg)", stopOpacity: 0.09 }}
+                style={{
+                  stopColor: "var(--color-primary-text)",
+                  stopOpacity: 0.1,
+                }}
               />
             </linearGradient>
           </defs>

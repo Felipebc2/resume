@@ -9,47 +9,69 @@ import {
   useSyncExternalStore,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { DEFAULT_THEME, themes, type Theme } from "@/content/themes";
+import { DEFAULT_THEME, themes, type Mode, type Theme } from "@/content/themes";
 import { useSetLang } from "@/lib/lang";
-import { useStill } from "@/lib/motion";
-import { getTheme, onTheme, setTheme } from "@/lib/theme";
+import { ease, ms, useStill } from "@/lib/motion";
+import { getMode, getTheme, onTheme, setLook } from "@/lib/theme";
 import s from "./Header.module.css";
 
-const Thumb = ({ c }: { c: (typeof themes)[number]["c"] }) => (
-  <span
-    className={s.th}
-    style={{ background: c.bg, borderColor: c.line }}
-    aria-hidden="true"
-  >
-    <span style={{ background: c.surface, borderColor: c.line }} />
-    <span>
-      {(
-        [
-          [70, c.text],
-          [44, c.dim],
-          [30, c.action],
-        ] as const
-      ).map(([w, bg]) => (
-        <i key={w} style={{ width: `${w}%`, background: bg }} />
-      ))}
+/** swatch of a palette in the current mode: background, text bar, primary bar, secondary bar */
+const Thumb = ({
+  c,
+  mode,
+}: {
+  c: (typeof themes)[number]["c"];
+  mode: Mode;
+}) => {
+  const [bg, fg, p, sc] =
+    mode === "dark" ? [c.dark, c.light, c.p, c.s] : [c.light, c.dark, c.s, c.p];
+  const line = `color-mix(in srgb, ${fg} 18%, ${bg})`;
+  return (
+    <span
+      className={s.th}
+      style={{ background: bg, borderColor: line }}
+      aria-hidden="true"
+    >
+      <span
+        style={{
+          background: `color-mix(in srgb, ${fg} 6%, ${bg})`,
+          borderColor: line,
+        }}
+      />
+      <span>
+        {(
+          [
+            [70, fg],
+            [44, p],
+            [30, sc],
+          ] as const
+        ).map(([w, col]) => (
+          <i key={w} style={{ width: `${w}%`, background: col }} />
+        ))}
+      </span>
     </span>
-  </span>
-);
+  );
+};
 
-/** Top-right menu: theme (collapsed to the current one) and the EN ⇄ PT switch. */
+/** Top-right menu: theme (collapsed to the current one), dark ⇄ light and EN ⇄ PT. */
 export function Settings() {
   const t = useTranslations("Settings");
   const locale = useLocale();
   const setLang = useSetLang();
   const still = useStill();
-  const theme = useSyncExternalStore(onTheme, getTheme, () => DEFAULT_THEME);
+  const look = useSyncExternalStore(
+    onTheme,
+    () => `${getTheme()} ${getMode()}`,
+    () => `${DEFAULT_THEME} dark`,
+  );
+  const [theme, mode] = look.split(" ") as [Theme, Mode];
   const [open, setOpen] = useState(false);
   const [list, setList] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
   const pop = useRef<HTMLDivElement>(null);
   const cur = useRef<HTMLButtonElement>(null);
   const items = useRef<HTMLDivElement>(null);
-  const current = themes.find((x) => x.id === theme) ?? themes[1];
+  const current = themes.find((x) => x.id === theme) ?? themes[2];
 
   const close = (back = true) => {
     setOpen(false);
@@ -79,7 +101,7 @@ export function Settings() {
           { opacity: 0, transform: "translateY(-6px) scale(.97)" },
           { opacity: 1, transform: "none" },
         ],
-        { duration: 220, easing: "cubic-bezier(.2,.8,.2,1)" },
+        { duration: ms("--d-2"), easing: ease("--ease-out") },
       );
     const h = (e: Event) => onDoc(e);
     document.addEventListener("pointerdown", h);
@@ -116,7 +138,7 @@ export function Settings() {
   };
 
   const pick = (id: Theme) => {
-    if (id !== theme) setTheme(id, still);
+    if (id !== theme) setLook({ theme: id }, still);
     setList(false);
     cur.current?.focus({ preventScroll: true });
   };
@@ -161,7 +183,7 @@ export function Settings() {
           aria-label={`${t("theme")}: ${current.name}`}
           onClick={() => setList(!list)}
         >
-          <Thumb c={current.c} />
+          <Thumb c={current.c} mode={mode} />
           <span>
             <span className={s.nm}>{current.name}</span>
             <span className={s.note}>{t(`themes.${current.id}`)}</span>
@@ -204,7 +226,7 @@ export function Settings() {
                     }}
                     onClick={() => pick(x.id)}
                   >
-                    <Thumb c={x.c} />
+                    <Thumb c={x.c} mode={mode} />
                     <span>
                       <span className={s.nm}>{x.name}</span>
                       <span className={s.note}>{t(`themes.${x.id}`)}</span>
@@ -215,6 +237,23 @@ export function Settings() {
           </div>
         </div>
         <div className={s.hr} />
+        <div className={s.row}>
+          <span>{t("mode")}</span>
+          <span className={s.lng}>
+            <span className={mode === "dark" ? s.on : ""}>{t("dark")}</span>
+            <button
+              type="button"
+              role="switch"
+              className={s.tg}
+              aria-checked={mode === "light"}
+              aria-label={`${t("mode")}: ${t(mode)}`}
+              onClick={() =>
+                setLook({ mode: mode === "dark" ? "light" : "dark" }, still)
+              }
+            />
+            <span className={mode === "light" ? s.on : ""}>{t("light")}</span>
+          </span>
+        </div>
         <div className={s.row}>
           <span>{t("lang")}</span>
           <span className={s.lng}>

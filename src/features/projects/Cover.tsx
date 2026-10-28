@@ -23,7 +23,7 @@ function paint(c: HTMLCanvasElement, id: string) {
     mode = Math.floor(r() * 3);
   ctx.setTransform(2, 0, 0, 2, 0, 0);
   ctx.clearRect(0, 0, 600, 260);
-  ctx.fillStyle = themeColor("cover", "#3d3d43");
+  ctx.fillStyle = themeColor("cover");
   ctx.beginPath();
   for (let y = 0; y < 26; y++)
     for (let x = 0; x < 72; x++) {

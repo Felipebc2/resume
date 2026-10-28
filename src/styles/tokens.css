@@ -1,22 +1,26 @@
 @theme {
-  --color-bg: #0e0e0f;
-  --color-panel: #161618;
-  --color-block: #202022;
-  --color-line: #34343a;
-  --color-line-2: #505056;
-  --color-fg: #e9e9ea;
-  --color-dim: #9a9a9f;
-  --color-faint: #6b6b70;
-  --color-l0: #1d1d20;
-  --color-l1: #36363c;
-  --color-l2: #5c5c63;
-  --color-l3: #9a9aa1;
-  --color-l4: #ececed;
-  --color-cover: #3d3d43;
-
-  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-nav: cubic-bezier(0.22, 0.8, 0.2, 1);
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Electric dark, the default. The real values come from the html[data-theme][data-mode] blocks below */
+  --color-bg: #0b0d12;
+  --color-panel: #161b26;
+  --color-block: #1d222d;
+  --color-line: #2b303a;
+  --color-line-2: #41444d;
+  --color-fg: #c0c0c0;
+  --color-dim: #8a8a8c;
+  --color-faint: #5e5f62;
+  --color-l0: #1a1e2a;
+  --color-l1: #1c294d;
+  --color-l2: #2c4488;
+  --color-l3: #3c60c4;
+  --color-l4: #4d7cff;
+  --color-cover: #1d2c54;
+  --color-primary: #4d7cff;
+  --color-primary-ink: #0b0d12;
+  --color-primary-text: #4d7cff;
+  --color-secondary: #2a2a2a;
+  --color-secondary-ink: #c0c0c0;
+  --color-secondary-text: #7c7c7c;
+  --color-ring: #4d7cff;
 }
 
 @theme inline {
@@ -29,109 +33,227 @@
 :root {
   --gut-l: max(20px, env(safe-area-inset-left, 0px));
   --gut-r: max(20px, env(safe-area-inset-right, 0px));
-  /* widest the Stack and Experience sections grow */
-  --content-w: 1560px;
+
+  /* type: 4 display levels + card, body and mono roles */
+  --t-hero: clamp(64px, 12vw, 180px); /* Born to BUILD. */
+  --t-moment: clamp(56px, 9vw, 132px); /* "Hi, I'm Felipe." */
+  --t-title: clamp(
+    44px,
+    5.4vw,
+    76px
+  ); /* This is my stack. / Let's build something. */
+  --t-sec-a: clamp(34px, 3.7vw, 52px); /* "My unique way" */
+  --t-sec-b: clamp(20px, 1.9vw, 27px); /* "to show" (italic) */
+  --t-sec-c: clamp(48px, 6vw, 84px); /* EXPERIENCE / PROJECTS (Anton) */
+  --t-card-l: clamp(32px, 3vw, 44px); /* featured card (NormAI, case) */
+  --t-card-m: 28px; /* cards and categories */
+  --t-card-s: 22px; /* small cards */
+  --t-body-l: clamp(17px, 1.4vw, 20px); /* intros */
+  --t-body: 15px; /* running text */
+  --t-body-s: 13px; /* captions, metadata */
+  --t-mono: 12px; /* code, chips, tags */
+  --t-label: 11px; /* uppercase labels; the floor */
+  --lh-display: 0.9;
+  --lh-title: 1.02;
+  --lh-body: 1.55;
+
+  /* space: 4px grid */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --section-y: clamp(96px, 12vh, 140px);
+  --container: 1560px;
+
+  --r-xs: 6px;
+  --r-s: 12px;
+  --r-m: 18px;
+  --r-l: 24px;
+  --r-pill: 999px;
+
+  /* motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1); /* everything */
+  --ease-inout: cubic-bezier(0.65, 0, 0.35, 1); /* line drawings */
+  --ease-pop: cubic-bezier(0.2, 0.9, 0.3, 1.4); /* micro pops only */
+  --d-1: 150ms; /* colour on hover */
+  --d-2: 250ms; /* hover transforms, switches */
+  --d-3: 400ms; /* popovers, menus, accordions */
+  --d-4: 700ms; /* section and card entrances */
+  --d-5: 1100ms; /* drawings */
 }
 
-/* ---------- themes: each one swaps tokens only. The @theme values above are mono, the wireframe.
-   Neutrals (bg … faint) stay neutral; colour lives in the role tokens:
-   action = what you click, accent = where you are, l0…l4 / cover / sig = data ---------- */
-:root {
-  --color-action: #e9e9ea;
-  --color-action-ink: #0e0e0f;
-  --color-accent: #e9e9ea;
-  --color-accent-ink: #000;
-  --color-sig: #e9e9ea;
-  --color-cta-bg: #1d1d20;
-  --color-cta-ink: #e9e9ea;
-  --color-cta-bg-h: #e9e9ea;
-  --color-cta-ink-h: #000;
-  --color-cta-tag: #9a9a9f;
-  --color-seal-h: rgba(255, 255, 255, 0.08);
-  --color-seal-ink: #e9e9ea;
+/* ---------- themes: 4 palettes × dark/light. Each block sets only its own colours;
+   everything else is derived here, so a palette is edited in one place.
+   In light mode primary and secondary swap. Fills (primary, secondary) always carry their -ink;
+   -text is the same hue nudged to ≥ 4.5:1 on bg, for type and thin strokes. ---------- */
+html {
+  --tinted: color-mix(
+    in srgb,
+    var(--color-primary) var(--tint),
+    var(--color-bg)
+  );
+  --color-panel: color-mix(in srgb, var(--color-fg) 4%, var(--tinted));
+  --color-block: color-mix(in srgb, var(--color-fg) 8%, var(--tinted));
+  --color-line: color-mix(in srgb, var(--color-fg) 16%, var(--tinted));
+  --color-line-2: color-mix(in srgb, var(--color-fg) 28%, var(--tinted));
+  --color-dim: color-mix(
+    in srgb,
+    var(--color-fg) var(--dim-p),
+    var(--color-bg)
+  );
+  --color-faint: color-mix(
+    in srgb,
+    var(--color-fg) var(--faint-p),
+    var(--color-bg)
+  );
+  /* data: from the surface up to the primary */
+  --color-l0: color-mix(in srgb, var(--color-fg) 6%, var(--tinted));
+  --color-l1: color-mix(
+    in srgb,
+    var(--color-primary-text) 25%,
+    var(--color-bg)
+  );
+  --color-l2: color-mix(
+    in srgb,
+    var(--color-primary-text) 50%,
+    var(--color-bg)
+  );
+  --color-l3: color-mix(
+    in srgb,
+    var(--color-primary-text) 75%,
+    var(--color-bg)
+  );
+  --color-l4: var(--color-primary-text);
+  --color-cover: color-mix(
+    in srgb,
+    var(--color-primary-text) 28%,
+    var(--color-bg)
+  );
+  --shadow-k: 1;
+  --inv: 1;
+  --icon-b: 1.15;
+  color-scheme: dark;
 }
-html[data-theme="blue"] {
-  --color-bg: #090b10;
-  --color-panel: #11141c;
-  --color-block: #171c28;
-  --color-line: #232a38;
-  --color-line-2: #3a4458;
-  --color-fg: #e6eaf2;
-  --color-dim: #8e97aa;
-  --color-faint: #5f687a;
-  --color-l0: #141a26;
-  --color-l1: #16344a;
-  --color-l2: #1b6b86;
-  --color-l3: #2fb6d4;
-  --color-l4: #5be7ff;
-  --color-cover: #1d3550;
-  --color-action: #4d7cff;
-  --color-action-ink: #fff;
-  --color-accent: #4d7cff;
-  --color-accent-ink: #fff;
-  --color-sig: #5be7ff;
-  --color-cta-bg: #4d7cff;
-  /* white on #4d7cff is 3.7:1; the theme's own ink clears 4.5:1 (5.3, hover 7.0) */
-  --color-cta-ink: #090b10;
-  --color-cta-bg-h: #6f95ff;
-  --color-cta-ink-h: #090b10;
-  --color-cta-tag: #090b10;
-  --color-seal-h: #4d7cff;
-  --color-seal-ink: #fff;
+html[data-mode="light"] {
+  --shadow-k: 0.3;
+  --inv: 0;
+  --icon-b: 0.6;
+  color-scheme: light;
 }
-html[data-theme="ember"] {
-  --color-bg: #0e0d0c;
-  --color-panel: #171513;
-  --color-block: #201d1a;
-  --color-line: #2e2a26;
-  --color-line-2: #4a443d;
-  --color-fg: #ede6da;
-  --color-dim: #a49b8e;
-  --color-faint: #6f675c;
-  --color-l0: #1a1816;
-  --color-l1: #3a332c;
-  --color-l2: #6b5d4f;
-  --color-l3: #a7957f;
-  --color-l4: #ede6da;
-  --color-cover: #3a332c;
-  --color-action: #ff6b3d;
-  --color-action-ink: #140804;
-  --color-accent: #ede6da;
-  --color-accent-ink: #140804;
-  --color-sig: #ede6da;
-  --color-cta-bg: #ff6b3d;
-  --color-cta-ink: #140804;
-  --color-cta-bg-h: #ff8a63;
-  --color-cta-ink-h: #140804;
-  --color-cta-tag: #140804;
-  --color-seal-h: #ff6b3d;
-  --color-seal-ink: #140804;
+html[data-theme="lemon"][data-mode="dark"] {
+  --color-bg: #171717;
+  --color-fg: #f4f3ee;
+  --color-primary: #fff21a;
+  --color-primary-ink: #171717;
+  --color-primary-text: #fff21a;
+  --color-secondary: #bfbcfc;
+  --color-secondary-ink: #171717;
+  --color-secondary-text: #bfbcfc;
+  --color-ring: #fff21a;
+  --tint: 2.5%;
+  --dim-p: 62%;
+  --faint-p: 42%;
 }
-html[data-theme="acid"] {
-  --color-bg: #0c0c0c;
-  --color-panel: #151515;
-  --color-block: #1e1e1e;
-  --color-line: #2c2c2c;
-  --color-line-2: #4a4a4a;
-  --color-fg: #f2f2f2;
-  --color-dim: #9c9c9c;
-  --color-faint: #6a6a6a;
-  --color-l0: #1b1b1b;
-  --color-l1: #333333;
-  --color-l2: #555555;
-  --color-l3: #8f8f8f;
-  --color-l4: #e6e6e6;
-  --color-cover: #333333;
-  --color-action: #d4ff3f;
-  --color-action-ink: #0c0c0c;
-  --color-accent: #d4ff3f;
-  --color-accent-ink: #0c0c0c;
-  --color-sig: #f2f2f2;
-  --color-cta-bg: #d4ff3f;
-  --color-cta-ink: #0c0c0c;
-  --color-cta-bg-h: #e2ff7a;
-  --color-cta-ink-h: #0c0c0c;
-  --color-cta-tag: #0c0c0c;
-  --color-seal-h: #d4ff3f;
-  --color-seal-ink: #0c0c0c;
+html[data-theme="lemon"][data-mode="light"] {
+  --color-bg: #f4f3ee;
+  --color-fg: #171717;
+  --color-primary: #bfbcfc;
+  --color-primary-ink: #171717;
+  --color-primary-text: #6b66a0;
+  --color-secondary: #fff21a;
+  --color-secondary-ink: #171717;
+  --color-secondary-text: #7d6d00;
+  --color-ring: #6b66a0;
+  --tint: 4%;
+  --dim-p: 66%;
+  --faint-p: 48%;
+}
+html[data-theme="deep"][data-mode="dark"] {
+  --color-bg: #120b12;
+  --color-fg: #dde3eb;
+  --color-primary: #3a0f34;
+  --color-primary-ink: #dde3eb;
+  --color-primary-text: #9e6c95;
+  --color-secondary: #eaaa00;
+  --color-secondary-ink: #120b12;
+  --color-secondary-text: #eaaa00;
+  --color-ring: #eaaa00;
+  --tint: 6%;
+  --dim-p: 62%;
+  --faint-p: 42%;
+}
+html[data-theme="deep"][data-mode="light"] {
+  --color-bg: #dde3eb;
+  --color-fg: #120b12;
+  --color-primary: #eaaa00;
+  --color-primary-ink: #120b12;
+  --color-primary-text: #915500;
+  --color-secondary: #3a0f34;
+  --color-secondary-ink: #dde3eb;
+  --color-secondary-text: #3a0f34;
+  --color-ring: #3a0f34;
+  --tint: 4%;
+  --dim-p: 66%;
+  --faint-p: 46%;
+}
+html[data-theme="electric"][data-mode="dark"] {
+  --color-bg: #0b0d12;
+  --color-fg: #c0c0c0;
+  --color-primary: #4d7cff;
+  --color-primary-ink: #0b0d12;
+  --color-primary-text: #4d7cff;
+  --color-secondary: #2a2a2a;
+  --color-secondary-ink: #c0c0c0;
+  --color-secondary-text: #7c7c7c;
+  --color-ring: #4d7cff;
+  --tint: 6%;
+  --dim-p: 70%;
+  --faint-p: 46%;
+}
+html[data-theme="electric"][data-mode="light"] {
+  --color-bg: #e3e4e7;
+  --color-fg: #0b0d12;
+  --color-primary: #2a2a2a;
+  --color-primary-ink: #e3e4e7;
+  --color-primary-text: #2a2a2a;
+  --color-secondary: #4d7cff;
+  --color-secondary-ink: #0b0d12;
+  --color-secondary-text: #3059d9;
+  --color-ring: #2a2a2a;
+  --tint: 6%;
+  --dim-p: 68%;
+  --faint-p: 46%;
+}
+html[data-theme="midnight"][data-mode="dark"] {
+  --color-bg: #1b1e4a;
+  --color-fg: #eeece6;
+  --color-primary: #afaea2;
+  --color-primary-ink: #1b1e4a;
+  --color-primary-text: #afaea2;
+  --color-secondary: #d21319;
+  --color-secondary-ink: #eeece6;
+  --color-secondary-text: #fc4a41;
+  --color-ring: #afaea2;
+  --tint: 6%;
+  --dim-p: 66%;
+  --faint-p: 42%;
+}
+html[data-theme="midnight"][data-mode="light"] {
+  --color-bg: #eeece6;
+  --color-fg: #1b1e4a;
+  --color-primary: #d21319;
+  --color-primary-ink: #eeece6;
+  --color-primary-text: #d21319;
+  --color-secondary: #afaea2;
+  --color-secondary-ink: #1b1e4a;
+  --color-secondary-text: #6b6a5f;
+  --color-ring: #d21319;
+  --tint: 3%;
+  --dim-p: 72%;
+  --faint-p: 50%;
 }

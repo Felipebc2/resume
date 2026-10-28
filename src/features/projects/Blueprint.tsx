@@ -45,7 +45,7 @@ export function Blueprint({
             markerHeight="7"
             orient="auto"
           >
-            <path d="M0 0L10 5L0 10z" fill="#8a8a90" />
+            <path d="M0 0L10 5L0 10z" style={{ fill: "var(--color-dim)" }} />
           </marker>
         </defs>
         {nodes

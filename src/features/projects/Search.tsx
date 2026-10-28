@@ -11,14 +11,13 @@ import {
   type RefObject,
 } from "react";
 import { filters, type Filter } from "@/content/projects";
-import { useStill } from "@/lib/motion";
+import { ease, ms, useStill } from "@/lib/motion";
 import type { Hit } from "./search";
 import type { Item } from "./useItems";
 import s from "./Projects.module.css";
 
 export type Row = { it: Item; m: Hit };
 
-const EASE = "cubic-bezier(.2,.8,.2,1)";
 const keep = (e: { preventDefault: () => void }) => e.preventDefault();
 const hl = (str: string, idx: number[]) =>
   str.split("").map((c, j) => (idx.includes(j) ? <mark key={j}>{c}</mark> : c));
@@ -69,12 +68,12 @@ export function Search({
             { opacity: 0, transform: "translateY(5px)" },
             { opacity: 1, transform: "none" },
           ],
-          { duration: 200, easing: EASE },
+          { duration: ms("--d-2"), easing: ease("--ease-out") },
         );
       else if (b !== a)
         r.animate(
           [{ transform: `translateY(${b - a}px)` }, { transform: "none" }],
-          { duration: 260, easing: EASE },
+          { duration: ms("--d-2"), easing: ease("--ease-out") },
         );
     });
   }, [view, open, still]);

@@ -1,37 +1,46 @@
 /* contact + about: reach-me cards, about card, Fourier signature */
 .ct {
-  /* derived from the theme (mono: #2c2c31 / #46464d) */
+  /* local shades, derived from the theme */
   --line: color-mix(in srgb, var(--color-line) 73%, var(--color-panel));
   --line-2: color-mix(in srgb, var(--color-line-2) 64%, var(--color-line));
   position: relative;
   overflow: hidden;
-  padding: clamp(110px, 14vh, 150px) var(--gut-r) clamp(80px, 11vh, 120px)
-    var(--gut-l);
+  /* extra top room so the ghost word clears the section edge */
+  --top: calc(var(--section-y) + var(--s-8));
+  padding: var(--top) var(--gut-r) var(--section-y) var(--gut-l);
   border-top: 1px solid var(--line);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
   background:
     radial-gradient(
       60% 48% at 50% 0%,
-      rgba(255, 255, 255, 0.085),
+      color-mix(in srgb, var(--color-fg) 8.5%, transparent),
       transparent 70%
     ),
-    linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 48px
-      48px,
-    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0
-      0 / 48px 48px,
+    linear-gradient(
+        color-mix(in srgb, var(--color-fg) 2.5%, transparent) 1px,
+        transparent 1px
+      )
+      0 0 / 48px 48px,
+    linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-fg) 2.5%, transparent) 1px,
+        transparent 1px
+      )
+      0 0 / 48px 48px,
     var(--color-bg);
 }
 .ghost {
   position: absolute;
   left: 50%;
-  top: clamp(36px, 5vh, 60px);
+  /* half its height above the heading, never past the section edge */
+  top: calc(var(--top) - 0.5em);
   transform: translateX(-50%);
   margin: 0;
   font-family: var(--font-serif);
   font-style: italic;
   font-size: clamp(100px, 19vw, 280px);
-  line-height: 0.85;
+  line-height: var(--lh-display);
   letter-spacing: -0.01em;
   white-space: nowrap;
   pointer-events: none;
@@ -39,8 +48,8 @@
   color: transparent;
   background: linear-gradient(
     180deg,
-    rgba(233, 233, 234, 0.22),
-    rgba(233, 233, 234, 0) 82%
+    color-mix(in srgb, var(--color-fg) 22%, transparent),
+    color-mix(in srgb, var(--color-fg) 0%, transparent) 82%
   );
   background-clip: text;
 }
@@ -54,19 +63,19 @@
 }
 .circ path {
   fill: none;
-  stroke: rgba(233, 233, 234, 0.22);
+  stroke: color-mix(in srgb, var(--color-fg) 22%, transparent);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 .circ .spark {
-  stroke: rgba(255, 255, 255, 0.9);
+  stroke: color-mix(in srgb, var(--color-fg) 90%, transparent);
   stroke-width: 1.4;
   stroke-dasharray: 0.1 2.2;
   animation: run 5.5s linear infinite;
 }
 /* pads: a ring and its fill, as round caps so they stay circles while the SVG stretches */
 .circ .pad {
-  stroke: rgba(233, 233, 234, 0.3);
+  stroke: color-mix(in srgb, var(--color-fg) 30%, transparent);
   stroke-width: 9;
   stroke-linecap: round;
 }
@@ -89,45 +98,49 @@
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: 22px;
+  gap: var(--s-5);
   max-width: 1080px;
   margin: 0 auto;
 }
 .left {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--s-4);
   min-width: 0;
 }
 .badge {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 6px 16px 6px 6px;
-  border-radius: 999px;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-4) var(--s-2) var(--s-2);
+  border-radius: var(--r-pill);
   border: 1px solid var(--line-2);
-  background: rgba(30, 30, 33, 0.7);
-  font-size: 13.5px;
+  background: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-block) 80%, var(--color-panel)) 70%,
+    transparent
+  );
+  font-size: var(--t-body-s);
   font-weight: 500;
 }
 .badge i {
   width: 28px;
   height: 28px;
-  border-radius: 50%;
+  border-radius: var(--r-pill);
   display: grid;
   place-items: center;
-  background: #2a2a2e;
+  background: color-mix(in srgb, var(--color-line) 50%, var(--color-block));
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-mono);
 }
 .left h2 {
   margin: 14px 0 0;
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(44px, 5.4vw, 72px);
-  line-height: 0.95;
+  font-size: var(--t-title);
+  line-height: var(--lh-display);
 }
 .left h2 span {
   font-family: var(--font-display);
@@ -143,27 +156,27 @@
 
 .cards {
   display: grid;
-  gap: 10px;
+  gap: var(--s-3);
   margin-top: auto;
-  padding-top: 22px;
+  padding-top: var(--s-5);
 }
 .cc {
   display: grid;
   grid-template-columns: 48px minmax(0, 1fr) 34px;
-  gap: 16px;
+  gap: var(--s-4);
   align-items: center;
-  padding: 14px;
-  border-radius: 18px;
+  padding: var(--s-4);
+  border-radius: var(--r-m);
   border: 1px solid var(--line);
-  /* two-colour mixes summing to 82% = 82% alpha (mono: rgba(28,28,31) → rgba(18,18,20)) */
+  /* two-colour mixes summing to 82% = 82% alpha */
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--color-block) 49.2%, var(--color-panel) 32.8%),
     color-mix(in srgb, var(--color-panel) 41%, var(--color-bg) 41%)
   );
   transition:
-    border-color 0.25s,
-    transform 0.3s var(--ease-out-soft);
+    border-color var(--d-2) var(--ease-out),
+    transform var(--d-2) var(--ease-out);
 }
 a.cc:hover,
 a.cc:focus-visible {
@@ -173,11 +186,11 @@ a.cc:focus-visible {
 .ic {
   width: 48px;
   height: 48px;
-  border-radius: 13px;
+  border-radius: var(--r-s);
   border: 1px solid var(--line-2);
   display: grid;
   place-items: center;
-  background: #141416;
+  background: color-mix(in srgb, var(--color-panel) 75%, var(--color-bg));
 }
 .ic svg {
   width: 22px;
@@ -194,7 +207,7 @@ a.cc:focus-visible {
 }
 .s {
   display: block;
-  font-size: 13.5px;
+  font-size: var(--t-body-s);
   color: var(--color-dim);
   white-space: nowrap;
   overflow: hidden;
@@ -203,28 +216,28 @@ a.cc:focus-visible {
 .go {
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background: #2a2a2e;
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--color-line) 50%, var(--color-block));
   display: grid;
   place-items: center;
-  font-size: 14px;
+  font-size: var(--t-body);
   transition:
-    background 0.25s,
-    color 0.25s,
-    transform 0.3s;
+    background var(--d-2) var(--ease-out),
+    color var(--d-2) var(--ease-out),
+    transform var(--d-2) var(--ease-out);
 }
 .cc:hover .go,
 .cc:focus-visible .go {
-  background: var(--color-action);
-  color: var(--color-action-ink);
+  background: var(--color-secondary);
+  color: var(--color-secondary-ink);
   transform: rotate(45deg);
 }
 .cv {
   align-self: flex-start;
   margin-top: 4px;
-  padding-bottom: 2px;
+  padding-bottom: var(--s-1);
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--t-mono);
   color: var(--color-dim);
   border-bottom: 1px dashed var(--line-2);
 }
@@ -236,9 +249,9 @@ a.cc:focus-visible {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  border-radius: 24px;
+  border-radius: var(--r-l);
   border: 1px solid var(--line-2);
-  /* 78% alpha (mono: rgba(20,20,22)) */
+  /* 78% alpha */
   background: color-mix(
     in srgb,
     var(--color-panel) 58.5%,
@@ -248,15 +261,15 @@ a.cc:focus-visible {
 }
 .txt {
   display: grid;
-  gap: 16px;
-  padding: 28px 28px 22px;
+  gap: var(--s-4);
+  padding: var(--s-6) var(--s-6) var(--s-5);
 }
 .k {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--s-3);
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: var(--t-label);
   color: var(--color-faint);
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -266,19 +279,19 @@ a.cc:focus-visible {
   max-width: 25ch;
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: clamp(28px, 2.8vw, 38px);
-  line-height: 1.05;
+  font-size: var(--t-card-l);
+  line-height: var(--lh-title);
 }
 .cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 26px;
+  gap: var(--s-4) var(--s-5);
 }
 .cols p {
   margin: 0;
-  color: #c6c6cb;
-  font-size: 14px;
-  line-height: 1.6;
+  color: color-mix(in srgb, var(--color-fg) 56%, var(--color-dim));
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
 }
 .cols b {
   color: var(--color-fg);
@@ -290,7 +303,7 @@ a.cc:focus-visible {
   flex: 1 1 auto;
   min-height: clamp(230px, 30vh, 320px);
   border-top: 1px solid var(--line);
-  background: color-mix(in srgb, var(--color-bg) 90%, #000);
+  background: var(--color-bg);
   overflow: hidden;
 }
 .art canvas {
@@ -305,12 +318,12 @@ a.cc:focus-visible {
   left: 14px;
   bottom: 12px;
   z-index: 2;
-  padding: 3px 9px;
-  border-radius: 999px;
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-pill);
   border: 1px solid var(--line);
-  background: rgba(12, 12, 13, 0.8);
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
   font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-size: var(--t-label);
   color: var(--color-dim);
 }
 .replay {
@@ -323,9 +336,9 @@ a.cc:focus-visible {
   width: 34px;
   height: 34px;
   padding: 0;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   border: 1px solid var(--line);
-  background: rgba(12, 12, 13, 0.8);
+  background: color-mix(in srgb, var(--color-bg) 80%, transparent);
   color: var(--color-dim);
   cursor: pointer;
 }
@@ -352,11 +365,11 @@ a.cc:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
   .txt {
-    padding: 22px 20px 18px;
+    padding: var(--s-5) var(--s-5) var(--s-4);
   }
   .cc {
     grid-template-columns: 44px minmax(0, 1fr) 32px;
-    gap: 12px;
+    gap: var(--s-3);
   }
   .ic {
     width: 44px;

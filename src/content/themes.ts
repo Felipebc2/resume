@@ -1,54 +1,28 @@
-/** Theme ids and the swatch each one shows in the settings menu. The tokens themselves live in styles/tokens.css. */
+/** The four palettes: primary, secondary and the two backgrounds. In light mode primary and secondary swap.
+    The full token set lives in styles/tokens.css; these hexes feed the settings-menu swatches. */
 export const themes = [
   {
-    id: "mono",
-    name: "Monochrome",
-    c: {
-      bg: "#0e0e0f",
-      surface: "#161618",
-      line: "#34343a",
-      text: "#e9e9ea",
-      dim: "#9a9a9f",
-      action: "#e9e9ea",
-    },
+    id: "lemon",
+    name: "Lemon",
+    c: { p: "#fff21a", s: "#bfbcfc", dark: "#171717", light: "#f4f3ee" },
   },
   {
-    id: "blue",
-    name: "Electric Blue",
-    c: {
-      bg: "#090b10",
-      surface: "#11141c",
-      line: "#232a38",
-      text: "#e6eaf2",
-      dim: "#8e97aa",
-      action: "#4d7cff",
-    },
+    id: "deep",
+    name: "Deep",
+    c: { p: "#3a0f34", s: "#eaaa00", dark: "#120b12", light: "#dde3eb" },
   },
   {
-    id: "ember",
-    name: "Ink & Ember",
-    c: {
-      bg: "#0e0d0c",
-      surface: "#171513",
-      line: "#2e2a26",
-      text: "#ede6da",
-      dim: "#a49b8e",
-      action: "#ff6b3d",
-    },
+    id: "electric",
+    name: "Electric",
+    c: { p: "#4d7cff", s: "#2a2a2a", dark: "#0b0d12", light: "#e3e4e7" },
   },
   {
-    id: "acid",
-    name: "Mono + Acid",
-    c: {
-      bg: "#0c0c0c",
-      surface: "#151515",
-      line: "#2c2c2c",
-      text: "#f2f2f2",
-      dim: "#9c9c9c",
-      action: "#d4ff3f",
-    },
+    id: "midnight",
+    name: "Midnight",
+    c: { p: "#afaea2", s: "#d21319", dark: "#1b1e4a", light: "#eeece6" },
   },
 ] as const;
 
 export type Theme = (typeof themes)[number]["id"];
-export const DEFAULT_THEME: Theme = "blue";
+export type Mode = "dark" | "light";
+export const DEFAULT_THEME: Theme = "electric";

@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import type { EntryId } from "@/content/experience";
+import { themeRgb } from "@/lib/theme";
 import { entries } from "./entries";
 import { useRepaint } from "./useFrames";
 import { useEntryText, type Card } from "./useEntryText";
@@ -44,13 +45,15 @@ function paintArt(cv: HTMLCanvasElement, art: string, seed: number) {
   o.textBaseline = "middle";
   o.fillText(art, w / 2, h * 0.54);
   const img = o.getImageData(0, 0, w, h);
+  const ink = themeRgb("fg"),
+    paper = themeRgb("panel");
   const d = img.data;
   for (let y = 0; y < h; y++)
     for (let x = 0; x < w; x++) {
       const k = (y * w + x) * 4;
       const l = (d[k] * 0.3 + d[k + 1] * 0.59 + d[k + 2] * 0.11) / 255;
       const on = l > (BAYER[(y % 8) * 8 + (x % 8)] + 0.5) / 64;
-      d[k] = d[k + 1] = d[k + 2] = on ? 233 : 22;
+      [d[k], d[k + 1], d[k + 2]] = on ? ink : paper;
       d[k + 3] = 255;
     }
   o.putImageData(img, 0, 0);

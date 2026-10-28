@@ -2,10 +2,6 @@
 @import "./tokens.css";
 @import "lenis/dist/lenis.css";
 
-:root {
-  color-scheme: dark;
-}
-
 html {
   scrollbar-color: var(--color-line-2) var(--color-bg);
 }
@@ -15,15 +11,15 @@ body {
   overflow-x: hidden;
   background: var(--color-bg);
   background-image: radial-gradient(
-    rgba(255, 255, 255, 0.045) 1px,
+    color-mix(in srgb, var(--color-primary-text) 7%, transparent) 1px,
     transparent 1.2px
   );
   background-size: 24px 24px;
   background-attachment: fixed;
   color: var(--color-fg);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
 }
 
 /* paints the notch / status-bar area behind the fixed header */
@@ -42,9 +38,9 @@ body::before {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-ring);
   outline-offset: 3px;
-  border-radius: 6px;
+  border-radius: var(--r-xs);
 }
 /* sections focused by in-page anchors (for screen readers / Tab order) need no ring */
 section[tabindex="-1"]:focus {
