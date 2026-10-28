@@ -140,7 +140,9 @@ button.chip:hover {
     "sharebite sharebite veritas veritas orbitas orbitas"
     "sharebite sharebite contratus contratus orbitas orbitas"
     "sharebite sharebite contratus contratus orbitas orbitas"
-    "airq airq slot1 slot1 slot2 slot3";
+    "airq airq stsw stsw stsw ekoparty"
+    "kernel kernel stsw stsw stsw ekoparty"
+    "kernel kernel sqlmap sqlmap tedax tedax";
 }
 .card {
   container-type: size;
@@ -226,13 +228,6 @@ button.chip:hover {
 }
 .big .meta .name {
   font-size: clamp(30px, 3.6vw, 44px);
-}
-.phCard {
-  border-style: dashed;
-  background: transparent;
-}
-.phCard .name {
-  color: var(--color-dim);
 }
 @container (max-height: 300px) {
   .meta .line {

@@ -291,7 +291,8 @@
         "data": "Data",
         "mobile": "Mobile",
         "science": "Science",
-        "other": "Other",
+        "security": "Security",
+        "systems": "Systems",
         "lab": "Lab notes"
       },
       "groups": {
@@ -317,8 +318,7 @@
         "stack": "Stack",
         "outcome": "Outcome"
       },
-      "tip": "click a stack to search for it",
-      "project": "Project"
+      "tip": "click a stack to search for it"
     },
     "auto": {
       "client": "Client",
@@ -637,14 +637,201 @@
           }
         }
       },
-      "slot1": {
-        "name": "Project A"
+      "stsw": {
+        "name": "Security & Testing",
+        "kind": "QA · Security",
+        "line": "Black-box, white-box and BDD suites in Java, plus OWASP labs.",
+        "problem": "One semester to cover black-box, white-box and behaviour-driven testing, then web security, with every assignment delivered as working code.",
+        "approach": "A small classifier tested three ways: Gherkin scenarios bound to Cucumber steps, JUnit suites for five coverage criteria measured with JaCoCo, and a TestNG suite with HTML reports. Security work ran as OWASP Top 10 labs on deliberately vulnerable training apps.",
+        "outcome": "5 BDD scenarios, 38 white-box tests and 22 TestNG tests, plus 10 security labs documented with evidence. TestNG was also presented to the class as a workshop.",
+        "nodes": {
+          "a": {
+            "label": "STSW course",
+            "sub": "Java · Maven",
+            "why": "Security & Software Testing at IDP. Each assignment is its own Maven project in a shared course repository."
+          },
+          "b": {
+            "label": "Cucumber",
+            "sub": "Gherkin · 5 scenarios",
+            "in": "BDD",
+            "why": "Behaviour written first in plain language, then bound to step code."
+          },
+          "c": {
+            "label": "White-box",
+            "sub": "JUnit · 38 tests",
+            "in": "coverage",
+            "why": "Statement, decision, condition, condition/decision and path coverage over the same logic, checked with JaCoCo."
+          },
+          "d": {
+            "label": "TestNG",
+            "sub": "22 tests · reports",
+            "in": "suite",
+            "why": "Grouped suites with HTML reports, researched and presented to the class as a workshop."
+          },
+          "e": {
+            "label": "Security labs",
+            "sub": "OWASP Top 10",
+            "in": "labs",
+            "why": "10 challenges on deliberately vulnerable training apps, each solved and documented with evidence."
+          }
+        }
       },
-      "slot2": {
-        "name": "Project B"
+      "ekoparty": {
+        "name": "Ekoparty CTF",
+        "kind": "CTF · Web3",
+        "badge": "4th place",
+        "line": "4th place in a five-hour CTF, as the team's Web3 specialist.",
+        "problem": "Ekoparty 2026's CTF: five hours, 32 challenges across seven categories, from malware and network traffic to smart contracts. We played as a team of two.",
+        "approach": "I took Web3 while my teammate took reverse engineering. Weeks before, I built a searchable library of 75 problem-to-method patterns across 12 categories, wired into an AI-assisted triage workflow, so time on the clock went to solving, not searching.",
+        "outcome": "Team nop finished 4th. My part: 3320 points, 11 solves and 2 first bloods, with every Web3 challenge solved. The writeups are public in English, Spanish and Portuguese, with live credentials redacted.",
+        "nodes": {
+          "a": {
+            "label": "Arsenal",
+            "sub": "75 patterns",
+            "why": "Built weeks ahead: each entry says how to recognise a kind of challenge and what has worked on it, searchable in seconds."
+          },
+          "b": {
+            "label": "Ekoparty",
+            "sub": "5 h · 32 challenges",
+            "in": "event",
+            "why": "Ekoparty 2026 CTF, October 9, 10:00 to 15:00, seven categories on one board."
+          },
+          "c": {
+            "label": "Web3",
+            "sub": "my category · 5/5",
+            "in": "track",
+            "why": "Smart-contract challenges: read the code and find what it allows that it shouldn't. All five solved."
+          },
+          "d": {
+            "label": "Scoreboard",
+            "sub": "4th · team nop",
+            "in": "points",
+            "why": "A team of two in 4th place. My part: 3320 points, 11 solves and 2 first bloods."
+          },
+          "e": {
+            "label": "Writeups",
+            "sub": "EN · ES · PT",
+            "in": "after",
+            "why": "Every solve written up on one template, in three languages, with live credentials redacted."
+          }
+        }
       },
-      "slot3": {
-        "name": "Project C"
+      "kernel": {
+        "name": "OS Internals",
+        "kind": "Systems · OS",
+        "line": "A bootloader, a patched kernel, a new syscall and x86 assembly.",
+        "problem": "Operating systems are usually learned from diagrams. This course asked for the real pieces, built and booted one by one.",
+        "approach": "A 512-byte real-mode bootloader that loads a kernel and jumps to it; Linux 6.6 patched, compiled and booted in QEMU on a BusyBox initramfs; a new system call that works with a character driver; and weekly x86 assembly exercises.",
+        "outcome": "Every piece boots in QEMU from a script or a Makefile, with per-step logs, plus 81 assembly files across 20 exercise sets.",
+        "nodes": {
+          "a": {
+            "label": "x86 Assembly",
+            "sub": "81 files · 20 sets",
+            "why": "Weekly exercises on registers, the stack and interrupts. The base for everything to the right."
+          },
+          "b": {
+            "label": "Bootloader",
+            "sub": "512 B · real mode",
+            "in": "boot",
+            "why": "One boot sector that loads a kernel from disk, passes a value in a register and jumps to it."
+          },
+          "c": {
+            "label": "Linux 6.6",
+            "sub": "patched · QEMU",
+            "in": "next",
+            "why": "Kernel compiled from source with a patch applied, booted in QEMU."
+          },
+          "d": {
+            "label": "Syscall",
+            "sub": "new · kernel space",
+            "in": "syscall",
+            "why": "A new system call that prints from kernel space and works with a character driver."
+          },
+          "e": {
+            "label": "initramfs",
+            "sub": "BusyBox · static C",
+            "in": "init",
+            "why": "Minimal userspace: a static C program calls into the kernel and the answer shows up in dmesg."
+          }
+        }
+      },
+      "sqlmap": {
+        "name": "SQLMap Seminar",
+        "kind": "Seminar · Security",
+        "line": "Automated SQL injection assessment, demoed end to end in a lab.",
+        "problem": "Show a class how automated vulnerability assessment works, live, without touching any system we weren't allowed to test.",
+        "approach": "A deliberately vulnerable app runs in Docker as the only target. A Makefile drives every step, alone or chained, and a small Flask + Next.js console runs the same steps in front of the class. The assessment repeats across four difficulty levels.",
+        "outcome": "A reproducible demo in one command, with docs, a timed script and slides. The hardest level uses prepared statements and holds, which closes the talk on the fix.",
+        "nodes": {
+          "a": {
+            "label": "Console",
+            "sub": "Next.js",
+            "why": "One button per step and the tool's output live, so the class follows without reading a terminal."
+          },
+          "b": {
+            "label": "Flask",
+            "sub": "backend",
+            "in": "HTTP",
+            "why": "Thin wrapper that runs the same Make targets the terminal uses."
+          },
+          "c": {
+            "label": "Makefile",
+            "sub": "scripts",
+            "in": "make",
+            "why": "Every step runs alone or chained in one command, so the demo is reproducible."
+          },
+          "d": {
+            "label": "SQLMap",
+            "sub": "automated assessment",
+            "in": "run",
+            "why": "Open-source scanner that finds and confirms the injection on its own."
+          },
+          "e": {
+            "label": "DVWA",
+            "sub": "Docker · 4 levels",
+            "in": "target",
+            "why": "Deliberately vulnerable app in a container, the only target. Its hardest level uses prepared statements and holds."
+          }
+        }
+      },
+      "tedax": {
+        "name": "Tedax",
+        "kind": "Game · Concurrency",
+        "line": "Terminal bomb-defusal game in C where every role is a thread.",
+        "problem": "A concurrent programming project: a bomb squad where modules, defusers and benches compete for time, with no races or deadlocks.",
+        "approach": "Each role runs in its own pthread: a generator posts modules, defuser threads take benches, a coordinator parses commands and a display thread redraws the ncurses UI. One mutex guards the game state, and condition variables wake threads on new modules, free benches and screen updates.",
+        "outcome": "A playable terminal game with three difficulty levels, a queue per defuser and optional music through SDL2_mixer, built with a classmate.",
+        "nodes": {
+          "a": {
+            "label": "Player",
+            "sub": "terminal",
+            "why": "Types short commands that pick a defuser, a bench and a module, or leaves them out for defaults."
+          },
+          "b": {
+            "label": "Coordinator",
+            "sub": "thread",
+            "in": "command",
+            "why": "Parses each command, fills in the defaults and hands out the work."
+          },
+          "c": {
+            "label": "Defusers",
+            "sub": "one thread each",
+            "in": "assign",
+            "why": "Each defuser holds a bench while it works, with at most one job queued."
+          },
+          "d": {
+            "label": "Game state",
+            "sub": "mutex · conds",
+            "in": "lock",
+            "why": "One mutex guards the state. Condition variables wake threads instead of polling."
+          },
+          "e": {
+            "label": "ncurses UI",
+            "sub": "display thread",
+            "in": "redraw",
+            "why": "Redraws when signalled, so the screen never shows a half-updated state."
+          }
+        }
       }
     },
     "ba": {

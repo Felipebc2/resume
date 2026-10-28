@@ -295,7 +295,8 @@
         "data": "Dados",
         "mobile": "Mobile",
         "science": "Ciência",
-        "other": "Outros",
+        "security": "Segurança",
+        "systems": "Sistemas",
         "lab": "Notas de lab"
       },
       "groups": {
@@ -321,8 +322,7 @@
         "stack": "Stack",
         "outcome": "Resultado"
       },
-      "tip": "clique numa stack para buscá-la",
-      "project": "Projeto"
+      "tip": "clique numa stack para buscá-la"
     },
     "auto": {
       "client": "Cliente",
@@ -641,14 +641,201 @@
           }
         }
       },
-      "slot1": {
-        "name": "Projeto A"
+      "stsw": {
+        "name": "Segurança & Testes",
+        "kind": "QA · Segurança",
+        "line": "Suítes black-box, white-box e BDD em Java, mais labs OWASP.",
+        "problem": "Um semestre para cobrir testes black-box, white-box e orientados a comportamento, depois segurança web, com cada atividade entregue como código funcionando.",
+        "approach": "Um classificador pequeno testado de três formas: cenários Gherkin ligados a steps do Cucumber, suítes JUnit para cinco critérios de cobertura medidos com JaCoCo e uma suíte TestNG com relatórios HTML. A parte de segurança foi feita em labs do OWASP Top 10, em aplicações de treino vulneráveis de propósito.",
+        "outcome": "5 cenários BDD, 38 testes white-box e 22 testes TestNG, mais 10 labs de segurança documentados com evidências. O TestNG também foi apresentado à turma como workshop.",
+        "nodes": {
+          "a": {
+            "label": "Disciplina STSW",
+            "sub": "Java · Maven",
+            "why": "Segurança e Teste de Software no IDP. Cada atividade é um projeto Maven próprio, num repositório compartilhado da disciplina."
+          },
+          "b": {
+            "label": "Cucumber",
+            "sub": "Gherkin · 5 cenários",
+            "in": "BDD",
+            "why": "O comportamento é escrito primeiro em linguagem natural e depois ligado ao código dos steps."
+          },
+          "c": {
+            "label": "White-box",
+            "sub": "JUnit · 38 testes",
+            "in": "cobertura",
+            "why": "Cobertura de comando, decisão, condição, condição/decisão e caminho sobre a mesma lógica, conferida com JaCoCo."
+          },
+          "d": {
+            "label": "TestNG",
+            "sub": "22 testes · relatórios",
+            "in": "suíte",
+            "why": "Suítes agrupadas com relatórios HTML, pesquisadas e apresentadas à turma como workshop."
+          },
+          "e": {
+            "label": "Labs de segurança",
+            "sub": "OWASP Top 10",
+            "in": "labs",
+            "why": "10 desafios em aplicações de treino vulneráveis de propósito, cada um resolvido e documentado com evidências."
+          }
+        }
       },
-      "slot2": {
-        "name": "Projeto B"
+      "ekoparty": {
+        "name": "Ekoparty CTF",
+        "kind": "CTF · Web3",
+        "badge": "4º lugar",
+        "line": "4º lugar num CTF de cinco horas, como especialista em Web3 do time.",
+        "problem": "O CTF da Ekoparty 2026: cinco horas, 32 desafios em sete categorias, de malware e tráfego de rede a smart contracts. Jogamos em dupla.",
+        "approach": "Fiquei com Web3 e meu parceiro com engenharia reversa. Semanas antes, montei um acervo pesquisável de 75 padrões de problema e método em 12 categorias, ligado a um fluxo de triagem assistido por IA, para o tempo de prova ir para resolver, não para procurar.",
+        "outcome": "O time nop terminou em 4º. Minha parte: 3320 pontos, 11 solves e 2 first bloods, com todos os desafios de Web3 resolvidos. Os writeups são públicos em inglês, espanhol e português, com as credenciais ativas removidas.",
+        "nodes": {
+          "a": {
+            "label": "Arsenal",
+            "sub": "75 padrões",
+            "why": "Montado semanas antes: cada entrada diz como reconhecer um tipo de desafio e o que já funcionou nele, pesquisável em segundos."
+          },
+          "b": {
+            "label": "Ekoparty",
+            "sub": "5 h · 32 desafios",
+            "in": "prova",
+            "why": "CTF da Ekoparty 2026, 9 de outubro, das 10h às 15h, sete categorias no mesmo placar."
+          },
+          "c": {
+            "label": "Web3",
+            "sub": "minha categoria · 5/5",
+            "in": "categoria",
+            "why": "Desafios de smart contracts: ler o código e achar o que ele permite e não deveria. Todos os cinco resolvidos."
+          },
+          "d": {
+            "label": "Placar",
+            "sub": "4º · time nop",
+            "in": "pontos",
+            "why": "Uma dupla em 4º lugar. Minha parte: 3320 pontos, 11 solves e 2 first bloods."
+          },
+          "e": {
+            "label": "Writeups",
+            "sub": "EN · ES · PT",
+            "in": "depois",
+            "why": "Cada desafio resolvido documentado no mesmo template, em três idiomas, com as credenciais ativas removidas."
+          }
+        }
       },
-      "slot3": {
-        "name": "Projeto C"
+      "kernel": {
+        "name": "Por dentro do SO",
+        "kind": "Sistemas · SO",
+        "line": "Um bootloader, um kernel modificado, uma syscall nova e assembly x86.",
+        "problem": "Sistemas operacionais costumam ser aprendidos por diagramas. Esta disciplina pediu as peças de verdade, construídas e bootadas uma a uma.",
+        "approach": "Um bootloader de 512 bytes em modo real que carrega um kernel e salta para ele; o Linux 6.6 com patch, compilado e bootado no QEMU sobre um initramfs com BusyBox; uma chamada de sistema nova que trabalha com um char driver; e exercícios semanais de assembly x86.",
+        "outcome": "Cada peça boota no QEMU a partir de um script ou Makefile, com log por etapa, mais 81 arquivos de assembly em 20 listas de exercícios.",
+        "nodes": {
+          "a": {
+            "label": "Assembly x86",
+            "sub": "81 arquivos · 20 listas",
+            "why": "Exercícios semanais de registradores, pilha e interrupções. A base de tudo o que vem à direita."
+          },
+          "b": {
+            "label": "Bootloader",
+            "sub": "512 B · modo real",
+            "in": "boot",
+            "why": "Um setor de boot que carrega um kernel do disco, passa um valor num registrador e salta para ele."
+          },
+          "c": {
+            "label": "Linux 6.6",
+            "sub": "com patch · QEMU",
+            "in": "depois",
+            "why": "Kernel compilado do código-fonte com um patch aplicado, bootado no QEMU."
+          },
+          "d": {
+            "label": "Syscall",
+            "sub": "nova · kernel space",
+            "in": "syscall",
+            "why": "Uma chamada de sistema nova que imprime a partir do kernel e trabalha com um char driver."
+          },
+          "e": {
+            "label": "initramfs",
+            "sub": "BusyBox · C estático",
+            "in": "init",
+            "why": "Userspace mínimo: um programa C estático chama o kernel e a resposta aparece no dmesg."
+          }
+        }
+      },
+      "sqlmap": {
+        "name": "Seminário SQLMap",
+        "kind": "Seminário · Segurança",
+        "line": "Avaliação automatizada de SQL injection, demonstrada de ponta a ponta num lab.",
+        "problem": "Mostrar à turma, ao vivo, como funciona a avaliação automatizada de vulnerabilidades, sem tocar em nenhum sistema que não tínhamos permissão para testar.",
+        "approach": "Uma aplicação vulnerável de propósito roda no Docker como único alvo. Um Makefile conduz cada etapa, sozinha ou encadeada, e um pequeno console em Flask + Next.js roda as mesmas etapas na frente da turma. A avaliação se repete em quatro níveis de dificuldade.",
+        "outcome": "Uma demo reproduzível em um comando, com documentação, roteiro cronometrado e slides. O nível mais difícil usa prepared statements e resiste, o que fecha a apresentação na correção.",
+        "nodes": {
+          "a": {
+            "label": "Console",
+            "sub": "Next.js",
+            "why": "Um botão por etapa e a saída da ferramenta ao vivo, para a turma acompanhar sem ler um terminal."
+          },
+          "b": {
+            "label": "Flask",
+            "sub": "backend",
+            "in": "HTTP",
+            "why": "Camada fina que roda os mesmos alvos do Make usados no terminal."
+          },
+          "c": {
+            "label": "Makefile",
+            "sub": "scripts",
+            "in": "make",
+            "why": "Cada etapa roda sozinha ou encadeada em um comando, então a demo é reproduzível."
+          },
+          "d": {
+            "label": "SQLMap",
+            "sub": "avaliação automatizada",
+            "in": "executa",
+            "why": "Scanner open source que encontra e confirma a injeção sozinho."
+          },
+          "e": {
+            "label": "DVWA",
+            "sub": "Docker · 4 níveis",
+            "in": "alvo",
+            "why": "Aplicação vulnerável de propósito num container, o único alvo. O nível mais difícil usa prepared statements e resiste."
+          }
+        }
+      },
+      "tedax": {
+        "name": "Tedax",
+        "kind": "Jogo · Concorrência",
+        "line": "Jogo de desarmar bombas no terminal, em C, onde cada papel é uma thread.",
+        "problem": "Um projeto de programação concorrente: um esquadrão antibomba em que módulos, tedax e bancadas disputam tempo, sem condições de corrida nem deadlocks.",
+        "approach": "Cada papel roda na sua própria pthread: um gerador publica módulos, threads de tedax ocupam bancadas, um coordenador interpreta os comandos e uma thread de exibição redesenha a interface ncurses. Um mutex protege o estado do jogo, e variáveis de condição acordam as threads quando surge um módulo, quando uma bancada libera e quando a tela muda.",
+        "outcome": "Um jogo jogável no terminal, com três níveis de dificuldade, fila por tedax e música opcional via SDL2_mixer, feito em dupla.",
+        "nodes": {
+          "a": {
+            "label": "Jogador",
+            "sub": "terminal",
+            "why": "Digita comandos curtos que escolhem tedax, bancada e módulo, ou os omite para usar os padrões."
+          },
+          "b": {
+            "label": "Coordenador",
+            "sub": "thread",
+            "in": "comando",
+            "why": "Interpreta cada comando, completa os padrões e distribui o trabalho."
+          },
+          "c": {
+            "label": "Tedax",
+            "sub": "uma thread cada",
+            "in": "atribui",
+            "why": "Cada tedax ocupa uma bancada enquanto trabalha, com no máximo um módulo na fila."
+          },
+          "d": {
+            "label": "Estado do jogo",
+            "sub": "mutex · conds",
+            "in": "lock",
+            "why": "Um mutex protege o estado. Variáveis de condição acordam as threads em vez de ficar consultando."
+          },
+          "e": {
+            "label": "Interface ncurses",
+            "sub": "thread de exibição",
+            "in": "redesenha",
+            "why": "Redesenha quando sinalizada, então a tela nunca mostra um estado pela metade."
+          }
+        }
       }
     },
     "ba": {

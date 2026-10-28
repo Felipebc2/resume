@@ -203,24 +203,18 @@ export function Case({
               {k === "stack" ? (
                 <>
                   <span className={s.tags}>
-                    {item.stack.map((x) =>
-                      item.ph ? (
-                        <span key={x} className={s.chip}>
-                          {x}
-                        </span>
-                      ) : (
-                        <button
-                          key={x}
-                          type="button"
-                          className={s.chip}
-                          onClick={() => onStack(x)}
-                        >
-                          {x}
-                        </button>
-                      ),
-                    )}
+                    {item.stack.map((x) => (
+                      <button
+                        key={x}
+                        type="button"
+                        className={s.chip}
+                        onClick={() => onStack(x)}
+                      >
+                        {x}
+                      </button>
+                    ))}
                   </span>
-                  {!item.ph && <span className={s.tip}>{t("case.tip")}</span>}
+                  <span className={s.tip}>{t("case.tip")}</span>
                 </>
               ) : (
                 <p className={item[k] ? undefined : s.ph}>{item[k] || tbd}</p>

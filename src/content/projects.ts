@@ -5,7 +5,7 @@ type M = typeof messages.Projects;
 export type ProjectId = keyof M["items"];
 export type LabId = keyof M["labs"];
 export type Cat =
-  "ai" | "web" | "data" | "mobile" | "science" | "other" | "lab";
+  "ai" | "web" | "data" | "mobile" | "science" | "security" | "systems" | "lab";
 export type Filter = "all" | Cat;
 
 export const filters: Filter[] = [
@@ -15,7 +15,8 @@ export const filters: Filter[] = [
   "data",
   "mobile",
   "science",
-  "other",
+  "security",
+  "systems",
   "lab",
 ];
 
@@ -37,8 +38,6 @@ export type Project = {
   stack: string[];
   /** without one, the case draws Client → stack[0..2] */
   bp?: Blueprint;
-  /** empty slot waiting for a real project */
-  ph?: true;
 };
 
 /** bento order; desktop placement lives in grid-template-areas (Projects.module.css) */
@@ -157,31 +156,79 @@ export const projects: Project[] = [
     },
   },
   {
-    id: "slot1",
-    cat: ["other"],
-    year: "—",
-    art: "A",
-    mob: [1, 1],
-    stack: [],
-    ph: true,
-  },
-  {
-    id: "slot2",
-    cat: ["other"],
-    year: "—",
-    art: "B",
-    mob: [1, 1],
-    stack: [],
-    ph: true,
-  },
-  {
-    id: "slot3",
-    cat: ["other"],
-    year: "—",
-    art: "C",
+    id: "stsw",
+    cat: ["security"],
+    year: "2026",
+    art: "QA",
     mob: [2, 1],
-    stack: [],
-    ph: true,
+    stack: ["Java", "JUnit", "Cucumber", "TestNG", "JaCoCo", "Maven"],
+    bp: {
+      a: [0, 0],
+      b: [1, 0, "a"],
+      c: [2, 0, "b"],
+      d: [3, 0, "c"],
+      e: [0, 1, "a"],
+    },
+  },
+  {
+    id: "ekoparty",
+    cat: ["security"],
+    year: "2026",
+    art: "CTF",
+    mob: [1, 2],
+    stack: ["Web3", "Solidity", "Python"],
+    bp: {
+      a: [0, 0],
+      b: [1, 0, "a"],
+      c: [2, 0, "b"],
+      d: [3, 0, "c"],
+      e: [1, 1, "b"],
+    },
+  },
+  {
+    id: "kernel",
+    cat: ["systems"],
+    year: "2026",
+    art: "BOOT",
+    mob: [1, 1],
+    stack: ["C", "x86 Assembly", "Linux", "QEMU", "BusyBox"],
+    bp: {
+      a: [0, 0],
+      b: [1, 0, "a"],
+      c: [2, 0, "b"],
+      d: [3, 0, "c"],
+      e: [2, 1, "c"],
+    },
+  },
+  {
+    id: "sqlmap",
+    cat: ["security"],
+    year: "2026",
+    art: "SQLi",
+    mob: [1, 1],
+    stack: ["SQLMap", "Docker", "Flask", "Next.js", "Make"],
+    bp: {
+      a: [0, 0],
+      b: [1, 0, "a"],
+      c: [2, 0, "b"],
+      d: [3, 0, "c"],
+      e: [3, 1, "d"],
+    },
+  },
+  {
+    id: "tedax",
+    cat: ["systems"],
+    year: "2025",
+    art: "BOOM",
+    mob: [2, 1],
+    stack: ["C", "pthreads", "ncurses", "SDL2"],
+    bp: {
+      a: [0, 0],
+      b: [1, 0, "a"],
+      c: [2, 0, "b"],
+      d: [3, 0, "c"],
+      e: [3, 1, "d"],
+    },
   },
 ];
 

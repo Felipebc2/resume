@@ -108,7 +108,6 @@ export function Board() {
               s.card,
               it.media ? "" : s.flat,
               it.id === "normai" ? s.big : "",
-              it.ph ? s.phCard : "",
               hits?.has(it.id) ? s.hit : "",
             ].join(" ")}
             style={
@@ -140,16 +139,12 @@ export function Board() {
             ) : (
               <>
                 <span className={s.top}>
-                  <span className={s.chip}>
-                    {it.ph ? t("case.project") : it.kind.split(" · ")[0]}
-                  </span>
+                  <span className={s.chip}>{it.kind.split(" · ")[0]}</span>
                   <span className={s.yr}>{it.year}</span>
                 </span>
                 <span className={s.mid}>
                   <span className={s.name}>{it.name}</span>
-                  <span className={`${s.line} ${it.ph ? s.ph : ""}`}>
-                    {it.line}
-                  </span>
+                  <span className={s.line}>{it.line}</span>
                 </span>
                 <Tags list={it.stack} />
               </>
