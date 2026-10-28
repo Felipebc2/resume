@@ -164,7 +164,8 @@
   gap: 10px;
   padding: 12px 14px 12px 18px;
   border-radius: 12px;
-  background: #1d1d20;
+  background: var(--color-cta-bg);
+  color: var(--color-cta-ink);
   border: 1px solid var(--color-line-2);
   font-size: 14.5px;
   font-weight: 500;
@@ -183,8 +184,9 @@
   text-transform: uppercase;
   padding: 3px 7px;
   border-radius: 6px;
-  background: #2c2c31;
-  color: var(--color-dim);
+  /* mono: the old #2c2c31 chip */
+  background: color-mix(in srgb, var(--color-cta-ink) 8%, var(--color-cta-bg));
+  color: var(--color-cta-tag);
   transition:
     background 0.25s,
     color 0.25s;
@@ -194,15 +196,15 @@
 }
 .c:hover .cta,
 .cta:focus-visible {
-  background: var(--color-fg);
-  color: #000;
-  border-color: var(--color-fg);
+  background: var(--color-cta-bg-h);
+  color: var(--color-cta-ink-h);
+  border-color: var(--color-cta-bg-h);
   transform: translateY(-1px);
 }
 .c:hover .tag,
 .cta:focus-visible .tag {
-  background: #000;
-  color: var(--color-fg);
+  background: var(--color-cta-ink-h);
+  color: var(--color-cta-bg-h);
 }
 .c:hover .ar,
 .cta:focus-visible .ar {
@@ -218,7 +220,7 @@
 }
 .c:hover .wire,
 .c:focus-within .wire {
-  background: var(--color-fg);
+  background: var(--color-action);
 }
 
 .nav {

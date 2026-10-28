@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { sections } from "@/content/sections";
 import { clamp } from "@/lib/math";
@@ -8,6 +8,7 @@ import s from "./Header.module.css";
 
 export function Nav() {
   const t = useTranslations("Header");
+  const locale = useLocale();
   const [active, setActive] = useState(-1);
   const nav = useRef<HTMLElement>(null);
   const ind = useRef<HTMLSpanElement>(null);
@@ -61,7 +62,7 @@ export function Nav() {
     const ro = new ResizeObserver(place);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [active]);
+  }, [active, locale]); // new labels, new widths
 
   return (
     <nav ref={nav} className={s.nav} aria-label={t("nav")}>

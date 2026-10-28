@@ -1,12 +1,14 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import { profile } from "@/content/profile";
 import { GithubSeal } from "./GithubSeal";
 import { HeroLeft } from "./HeroLeft";
 import { RoleRoller } from "./RoleRoller";
 import s from "./Hero.module.css";
 
-export async function Hero() {
-  const t = await getTranslations("Hero");
+export function Hero() {
+  const t = useTranslations("Hero");
   const { links, contacts } = profile;
   return (
     <section className={s.hero} id="top" aria-label={t("label")}>

@@ -1,4 +1,6 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { invertedIcons, stack } from "@/content/stack";
 import { RevealFrame } from "./RevealFrame";
@@ -14,8 +16,8 @@ const rightColumn = stack.reduce<{ col: number; right: boolean[] }>(
   { col: 0, right: [] },
 ).right;
 
-export async function StackList() {
-  const t = await getTranslations("Stack");
+export function StackList() {
+  const t = useTranslations("Stack");
   return (
     <section className={s.stacklist} id="stacklist" aria-label={t("listLabel")}>
       <RevealFrame>

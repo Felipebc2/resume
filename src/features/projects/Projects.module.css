@@ -1,7 +1,6 @@
 /* projects: search + magic bento + case view + before/after */
 .pj {
   padding: clamp(110px, 14vh, 150px) var(--gut-r) 120px var(--gut-l);
-  border-top: 1px solid var(--color-line);
 }
 .inner {
   max-width: 1120px;
@@ -15,12 +14,13 @@
   margin-bottom: 28px;
 }
 
-/* the case <dialog> sits in the top layer but still inherits these */
+/* the case <dialog> sits in the top layer but still inherits these.
+   Shades derived from the theme tokens (in mono they land on the old #141416 / #1a1a1d / #2f2f35 / #4a4a51) */
 .root {
-  --panel: #141416;
-  --panel-2: #1a1a1d;
-  --line: #2f2f35;
-  --line-2: #4a4a51;
+  --panel: color-mix(in srgb, var(--color-panel) 75%, var(--color-bg));
+  --panel-2: color-mix(in srgb, var(--color-block) 40%, var(--color-panel));
+  --line: color-mix(in srgb, var(--color-line) 83%, var(--color-panel));
+  --line-2: color-mix(in srgb, var(--color-line-2) 79%, var(--color-line));
   font-size: 15px;
   line-height: 1.55;
 }
@@ -262,7 +262,7 @@ button.chip:hover {
   transform: scale(0.985);
 }
 .filtering .hit {
-  border-color: var(--color-fg);
+  border-color: var(--color-accent);
 }
 
 /* search bar + results dropdown */

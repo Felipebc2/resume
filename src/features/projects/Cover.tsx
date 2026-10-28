@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
+import { onTheme, themeColor } from "@/lib/theme";
 import type { Item } from "./useItems";
 import s from "./Projects.module.css";
 
@@ -21,7 +22,8 @@ function paint(c: HTMLCanvasElement, id: string) {
     fq = 2 + r() * 4,
     mode = Math.floor(r() * 3);
   ctx.setTransform(2, 0, 0, 2, 0, 0);
-  ctx.fillStyle = "#3d3d43";
+  ctx.clearRect(0, 0, 600, 260);
+  ctx.fillStyle = themeColor("cover", "#3d3d43");
   ctx.beginPath();
   for (let y = 0; y < 26; y++)
     for (let x = 0; x < 72; x++) {
@@ -48,7 +50,9 @@ export function Cover({ item, word = true }: { item: Item; word?: boolean }) {
   const t = useTranslations("Projects.media");
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    if (ref.current) paint(ref.current, item.id);
+    const draw = () => ref.current && paint(ref.current, item.id);
+    draw();
+    return onTheme(draw);
   }, [item.id]);
 
   return (

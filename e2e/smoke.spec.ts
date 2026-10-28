@@ -49,11 +49,28 @@ test("reduced motion starts with animations off", async ({ page }) => {
   await expect(html).not.toHaveAttribute("data-still");
 });
 
-test("Portuguese lives under /pt and English has no prefix", async ({
+test("settings switch the theme and the language in place", async ({
   page,
 }) => {
-  await page.goto("/pt");
-  await expect(page.locator("html")).toHaveAttribute("lang", "pt");
-  await page.goto("/en");
+  await page.goto("/");
+  const html = page.locator("html");
+  await expect(html).toHaveAttribute("data-theme", "blue");
+  await page.getByRole("button", { name: "Settings" }).click();
+  const menu = page.getByRole("dialog", { name: "Settings" });
+  await menu.getByRole("button", { name: /^Theme:/ }).click();
+  await menu.getByRole("radio", { name: /Ink & Ember/ }).click();
+  await expect(html).toHaveAttribute("data-theme", "ember");
+  await menu.getByRole("switch").click();
+  await expect(html).toHaveAttribute("lang", "pt-BR");
+  await expect(
+    page.getByRole("navigation", { name: "Seções" }).getByRole("link", {
+      name: "Projetos",
+    }),
+  ).toBeVisible();
   await expect(page).toHaveURL(/\/$/);
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "ember");
+  await expect(html).toHaveAttribute("lang", "pt-BR");
 });

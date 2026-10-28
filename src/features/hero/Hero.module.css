@@ -65,7 +65,7 @@
 }
 .links a:hover {
   color: var(--color-fg);
-  border-color: var(--color-fg);
+  border-color: var(--color-action);
 }
 .links .cv {
   color: var(--color-faint);
@@ -186,14 +186,18 @@
   transform: translate(-50%, -50%);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 50%;
-  transition: background 0.25s;
+  color: var(--color-fg);
+  transition:
+    background 0.25s,
+    color 0.25s;
 }
 .core svg {
   width: 48%;
   height: 48%;
 }
 .seal:hover .core {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--color-seal-h);
+  color: var(--color-seal-ink);
 }
 @keyframes spin {
   to {

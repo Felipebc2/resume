@@ -19,6 +19,20 @@
     "enable": "Turn animations on",
     "dismiss": "Dismiss notice"
   },
+  "Settings": {
+    "label": "Settings",
+    "theme": "Theme",
+    "more": "{count} more",
+    "lang": "Language",
+    "langName": "English",
+    "saved": "saved on this device",
+    "themes": {
+      "mono": "the wireframe, pure grey",
+      "blue": "default · action + data",
+      "ember": "warm, editorial",
+      "acid": "black & white, one spark"
+    }
+  },
   "Hero": {
     "label": "Intro",
     "titleTop": "Born to",

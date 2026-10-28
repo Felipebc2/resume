@@ -1,7 +1,8 @@
 /* contact + about: reach-me cards, about card, Fourier signature */
 .ct {
-  --line: #2c2c31;
-  --line-2: #46464d;
+  /* derived from the theme (mono: #2c2c31 / #46464d) */
+  --line: color-mix(in srgb, var(--color-line) 73%, var(--color-panel));
+  --line-2: color-mix(in srgb, var(--color-line-2) 64%, var(--color-line));
   position: relative;
   overflow: hidden;
   padding: clamp(110px, 14vh, 150px) var(--gut-r) clamp(80px, 11vh, 120px)
@@ -154,10 +155,11 @@
   padding: 14px;
   border-radius: 18px;
   border: 1px solid var(--line);
+  /* two-colour mixes summing to 82% = 82% alpha (mono: rgba(28,28,31) → rgba(18,18,20)) */
   background: linear-gradient(
     180deg,
-    rgba(28, 28, 31, 0.82),
-    rgba(18, 18, 20, 0.82)
+    color-mix(in srgb, var(--color-block) 49.2%, var(--color-panel) 32.8%),
+    color-mix(in srgb, var(--color-panel) 41%, var(--color-bg) 41%)
   );
   transition:
     border-color 0.25s,
@@ -213,8 +215,8 @@ a.cc:focus-visible {
 }
 .cc:hover .go,
 .cc:focus-visible .go {
-  background: var(--color-fg);
-  color: #000;
+  background: var(--color-action);
+  color: var(--color-action-ink);
   transform: rotate(45deg);
 }
 .cv {
@@ -236,7 +238,12 @@ a.cc:focus-visible {
   min-width: 0;
   border-radius: 24px;
   border: 1px solid var(--line-2);
-  background: rgba(20, 20, 22, 0.78);
+  /* 78% alpha (mono: rgba(20,20,22)) */
+  background: color-mix(
+    in srgb,
+    var(--color-panel) 58.5%,
+    var(--color-bg) 19.5%
+  );
   overflow: hidden;
 }
 .txt {
@@ -283,7 +290,7 @@ a.cc:focus-visible {
   flex: 1 1 auto;
   min-height: clamp(230px, 30vh, 320px);
   border-top: 1px solid var(--line);
-  background: #0c0c0d;
+  background: color-mix(in srgb, var(--color-bg) 90%, #000);
   overflow: hidden;
 }
 .art canvas {

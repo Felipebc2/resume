@@ -1,13 +1,12 @@
-import { hasLocale, NextIntlClientProvider } from "next-intl";
 import type { Metadata } from "next";
-import type { Locale } from "next-intl";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { getMessages, getTimeZone, getTranslations } from "next-intl/server";
 import { Anton, Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
-import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
+import { DEFAULT_THEME } from "@/content/themes";
 import { profile } from "@/content/profile";
+import { LangProvider } from "@/lib/lang";
 import { MotionProvider } from "@/lib/motion";
-import { localePath, SITE_URL } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
+import { bootScript } from "@/lib/theme";
 import "@/styles/globals.css";
 
 const instrument = Instrument_Serif({
@@ -27,53 +26,32 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata({
-  params,
-}: LayoutProps<"/[locale]">): Promise<Metadata> {
-  const locale = (await params).locale as Locale;
-  const t = await getTranslations({ locale, namespace: "Meta" });
-  const languages = Object.fromEntries(
-    routing.locales.map((l) => [l, localePath(l)]),
-  );
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Meta");
   return {
     metadataBase: new URL(SITE_URL),
     title: t("title"),
     description: t("description"),
-    alternates: {
-      canonical: localePath(locale),
-      languages: { ...languages, "x-default": "/" },
-    },
+    alternates: { canonical: "/" },
     openGraph: {
       type: "profile",
       title: t("title"),
       description: t("description"),
-      url: localePath(locale),
+      url: "/",
       siteName: profile.name,
-      locale: locale === "pt" ? "pt_BR" : "en_US",
+      locale: "en_US",
     },
     twitter: { card: "summary_large_image" },
   };
 }
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
-
-export default async function LocaleLayout({
-  children,
-  params,
-}: LayoutProps<"/[locale]">) {
-  const { locale } = await params;
-  if (!hasLocale(routing.locales, locale)) notFound();
-  setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "Meta" });
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const t = await getTranslations("Meta");
   const person = {
     "@context": "https://schema.org",
     "@type": "Person",
     name: profile.name,
-    jobTitle: (await getTranslations({ locale, namespace: "Hero" })).raw(
-      "roles",
-    )[0],
+    jobTitle: (await getTranslations("Hero")).raw("roles")[0],
     description: t("description"),
     url: SITE_URL,
     email: profile.contacts.email.href,
@@ -82,10 +60,16 @@ export default async function LocaleLayout({
   };
 
   return (
+    // the boot script rewrites data-theme and lang before hydration
     <html
-      lang={locale}
+      lang="en"
+      data-theme={DEFAULT_THEME}
+      suppressHydrationWarning
       className={`${instrument.variable} ${anton.variable} ${geist.variable} ${geistMono.variable} antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: bootScript }} />
+      </head>
       <body>
         <script
           type="application/ld+json"
@@ -93,9 +77,9 @@ export default async function LocaleLayout({
             __html: JSON.stringify(person).replace(/</g, "\\u003c"),
           }}
         />
-        <NextIntlClientProvider>
+        <LangProvider en={await getMessages()} timeZone={await getTimeZone()}>
           <MotionProvider>{children}</MotionProvider>
-        </NextIntlClientProvider>
+        </LangProvider>
       </body>
     </html>
   );

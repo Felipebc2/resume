@@ -1,4 +1,6 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
 import { Signature } from "./Signature";
@@ -45,9 +47,9 @@ const PADS = "M20 15h0M9 22h0M80 14h0M90 27h0M10 86h0M84 97h0";
 const host = (url: string) => url.replace(/^https:\/\/(www\.)?|\/$/g, "");
 
 /** Contact and About in one section: ways to reach me on the left, who I am on the right. */
-export async function Contact() {
-  const t = await getTranslations("Contact");
-  const h = await getTranslations("Hero");
+export function Contact() {
+  const t = useTranslations("Contact");
+  const h = useTranslations("Hero");
   const { links, contacts, city } = profile;
   const cards = [
     { key: "linkedin", href: links.linkedin, sub: host(links.linkedin) },

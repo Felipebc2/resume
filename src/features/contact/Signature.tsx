@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef } from "react";
 import { signature } from "@/content/signature";
 import { useStill } from "@/lib/motion";
+import { themeColor } from "@/lib/theme";
 import { useFrames, useRepaint } from "../experience/useFrames";
 import { epicycles, tip } from "./fourier";
 import s from "./Contact.module.css";
@@ -11,8 +12,6 @@ import s from "./Contact.module.css";
 /** epicycles drawn, and how long the pen takes */
 const K = 40;
 const DUR = 1500;
-const INK = "#e9e9ea";
-const BG = "#0c0c0d";
 
 type Pt = [x: number, y: number, lift: boolean];
 let series: ReturnType<typeof epicycles> | undefined;
@@ -27,7 +26,7 @@ export function Signature() {
   const dirty = useRef(true);
 
   const ink = (ctx: CanvasRenderingContext2D, pts: Pt[], f: Frame) => {
-    ctx.strokeStyle = INK;
+    ctx.strokeStyle = themeColor("sig", "#e9e9ea");
     ctx.lineWidth = 1.8;
     ctx.lineCap = ctx.lineJoin = "round";
     ctx.beginPath();
@@ -51,7 +50,7 @@ export function Signature() {
     const W = c.clientWidth,
       H = c.clientHeight;
     const f = { sc: Math.min(W, H) * 0.86, cx: W / 2, cy: H / 2 };
-    ctx.fillStyle = BG;
+    ctx.fillStyle = themeColor("bg", "#0c0c0d");
     ctx.fillRect(0, 0, W, H);
     const at = (i: number): Pt => [...tip(terms, K, i, N), jumps.has(i)];
 

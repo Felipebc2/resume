@@ -19,6 +19,20 @@
     "enable": "Ligar animações",
     "dismiss": "Fechar aviso"
   },
+  "Settings": {
+    "label": "Configurações",
+    "theme": "Tema",
+    "more": "mais {count}",
+    "lang": "Idioma",
+    "langName": "Português",
+    "saved": "salvo neste dispositivo",
+    "themes": {
+      "mono": "o wireframe, só cinza",
+      "blue": "padrão · ação + dados",
+      "ember": "quente, editorial",
+      "acid": "preto e branco, uma faísca"
+    }
+  },
   "Hero": {
     "label": "Início",
     "titleTop": "Born to",

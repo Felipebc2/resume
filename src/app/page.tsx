@@ -1,5 +1,4 @@
-import type { Locale } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { cacheLife } from "next/cache";
 import { stats } from "@/content/stats";
 import { Contact } from "@/features/contact/Contact";
 import { Experience } from "@/features/experience/Experience";
@@ -10,13 +9,19 @@ import { Projects } from "@/features/projects/Projects";
 import { StackList } from "@/features/stack/StackList";
 import { StackStory } from "@/features/stack/StackStory";
 import { getGithubStats } from "@/lib/github";
+import { getVisitors, goatcounterCode } from "@/lib/goatcounter";
 
-export default async function Home({ params }: PageProps<"/[locale]">) {
-  setRequestLocale((await params).locale as Locale);
-  const live = await getGithubStats();
+async function year() {
+  "use cache";
+  cacheLife("days");
+  return new Date().getFullYear();
+}
+
+export default async function Home() {
+  const [live, visitors] = await Promise.all([getGithubStats(), getVisitors()]);
   return (
     <>
-      <Header />
+      <Header code={goatcounterCode} visitors={visitors} />
       <main id="main" className="relative">
         <Hero />
         <StackStory
@@ -30,7 +35,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
         <Projects />
         <Contact />
       </main>
-      <Footer />
+      <Footer year={await year()} />
     </>
   );
 }

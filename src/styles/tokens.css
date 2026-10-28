@@ -12,6 +12,7 @@
   --color-l2: #5c5c63;
   --color-l3: #9a9aa1;
   --color-l4: #ececed;
+  --color-cover: #3d3d43;
 
   --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-nav: cubic-bezier(0.22, 0.8, 0.2, 1);
@@ -30,4 +31,107 @@
   --gut-r: max(20px, env(safe-area-inset-right, 0px));
   /* widest the Stack and Experience sections grow */
   --content-w: 1560px;
+}
+
+/* ---------- themes: each one swaps tokens only. The @theme values above are mono, the wireframe.
+   Neutrals (bg … faint) stay neutral; colour lives in the role tokens:
+   action = what you click, accent = where you are, l0…l4 / cover / sig = data ---------- */
+:root {
+  --color-action: #e9e9ea;
+  --color-action-ink: #0e0e0f;
+  --color-accent: #e9e9ea;
+  --color-accent-ink: #000;
+  --color-sig: #e9e9ea;
+  --color-cta-bg: #1d1d20;
+  --color-cta-ink: #e9e9ea;
+  --color-cta-bg-h: #e9e9ea;
+  --color-cta-ink-h: #000;
+  --color-cta-tag: #9a9a9f;
+  --color-seal-h: rgba(255, 255, 255, 0.08);
+  --color-seal-ink: #e9e9ea;
+}
+html[data-theme="blue"] {
+  --color-bg: #090b10;
+  --color-panel: #11141c;
+  --color-block: #171c28;
+  --color-line: #232a38;
+  --color-line-2: #3a4458;
+  --color-fg: #e6eaf2;
+  --color-dim: #8e97aa;
+  --color-faint: #5f687a;
+  --color-l0: #141a26;
+  --color-l1: #16344a;
+  --color-l2: #1b6b86;
+  --color-l3: #2fb6d4;
+  --color-l4: #5be7ff;
+  --color-cover: #1d3550;
+  --color-action: #4d7cff;
+  --color-action-ink: #fff;
+  --color-accent: #4d7cff;
+  --color-accent-ink: #fff;
+  --color-sig: #5be7ff;
+  --color-cta-bg: #4d7cff;
+  /* white on #4d7cff is 3.7:1; the theme's own ink clears 4.5:1 (5.3, hover 7.0) */
+  --color-cta-ink: #090b10;
+  --color-cta-bg-h: #6f95ff;
+  --color-cta-ink-h: #090b10;
+  --color-cta-tag: #090b10;
+  --color-seal-h: #4d7cff;
+  --color-seal-ink: #fff;
+}
+html[data-theme="ember"] {
+  --color-bg: #0e0d0c;
+  --color-panel: #171513;
+  --color-block: #201d1a;
+  --color-line: #2e2a26;
+  --color-line-2: #4a443d;
+  --color-fg: #ede6da;
+  --color-dim: #a49b8e;
+  --color-faint: #6f675c;
+  --color-l0: #1a1816;
+  --color-l1: #3a332c;
+  --color-l2: #6b5d4f;
+  --color-l3: #a7957f;
+  --color-l4: #ede6da;
+  --color-cover: #3a332c;
+  --color-action: #ff6b3d;
+  --color-action-ink: #140804;
+  --color-accent: #ede6da;
+  --color-accent-ink: #140804;
+  --color-sig: #ede6da;
+  --color-cta-bg: #ff6b3d;
+  --color-cta-ink: #140804;
+  --color-cta-bg-h: #ff8a63;
+  --color-cta-ink-h: #140804;
+  --color-cta-tag: #140804;
+  --color-seal-h: #ff6b3d;
+  --color-seal-ink: #140804;
+}
+html[data-theme="acid"] {
+  --color-bg: #0c0c0c;
+  --color-panel: #151515;
+  --color-block: #1e1e1e;
+  --color-line: #2c2c2c;
+  --color-line-2: #4a4a4a;
+  --color-fg: #f2f2f2;
+  --color-dim: #9c9c9c;
+  --color-faint: #6a6a6a;
+  --color-l0: #1b1b1b;
+  --color-l1: #333333;
+  --color-l2: #555555;
+  --color-l3: #8f8f8f;
+  --color-l4: #e6e6e6;
+  --color-cover: #333333;
+  --color-action: #d4ff3f;
+  --color-action-ink: #0c0c0c;
+  --color-accent: #d4ff3f;
+  --color-accent-ink: #0c0c0c;
+  --color-sig: #f2f2f2;
+  --color-cta-bg: #d4ff3f;
+  --color-cta-ink: #0c0c0c;
+  --color-cta-bg-h: #e2ff7a;
+  --color-cta-ink-h: #0c0c0c;
+  --color-cta-tag: #0c0c0c;
+  --color-seal-h: #d4ff3f;
+  --color-seal-ink: #0c0c0c;
 }

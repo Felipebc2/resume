@@ -1,4 +1,5 @@
 import { useEffect, useEffectEvent, type RefObject } from "react";
+import { onTheme } from "@/lib/theme";
 
 /** Calls `frame(now)` on every animation frame while `ref` is on screen (at least `threshold` of it). */
 export function useFrames(
@@ -34,7 +35,7 @@ export function useFrames(
   }, [ref, threshold]);
 }
 
-/** Runs `paint` now, on resize of `ref` and once web fonts are ready (canvas text needs them). */
+/** Runs `paint` now, on resize of `ref`, once web fonts are ready (canvas text needs them) and on a theme change. */
 export function useRepaint(ref: RefObject<Element | null>, paint: () => void) {
   const run = useEffectEvent(paint);
   useEffect(() => {
@@ -43,6 +44,10 @@ export function useRepaint(ref: RefObject<Element | null>, paint: () => void) {
     const ro = new ResizeObserver(() => run());
     ro.observe(el);
     document.fonts?.ready.then(() => run());
-    return () => ro.disconnect();
+    const off = onTheme(() => run());
+    return () => {
+      ro.disconnect();
+      off();
+    };
   }, [ref]);
 }

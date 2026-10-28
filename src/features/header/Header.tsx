@@ -1,14 +1,20 @@
-import { getLocale, getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import { profile } from "@/content/profile";
-import { getVisitors, goatcounterCode } from "@/lib/goatcounter";
 import { Nav } from "./Nav";
+import { Settings } from "./Settings";
 import { Visitors } from "./Visitors";
 import s from "./Header.module.css";
 
-export async function Header() {
-  const t = await getTranslations("Header");
-  const locale = await getLocale();
-  const visitors = await getVisitors();
+export function Header({
+  code,
+  visitors,
+}: {
+  code?: string;
+  visitors?: number;
+}) {
+  const t = useTranslations("Header");
   return (
     <>
       <a
@@ -24,18 +30,8 @@ export async function Header() {
         </a>
         <Nav />
         <div className={s.tools}>
-          <a
-            className={s.pill}
-            href={locale === "en" ? "/pt" : "/"}
-            hrefLang={locale === "en" ? "pt" : "en"}
-          >
-            <span aria-current={locale === "en" ? "true" : undefined}>EN</span>
-            {" / "}
-            <span aria-current={locale === "pt" ? "true" : undefined}>PT</span>
-          </a>
-          {goatcounterCode && (
-            <Visitors code={goatcounterCode} count={visitors} />
-          )}
+          <Settings />
+          {code && <Visitors code={code} count={visitors} />}
         </div>
       </header>
     </>

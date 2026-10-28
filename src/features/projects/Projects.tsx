@@ -1,11 +1,13 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import x from "../experience/Experience.module.css";
 import { BeforeAfter } from "./BeforeAfter";
 import { Board } from "./Board";
 import s from "./Projects.module.css";
 
-export async function Projects() {
-  const t = await getTranslations("Projects");
+export function Projects() {
+  const t = useTranslations("Projects");
   return (
     <section id="projects" aria-labelledby="projects-title" className={s.pj}>
       <div className={s.inner}>

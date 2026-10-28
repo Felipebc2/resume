@@ -1,5 +1,6 @@
-import { cacheLife } from "next/cache";
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 import { profile } from "@/content/profile";
 import { sections } from "@/content/sections";
 import { ICON } from "../contact/Contact";
@@ -19,16 +20,10 @@ const DOTS = {
   ],
 } as const;
 
-async function year() {
-  "use cache";
-  cacheLife("days");
-  return new Date().getFullYear();
-}
-
-export async function Footer() {
-  const t = await getTranslations("Footer");
-  const h = await getTranslations("Hero");
-  const nav = await getTranslations("Header.links");
+export function Footer({ year }: { year: number }) {
+  const t = useTranslations("Footer");
+  const h = useTranslations("Hero");
+  const nav = useTranslations("Header.links");
   const { links, contacts, city, handle, name } = profile;
   const social = [
     ["linkedin", links.linkedin],
@@ -112,7 +107,7 @@ export async function Footer() {
           <a href="#top">
             {t("top")} <span aria-hidden="true">↑</span>
           </a>
-          <span>{t("copy", { year: await year(), name })}</span>
+          <span>{t("copy", { year, name })}</span>
           <a className={s.r} href={links.source} target="_blank" rel="noopener">
             {t("source")}
           </a>
@@ -124,8 +119,14 @@ export async function Footer() {
         <svg viewBox="0 0 1000 372" preserveAspectRatio="xMidYMin meet">
           <defs>
             <linearGradient id="ft-word" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#e9e9ea" stopOpacity=".22" />
-              <stop offset="1" stopColor="#e9e9ea" stopOpacity=".09" />
+              <stop
+                offset="0"
+                style={{ stopColor: "var(--color-fg)", stopOpacity: 0.22 }}
+              />
+              <stop
+                offset="1"
+                style={{ stopColor: "var(--color-fg)", stopOpacity: 0.09 }}
+              />
             </linearGradient>
           </defs>
           <text

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { trophies, type EntryId } from "@/content/experience";
 import { useStill } from "@/lib/motion";
+import { themeColor } from "@/lib/theme";
 import type { Select } from "./Bento";
 import { useFrames, useRepaint } from "./useFrames";
 import s from "./Experience.module.css";
@@ -89,7 +90,9 @@ export function Trophies({
       const on = burst === i;
       const ctx = cv.getContext("2d")!;
       ctx.clearRect(0, 0, size, size);
-      ctx.fillStyle = on ? "rgba(233,233,234,.25)" : "#e9e9ea";
+      ctx.fillStyle = on
+        ? "rgba(233,233,234,.25)"
+        : themeColor("fg", "#e9e9ea");
       const sz = Math.max(1.5, size / 62);
       for (const p of pts) {
         const tx = on ? p.bx : p.tx;
