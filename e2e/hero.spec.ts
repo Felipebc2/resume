@@ -65,9 +65,7 @@ test.describe("hero scene, desktop", () => {
     expect(errors).toEqual([]);
   });
 
-  test("hover doubles the speed, Ship faster takes it to 4×", async ({
-    page,
-  }) => {
+  test("hover doubles the speed, Turbo takes it to 4×", async ({ page }) => {
     await withHooks(page);
     await page.goto("/");
     const ship = page.locator("[data-engine] [data-el=ship]");
@@ -127,8 +125,9 @@ test.describe("hero scene, desktop", () => {
     await expect.poll(fill).not.toBe(before);
     await menu.getByRole("switch", { name: /^Mode/ }).click();
     await menu.getByRole("switch", { name: /^Language/ }).click();
-    await expect(page.locator("[data-engine] [data-el=ship]")).toContainText(
-      "Mais rápido",
+    await expect(page.locator("[data-engine] [data-el=ship]")).toHaveAttribute(
+      "aria-label",
+      /velocidade/,
     );
     await expect(
       page.getByRole("group", { name: /^Canvas animado/ }),

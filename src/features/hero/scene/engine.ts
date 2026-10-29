@@ -121,7 +121,7 @@ const ZONES = {
   glog: { x: 610, y: 30, w: 206, h: 180 },
   bars: { x: 0, y: 716, w: 220, h: 72 },
   chip: { x: 16, y: 66, w: 136, h: 30 },
-  term: { x: 430, y: 722, w: 210, h: 58 }, // mode B's log, left of where Felipebc2 runs the tests
+  term: { x: 474, y: 722, w: 210, h: 58 }, // mode B's log, left of where Felipebc2 runs the tests
 };
 type Zone = (typeof ZONES)["glog"];
 const LOG_ROW = 26,
@@ -130,7 +130,7 @@ const LOG_ROW = 26,
 const BAR_WORK = [0.3, 0.22, 0.18, 0.1], // per layer, fw first: resting load while the episode plays
   BAR_IDLE = [0.44, 0.31, 0.27, 0.12]; // and after deployed
 
-const TEMPLATE = `<div class="tb"><button class="pill" data-el="ship" type="button" aria-pressed="false"><span class="label"></span><span class="seg"><span class="on">1×</span><span>·</span><span>2×</span><span>·</span><span>4×</span></span></button><button class="pill ghostly" data-el="rebuild" type="button" hidden></button></div>
+const TEMPLATE = `<div class="tb"><button class="pill" data-el="ship" type="button" aria-pressed="false"><span class="label"></span></button><button class="pill ghostly" data-el="rebuild" type="button" inert>↻</button></div>
 <div class="stage" aria-hidden="true"><svg class="canvas" viewBox="0 0 724 800"><defs>
 <marker id="mk-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 <marker id="mk-head-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
@@ -466,7 +466,12 @@ export function mount(
       },
       content,
     );
-    const title = el("text", { class: "ptitle", x: 22, y: Pl.h - 18 }, content);
+    // ends at the front corner, the mirror of v4.4's title that started there
+    const title = el(
+      "text",
+      { class: "ptitle", x: Pl.w - 22, y: Pl.h - 18, "text-anchor": "end" },
+      content,
+    );
     title.textContent = Pl.title;
     const guides = {
       v: el("line", { class: "guide", opacity: 0 }, content),
@@ -950,20 +955,20 @@ export function mount(
         D.sideL,
         "points",
         polyPts([
-          c[0],
           c[3],
+          c[2],
+          { x: c[2].x, y: c[2].y + TH },
           { x: c[3].x, y: c[3].y + TH },
-          { x: c[0].x, y: c[0].y + TH },
         ]),
       );
       setAttr(
         D.sideR,
         "points",
         polyPts([
-          c[3],
           c[2],
+          c[1],
+          { x: c[1].x, y: c[1].y + TH },
           { x: c[2].x, y: c[2].y + TH },
-          { x: c[3].x, y: c[3].y + TH },
         ]),
       );
       const m = faceMatrix(layer);
@@ -1184,7 +1189,7 @@ export function mount(
           const ex = Math.min(src.w / 2, NH - 6) + 2,
             E = P({
               layer: src.cur.layer,
-              lx: src.cur.lx + ex,
+              lx: src.cur.lx - ex,
               ly: src.cur.ly + NH / 2 - 6 - ex,
               dz: src.cur.dz,
             });
@@ -1770,7 +1775,7 @@ export function mount(
     {
       const showRb =
         t >= ep.MAIN && !(ep.collapse && t >= ep.collapse.t0) && !isStatic();
-      if (rebuildBtn.hidden === showRb) rebuildBtn.hidden = !showRb;
+      if (rebuildBtn.inert === showRb) rebuildBtn.inert = !showRb;
     }
 
     // ---- actors (screen space, targets projected through P)
@@ -2096,15 +2101,12 @@ export function mount(
     });
   }
 
-  /* ---- interaction: hover 2×, Ship faster 4× ---- */
+  /* ---- interaction: hover 2×, Turbo 4× ---- */
   let hover = false,
     boost = false;
   const effectiveSpeed = () => (hover ? (boost ? 4 : 2) : 1);
   function updateShipUI() {
     const s = effectiveSpeed();
-    shipBtn
-      .querySelectorAll(".seg span")
-      .forEach((sp) => sp.classList.toggle("on", sp.textContent === s + "×"));
     shipBtn.setAttribute("aria-pressed", String(boost));
     shipBtn.setAttribute("aria-label", L.shipAria.replace("{s}", String(s)));
     shipBtn.dataset.speed = String(s);
@@ -2244,7 +2246,8 @@ export function mount(
   function applyLang(d: HeroDict) {
     L = d;
     (shipBtn.querySelector(".label") as HTMLElement).textContent = L.ship;
-    rebuildBtn.textContent = L.rebuild;
+    rebuildBtn.setAttribute("aria-label", L.rebuild);
+    rebuildBtn.title = L.rebuild;
     (youEl.querySelector(".name") as HTMLElement).textContent = L.you;
     UI.ia.name.textContent = L.ia;
     UI.fb.name.textContent = L.fb;

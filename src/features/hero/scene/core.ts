@@ -52,6 +52,7 @@ interface Plate {
   slots: Partial<Record<Band, number[]>>;
   extra: Partial<Record<Band, [number, number]>>;
 }
+// lx is v4.4's mirrored (w − lx) to match the mirrored projection, so risers still miss the nodes below
 // rows sit toward the FRONT of each plate so nodes and riser heads are not hidden by the plate above
 export const PLATES: Record<Layer, Plate> = {
   fw: {
@@ -60,8 +61,8 @@ export const PLATES: Record<Layer, Plate> = {
     w: 520,
     h: 460,
     rows: { top: 290, bottom: 400 },
-    slots: { top: [135, 300], bottom: [140, 320] },
-    extra: { top: [440, 290], bottom: [440, 290] },
+    slots: { top: [385, 220], bottom: [380, 200] },
+    extra: { top: [80, 290], bottom: [80, 290] },
   },
   ia: {
     title: LAYER_TITLES.ia,
@@ -69,8 +70,8 @@ export const PLATES: Record<Layer, Plate> = {
     w: 450,
     h: 390,
     rows: { top: 245, bottom: 335 },
-    slots: { top: [225], bottom: [130, 335] },
-    extra: { top: [390, 245], bottom: [390, 245] },
+    slots: { top: [225], bottom: [320, 115] },
+    extra: { top: [60, 245], bottom: [60, 245] },
   },
   uc: {
     title: LAYER_TITLES.uc,
@@ -78,8 +79,8 @@ export const PLATES: Record<Layer, Plate> = {
     w: 400,
     h: 330,
     rows: { top: 195, bottom: 275 },
-    slots: { top: [140], bottom: [255] },
-    extra: { top: [300, 195], bottom: [300, 195] },
+    slots: { top: [260], bottom: [145] },
+    extra: { top: [100, 195], bottom: [100, 195] },
   },
   en: {
     title: LAYER_TITLES.en,
@@ -88,10 +89,12 @@ export const PLATES: Record<Layer, Plate> = {
     h: 250,
     rows: { mid: 160 },
     slots: { mid: [] },
-    extra: { mid: [260, 60] },
+    extra: { mid: [70, 60] },
   },
 };
 export const LAYER_ORDER: Layer[] = ["en", "uc", "ia", "fw"];
+// mirrored from v4.4 (long edge runs down-right): x and v are both flipped, so the face matrix keeps
+// a positive determinant and the labels stay readable; yaw is flipped too, so the parallax still follows the pointer
 // projection state (parallax changes yaw/pitch; the collapse/breathing change the per-layer z)
 export const VIEW = {
   yaw: 0,
@@ -108,20 +111,20 @@ export function resetView() {
 }
 export function uvOf(layer: Layer, lx: number, ly: number) {
   const Pl = PLATES[layer];
-  return { u: ly - Pl.h / 2, v: -(lx - Pl.w / 2) };
+  return { u: ly - Pl.h / 2, v: lx - Pl.w / 2 };
 }
 export function lxyOf(layer: Layer, u: number, v: number) {
   const Pl = PLATES[layer];
-  return { lx: Pl.w / 2 - v, ly: u + Pl.h / 2 };
+  return { lx: Pl.w / 2 + v, ly: u + Pl.h / 2 };
 }
 export function projUV(u: number, v: number, z: number, layer?: Layer): XY {
   const cs = Math.cos(VIEW.yaw),
-    sn = Math.sin(VIEW.yaw);
+    sn = -Math.sin(VIEW.yaw);
   const u2 = u * cs - v * sn,
     v2 = u * sn + v * cs;
   const m = 0.5 * K * (1 + VIEW.pitch);
   return {
-    x: CX + (u2 - v2) * 0.866 * K,
+    x: CX - (u2 - v2) * 0.866 * K,
     y: CY - z * K + (u2 + v2) * m + (layer ? VIEW.dy[layer] : 0),
   };
 }
@@ -883,12 +886,12 @@ export function buildEpisode(
       b = N.ent2,
       total = a.w + 20 + b.w,
       cx = PLATES.en.w / 2;
-    a.lx = cx - total / 2 + a.w / 2;
-    b.lx = cx + total / 2 - b.w / 2;
+    a.lx = cx + total / 2 - a.w / 2;
+    b.lx = cx - total / 2 + b.w / 2;
     a.ly = b.ly = PLATES.en.rows.mid!;
   }
   if (N.dup) {
-    N.dup.lx = N[E.dup!].lx + 24;
+    N.dup.lx = N[E.dup!].lx - 24;
     N.dup.ly = N[E.dup!].ly + 18;
   }
   // start state (plate + position before the fixes / micro moves)

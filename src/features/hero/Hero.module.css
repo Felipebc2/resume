@@ -4,7 +4,6 @@
   min-height: 620px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  --seam: 50%; /* where the columns meet: the seal sits on it */
   overflow: hidden;
   background-image: radial-gradient(var(--color-line) 1px, transparent 1.2px);
   background-size: 24px 24px;
@@ -115,14 +114,15 @@
 .seal {
   position: absolute;
   z-index: 5;
-  left: var(--seam);
-  top: 72%;
+  right: calc(2.4vw + env(safe-area-inset-right, 0px));
+  bottom: var(--s-6);
   display: block;
   width: clamp(100px, 8.6vw, 136px);
   aspect-ratio: 1;
   /* the hinge between the halves rolls away with the scroll */
-  --sy: -50%;
-  transform: translate(-50%, var(--sy)) rotate(calc(var(--hinge) * 180deg))
+  --sx: 0%;
+  --sy: 0%;
+  transform: translate(var(--sx), var(--sy)) rotate(calc(var(--hinge) * 180deg))
     scale(calc(1 - 0.3 * var(--hinge)));
   opacity: calc(1 - var(--hinge));
   border: 1px solid color-mix(in srgb, var(--color-fg) 14%, transparent);
@@ -219,7 +219,6 @@
 @media (min-width: 1024px) {
   .hero {
     grid-template-columns: 2fr 3fr;
-    --seam: 40%;
   }
 }
 
@@ -240,9 +239,12 @@
     align-content: start;
     padding-top: var(--s-8);
   }
+  /* phones: on the seam between the copy and the blocks */
   .seal {
-    top: auto;
+    right: auto;
+    left: 50%;
     bottom: var(--media-h);
+    --sx: -50%;
     --sy: 50%;
   }
   .icons {
