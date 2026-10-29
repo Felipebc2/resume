@@ -6,6 +6,7 @@ import { Experience } from "@/features/experience/Experience";
 import { Footer } from "@/features/footer/Footer";
 import { Header } from "@/features/header/Header";
 import { Hero } from "@/features/hero/Hero";
+import { HeroMobile } from "@/features/hero/HeroMobile";
 import { Projects } from "@/features/projects/Projects";
 import { StackList } from "@/features/stack/StackList";
 import { StackStory } from "@/features/stack/StackStory";
@@ -48,7 +49,7 @@ export default async function Home() {
       />
       <Header code={goatcounterCode} visitors={visitors} />
       <main id="main" className="relative">
-        <Hero />
+        <Hero mobile={<HeroMobile />} />
         <StackStory
           stats={stats.map((st) => ({
             ...st,

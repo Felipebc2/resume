@@ -1,13 +1,16 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { profile } from "@/content/profile";
 import { GithubSeal } from "./GithubSeal";
 import { HeroLeft } from "./HeroLeft";
+import { HeroScene } from "./HeroScene";
 import { RoleRoller } from "./RoleRoller";
 import s from "./Hero.module.css";
 
-export function Hero() {
+/** `mobile`: the server-rendered phone diagram (HeroMobile), passed through so it ships no JS */
+export function Hero({ mobile }: { mobile: ReactNode }) {
   const t = useTranslations("Hero");
   const { links, contacts } = profile;
   return (
@@ -56,8 +59,8 @@ export function Hero() {
         </div>
       </HeroLeft>
 
-      <div className={s.media} aria-hidden="true">
-        <span className={s.lbl}>{t("media")}</span>
+      <div className={s.media}>
+        <HeroScene mobile={mobile} />
       </div>
 
       <GithubSeal href={links.github} label={t("sealLabel")} text={t("seal")} />

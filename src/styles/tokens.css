@@ -260,3 +260,68 @@ html[data-theme="midnight"][data-mode="light"] {
   --dim-p: 72%;
   --faint-p: 50%;
 }
+
+/* ---------- hero scene (features/hero): the stack and its cursors. The plates climb from the surface
+   to the primary; light mode keeps the same climb on a light surface, sides only a touch darker.
+   ok/danger/guide/data are status colours per mode; the IA cursor takes a hue per palette. ---------- */
+html {
+  --hero-action: var(--color-primary-text);
+  --hero-l1: color-mix(in srgb, var(--hero-action) 8%, var(--color-panel));
+  --hero-l2: color-mix(in srgb, var(--hero-action) 22%, var(--color-panel));
+  --hero-l3: color-mix(in srgb, var(--hero-action) 50%, var(--color-panel));
+  --hero-l4: var(--hero-action);
+  --hero-n4: color-mix(
+    in srgb,
+    #fff 60%,
+    var(--hero-l4)
+  ); /* node boxes on the top plate */
+  --hero-l4-ink: var(--color-bg); /* type on the top plate */
+  --hero-n4-ink: var(--color-bg); /* type on its nodes */
+  --hero-edge: #fff;
+  --hero-side-l: 70%; /* plate sides and node depth: share of the plate colour, the rest black */
+  --hero-side-r: 82%;
+  --hero-depth: 42%;
+  --hero-depth-4: 62%;
+  --hero-ok: #3ddc97;
+  --hero-danger: #ff4d5e;
+  --hero-guide: #ff2bd6;
+  --hero-data: #5be7ff;
+}
+html[data-mode="light"] {
+  --hero-l4-ink: #fff;
+  --hero-n4-ink: var(--color-fg);
+  --hero-edge: #000;
+  --hero-side-l: 86%;
+  --hero-side-r: 93%;
+  --hero-depth: 80%;
+  --hero-depth-4: 72%;
+  --hero-ok: #085e3c;
+  --hero-danger: #b00d28;
+  --hero-guide: #b0108f;
+  --hero-data: #0b5f76;
+}
+html[data-theme="lemon"][data-mode="dark"] {
+  --hero-ia: #bfbcfc;
+}
+html[data-theme="lemon"][data-mode="light"] {
+  --hero-ia: #7d6d00;
+}
+html[data-theme="deep"][data-mode="dark"] {
+  --hero-ia: #eaaa00;
+}
+html[data-theme="deep"][data-mode="light"] {
+  --hero-ia: #3a0f34;
+}
+html[data-theme="electric"][data-mode="dark"] {
+  --hero-ia: #ff7a3d;
+}
+html[data-theme="electric"][data-mode="light"] {
+  --hero-ia: #a83a0b;
+}
+html[data-theme="midnight"][data-mode="dark"] {
+  --hero-ia: #ffb347;
+  --hero-danger: #ff7a84; /* the navy panel is lighter: AA for the error chips */
+}
+html[data-theme="midnight"][data-mode="light"] {
+  --hero-ia: #8a4b00;
+}

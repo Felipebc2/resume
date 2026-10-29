@@ -1,0 +1,1513 @@
+<!doctype html>
+<html lang="en" data-theme="blue">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Born to BUILD — hero motion prototype v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* ---------- tokens (4 themes; --ia/--ok/--danger per theme, nothing fixed) ---------- */
+:root{
+  --bg:#090b10; --panel:#11141c; --line:#232a38; --line-2:#3a4458;
+  --fg:#e6eaf2; --dim:#8e97aa; --action:#4d7cff; --data:#5be7ff;
+  --ia:#ff7a3d; --ok:#3ddc97; --danger:#ff4d5e; --guide:#ff2bd6;
+  --l1:#141b2e; --l2:#1c2a52; --l3:#2c4a9c; --l4:#4d7cff; --l4-fg:#0a1020;
+  --font-serif:'Instrument Serif', Georgia, serif;
+  --font-display:'Anton', Impact, sans-serif;
+  --font-sans:'Geist', system-ui, sans-serif;
+  --font-mono:'Geist Mono', ui-monospace, monospace;
+  --glow:0;
+}
+html[data-theme="mono"]{ --bg:#0e0e0f; --panel:#161618; --line:#34343a; --line-2:#48484f; --fg:#e9e9ea; --dim:#9a9a9f; --action:#e9e9ea; --data:#c3c7cf; --ia:#a9a9b0; --ok:#e9e9ea; --danger:#ff5c5c; --guide:#e9e9ea; --l1:color-mix(in srgb, var(--action) 8%, var(--panel)); --l2:color-mix(in srgb, var(--action) 22%, var(--panel)); --l3:color-mix(in srgb, var(--action) 50%, var(--panel)); --l4:var(--action); --l4-fg:#0e0e0f; }
+html[data-theme="ember"]{ --bg:#0e0d0c; --panel:#171513; --line:#2e2a26; --line-2:#443e37; --fg:#ede6da; --dim:#a49b8e; --action:#ff6b3d; --data:#ffb38a; --ia:#ffb347; --ok:#9bd17a; --danger:#ff4d4d; --guide:#ff6b3d; --l1:color-mix(in srgb, var(--action) 8%, var(--panel)); --l2:color-mix(in srgb, var(--action) 22%, var(--panel)); --l3:color-mix(in srgb, var(--action) 50%, var(--panel)); --l4:var(--action); --l4-fg:#1a0e08; }
+html[data-theme="acid"]{ --bg:#0c0c0c; --panel:#151515; --line:#2c2c2c; --line-2:#3f3f3f; --fg:#f2f2f2; --dim:#9c9c9c; --action:#d4ff3f; --data:#e8ff8a; --ia:#ff6ad5; --ok:#d4ff3f; --danger:#ff4d5e; --guide:#ff6ad5; --l1:color-mix(in srgb, var(--action) 8%, var(--panel)); --l2:color-mix(in srgb, var(--action) 22%, var(--panel)); --l3:color-mix(in srgb, var(--action) 50%, var(--panel)); --l4:var(--action); --l4-fg:#0c0c0c; }
+
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-sans);font-size:15px;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--data);outline-offset:3px;border-radius:6px}
+button{font:inherit;color:inherit}
+
+/* ---------- test bar (remove in the real site) ---------- */
+.testbar{position:fixed;top:10px;right:12px;z-index:50;display:flex;gap:6px;font:11px/1 var(--font-mono);color:var(--dim)}
+.testbar select,.testbar input{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 8px}
+.testbar input{width:76px}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;min-height:100svh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;
+  background-image:radial-gradient(var(--line) 1px, transparent 1.2px);background-size:24px 24px;background-position:center;
+}
+.hero__left{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:28px;padding:clamp(24px,6vw,84px) clamp(20px,5vw,64px)}
+.eyebrow{font:500 11px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.title{margin:0;font:400 clamp(64px,12vw,180px)/.88 var(--font-serif);letter-spacing:-.01em}
+.title em{font-style:italic}
+.title b{display:block;font:400 1.08em/.88 var(--font-display);text-transform:uppercase;letter-spacing:.01em}
+.roles{display:flex;flex-direction:column;gap:6px;font:400 13px/1.5 var(--font-mono);color:var(--dim);margin:0;padding:0;list-style:none}
+.roles b{color:var(--fg);font-weight:500}
+.links{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.links a{font:500 12px/1 var(--font-mono);text-decoration:none;border:1px solid var(--line-2);border-radius:999px;padding:9px 13px;transition:border-color .2s,color .2s}
+.links a:hover{border-color:var(--action);color:var(--action)}
+
+/* seal — on the seam, ABOVE the scene, stays clickable */
+.seal{position:absolute;left:50%;top:50%;width:116px;height:116px;transform:translate(-50%,-50%);z-index:5;text-decoration:none;cursor:pointer;border-radius:50%;background:var(--bg);box-shadow:0 0 0 1px var(--line),0 12px 40px -12px #0008}
+.seal svg{width:100%;height:100%;display:block}
+.seal .ring{animation:spin 16s linear infinite;transform-origin:50% 50%}
+.seal:hover .ring{animation-duration:6s}
+.seal text{font:500 11.5px var(--font-mono);letter-spacing:.2em;fill:var(--dim)}
+.seal .mark{font:400 36px var(--font-display);fill:var(--fg)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- scene (desktop) ---------- */
+.scene{position:relative;z-index:1;min-height:520px;user-select:none;-webkit-user-select:none}
+.scene.is-live{cursor:none}
+.scene.is-live .tb button{cursor:none}
+.stage{position:absolute;left:0;top:0;width:724px;height:800px;transform-origin:0 0;transform:translate(var(--ox,0px),var(--oy,0px)) scale(var(--s,1))}
+.stage svg.canvas{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.overlay{position:absolute;inset:0;pointer-events:none}
+
+/* toolbar (below the diagram, always there) */
+.tb{position:absolute;left:50%;top:0;transform:translateX(-50%);z-index:3;display:flex;gap:4px;align-items:center;padding:5px;border-radius:12px;background:var(--panel);border:1px solid var(--line-2);box-shadow:0 10px 30px -18px #000}
+.pill{font:500 12px/1 var(--font-mono);color:var(--fg);background:transparent;border:1px solid transparent;border-radius:8px;padding:8px 10px;display:inline-flex;gap:9px;align-items:center;cursor:pointer;transition:border-color .2s,background .2s;white-space:nowrap}
+.pill:hover{background:var(--line)}
+.pill .seg{display:inline-flex;gap:5px;color:var(--dim)}
+.pill .seg span.on{color:var(--action)}
+.pill[aria-pressed="true"]{border-color:var(--action)}
+.pill.ghostly{color:var(--dim)}
+.pill[hidden]{display:none}
+
+/* canvas styling */
+.canvas{--mixed:color-mix(in srgb, var(--line-2), var(--action) calc(var(--glow) * 100%))}
+.plate{transition:none}
+.frame.l2 rect{fill-opacity:.4}.frame.l3 rect{fill-opacity:.45}.frame.l4 rect{fill-opacity:.55}
+.frame text{font:500 11px var(--font-mono);letter-spacing:.14em;text-transform:uppercase;fill:var(--dim)}
+.frame .ico{fill:var(--dim)}
+.node rect.box{fill:var(--panel);stroke:var(--mixed);stroke-width:1.2;transition:stroke .15s}
+.plate.l4 .node rect.box{fill:color-mix(in srgb, #fff 60%, var(--l4));stroke:color-mix(in srgb, #fff 30%, var(--l4))}
+.plate.l4 .node text{fill:var(--l4-fg)} .plate.l4 .node .ico{fill:var(--l4-fg)} .plate.l4 .node .caret{fill:var(--l4-fg)}
+.plate .face{fill:var(--lp);stroke:color-mix(in srgb, #fff 12%, var(--lp));stroke-width:1}
+.plate .sideL{fill:color-mix(in oklab, var(--lp) 70%, black)} .plate .sideR{fill:color-mix(in oklab, var(--lp) 82%, black)}
+.plate.l1{--lp:var(--l1)} .plate.l2{--lp:var(--l2)} .plate.l3{--lp:var(--l3)} .plate.l4{--lp:var(--l4)}
+.plate .ptitle{font:500 13px var(--font-mono);letter-spacing:.16em;text-transform:uppercase;fill:var(--fg);fill-opacity:.8}
+.plate.l4 .ptitle{fill:var(--l4-fg)} .plate .ico{fill:var(--fg);fill-opacity:.8} .plate.l4 .ico{fill:var(--l4-fg)}
+.shadow{fill:#000}
+.node rect.depth{fill:color-mix(in oklab, var(--lp) 42%, black)} .plate.l4 .node rect.depth{fill:color-mix(in oklab, var(--l4) 62%, black)}
+.riser{stroke:var(--dim);stroke-opacity:calc(.75 + var(--glow) * .25);stroke-width:1.6;stroke-dasharray:5 5;stroke-linecap:round}
+.riser.hot{stroke:var(--action);stroke-opacity:1} .riser.bad{stroke:var(--danger);stroke-opacity:1;stroke-width:2}
+.rface{stroke-dasharray:none;stroke-width:1.8}
+.rhead{fill:var(--dim)} .rhead.hot{fill:var(--action)} .rhead.bad{fill:var(--danger)}
+.pulse{fill:var(--data)}
+.node.hover rect.box,.node.grab rect.box{stroke:var(--action)}
+.node text{font:500 18px var(--font-mono);fill:var(--fg)}
+.node .ico{fill:var(--fg);fill-opacity:.9}
+.node .caret{fill:var(--action)}
+.node .squig{stroke:var(--danger);stroke-width:1.5;fill:none}
+.node .badge{fill:var(--danger)}
+.node .badge-ring{fill:none;stroke:var(--danger);stroke-width:1}
+.node.misplaced rect.box,.node.orphan rect.box{stroke:var(--danger);stroke-dasharray:4 3}
+.node.fail rect.box{stroke:var(--danger)}
+.arrow{fill:none;stroke:var(--mixed);stroke-opacity:calc(.55 + var(--glow) * .45);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.arrow.hot{stroke:var(--action);stroke-opacity:1}
+.arrow.bad{stroke:var(--danger);stroke-opacity:1;stroke-width:2}
+.port{fill:var(--bg);stroke:var(--line-2);stroke-width:1.5}
+.port.bad{stroke:var(--danger)}
+#mk-head path{fill:var(--dim);fill-opacity:.7} #mk-head-bad path{fill:var(--danger)} #mk-head-hot path{fill:var(--action)}
+.sel polygon.box{fill:none;stroke:var(--action);stroke-width:1.2}
+.sel rect.h{fill:var(--bg);stroke:var(--action);stroke-width:1.2}
+.marquee{fill:var(--action);fill-opacity:.08;stroke:var(--action);stroke-width:1;stroke-dasharray:3 3}
+.guide{stroke:var(--guide);stroke-width:1;stroke-dasharray:4 3}
+.pin circle{fill:var(--action);stroke:var(--bg);stroke-width:1.5}
+.pin text{font:600 9px var(--font-mono);fill:var(--bg)}
+.pin.done circle{fill:var(--ok)}
+.fx line,.fx circle{pointer-events:none}
+
+/* cursors (HTML overlay, stage coordinates). Tip = (0,0) */
+.cursor{position:absolute;left:0;top:0;will-change:transform;transform-origin:0 0;opacity:0}
+.cursor svg{display:block;width:14px;height:19px;overflow:visible;transform-origin:0 0}
+.cursor .arrowhead{fill:var(--c);stroke:var(--bg);stroke-width:1.2;stroke-linejoin:round}
+.cursor .tag{position:absolute;left:13px;top:14px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;white-space:nowrap}
+.cursor.flip .tag{left:auto;right:4px;align-items:flex-end}
+.cursor.flip .bubble{transform-origin:100% 0}
+.cursor .name{font:500 11px/1 var(--font-mono);color:var(--bg);background:var(--c);border-radius:999px;padding:4px 7px;letter-spacing:.02em}
+.cursor .bubble{font:500 11px/1.2 var(--font-mono);color:var(--fg);background:var(--panel);border:1px solid var(--line-2);border-radius:999px;padding:5px 9px;transform-origin:0 0;opacity:0}
+.cursor.ia{--c:var(--ia)} .cursor.fb{--c:var(--action)} .cursor.you{--c:var(--data)}
+html[data-theme="mono"] .cursor.ia .arrowhead{fill:var(--bg);stroke:var(--ia);stroke-width:1.4}
+html[data-theme="mono"] .cursor.ia .name{background:var(--bg);color:var(--ia);box-shadow:inset 0 0 0 1px var(--ia)}
+.ghost{position:absolute;left:0;top:0;width:14px;height:19px;opacity:0;will-change:transform;transform-origin:0 0}
+.ghost svg{display:block;width:14px;height:19px;overflow:visible}
+.ghost path{fill:var(--c)}
+
+/* chips / toasts / terminal */
+.chip{position:absolute;font:500 11px/1 var(--font-mono);padding:7px 10px;border-radius:999px;background:var(--panel);border:1px solid var(--line-2);color:var(--fg);transform-origin:0 50%;opacity:0;white-space:nowrap}
+.chip.warn{color:var(--danger);border-color:var(--danger)}
+.chip.ok{color:var(--ok);border-color:var(--ok);left:16px;top:12px;font-size:12px;padding:8px 12px;display:flex;gap:8px;align-items:center}
+.chip.ok .bar{width:64px;height:4px;border-radius:2px;background:var(--line-2);overflow:hidden;display:none}
+.chip.ok .bar i{display:block;height:100%;width:0;background:var(--ok);transform-origin:0 50%}
+.chip.ok.running{color:var(--fg);border-color:var(--line-2)}
+.chip.ok.running .bar{display:block}
+.chip.ok.failing{color:var(--danger);border-color:var(--danger)}
+.chip.ok.failing .bar{display:block}
+.chip.ok.failing .bar i{background:var(--danger)}
+.chip.ok .ring{position:absolute;inset:-1px;border-radius:999px;border:1px solid var(--ok);opacity:0;pointer-events:none}
+.toast{position:absolute;right:14px;bottom:12px;font:500 10.5px/1.3 var(--font-mono);color:var(--fg);background:var(--panel);border:1px solid var(--line-2);border-left:2px solid var(--ok);border-radius:8px;padding:7px 10px;opacity:0;width:230px;overflow-wrap:anywhere;transform-origin:100% 100%}
+.term{position:absolute;left:520px;top:26px;width:190px;height:168px;background:var(--bg);border:1px solid var(--line-2);border-radius:10px;font:500 10px/1.4 var(--font-mono);color:var(--fg);padding:8px 10px;opacity:0;transform-origin:100% 0;overflow:hidden;box-shadow:0 12px 30px -16px #000}
+.term .hd{display:flex;gap:4px;align-items:center;color:var(--dim);margin-bottom:5px;font-size:10px}
+.term .hd i{width:7px;height:7px;border-radius:50%;background:var(--line-2);display:inline-block}
+.term .ln{color:var(--dim);overflow-wrap:anywhere}
+.term .ln.c{color:var(--fg)}
+.term .ln.ok{color:var(--ok)} .term .ln.bad{color:var(--danger)}
+.term .ln .p{color:var(--action)}
+
+/* ---------- mobile diagram (same concept as the OG image) ---------- */
+.mobile{display:none}
+.seal-m{display:none}
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr;min-height:0}
+  .hero__left{padding:28px 16px 18px;gap:22px}
+  .title{font-size:clamp(64px,19vw,110px)}
+  .seal{display:none}
+  .links a{font-size:11px;padding:8px 11px}
+  .seal-m{display:block;position:relative;left:auto;top:auto;transform:none;width:64px;height:64px;margin-left:auto;align-self:center}
+  .seal-m text{font-size:13px;letter-spacing:.16em}
+  .seal-m .mark{font-size:40px}
+  .scene{display:none}
+  .mobile{display:block;position:relative;padding:0 68px 28px}   /* 16 px gutter + 50 px margin: cursors live outside the blocks */
+  .mb{position:relative;border-radius:12px;padding:10px 14px 11px;margin:0 0 10px;min-height:64px;background:var(--l);border:1px solid transparent;opacity:0;transform:translateY(8px)}
+  .mb.ready{animation:mbin .3s cubic-bezier(.22,1,.36,1) forwards}
+  .mb h3{margin:0 0 6px;font:500 10px/1 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--fg);opacity:.85;white-space:nowrap}
+  .mb .ns{display:flex;gap:8px;flex-wrap:wrap}
+  .mb .n{font:500 12px/1 var(--font-mono);color:var(--fg);background:var(--panel);border-radius:7px;padding:7px 10px;display:inline-flex;gap:7px;align-items:center}
+  .mb .n svg{width:13px;height:13px;fill:var(--fg)}
+  .mb.l1{--l:var(--l1);border-color:var(--line-2)} .mb.l2{--l:var(--l2)} .mb.l3{--l:var(--l3)} .mb.l4{--l:var(--l4)}
+  .mb.l4 h3{color:var(--l4-fg);opacity:.8}
+  .mb.l4 .n{background:color-mix(in srgb, #fff 58%, var(--l4));color:var(--l4-fg)}
+  .mcur{position:absolute;display:flex;pointer-events:none}
+  .mcur svg{width:14px;height:19px;overflow:visible;flex:none}
+  .mcur .arrowhead{fill:var(--c);stroke:var(--bg);stroke-width:1.2}
+  .mcur .name{font:500 10px/1 var(--font-mono);color:var(--bg);background:var(--c);border-radius:999px;padding:3px 6px;white-space:nowrap}
+  .mcur.fb{--c:var(--action);right:100%;top:50%;transform:translateY(-10px);flex-direction:column;align-items:flex-end;gap:2px}
+  .mcur.fb svg{transform:scaleX(-1);transform-origin:50% 0}
+  .mcur.fb .arrowhead{stroke:var(--fg)}
+  .mcur.fb .name{margin-right:3px}
+  .mcur.ia{--c:var(--ia);left:100%;bottom:-26px;flex-direction:column;align-items:flex-start;gap:2px;margin-left:4px}
+  .mcur.ia .tag{display:flex;flex-direction:column;gap:3px;align-items:flex-start}
+  .mcur.ia .bubble{font:500 12px/1 var(--font-mono);background:var(--panel);border:1px solid var(--line-2);border-radius:999px;padding:4px 7px}
+  html[data-theme="mono"] .mcur.ia .arrowhead{fill:var(--bg);stroke:var(--ia)}
+  html[data-theme="mono"] .mcur.ia .name{background:var(--bg);color:var(--ia);box-shadow:inset 0 0 0 1px var(--ia)}
+  @keyframes mbin{to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){ .seal .ring{animation:none} .links a,.pill{transition:none} .mb.ready{animation:none;opacity:1;transform:none} }
+</style>
+</head>
+<body>
+
+<div class="testbar" aria-label="test controls">
+  <select id="theme" aria-label="Theme"><option value="blue">blue</option><option value="mono">mono</option><option value="ember">ember</option><option value="acid">acid</option></select>
+  <select id="lang" aria-label="Language"><option value="en">en</option><option value="pt">pt</option></select>
+  <input id="seedIn" type="number" aria-label="Seed" placeholder="seed">
+</div>
+
+<section class="hero">
+  <div class="hero__left">
+    <div class="eyebrow">Felipe Castro — Full-Stack Engineer</div>
+    <h1 class="title"><em>Born to</em> <b>BUILD.</b></h1>
+    <ul class="roles">
+      <li><b>Full-stack developer</b> — Brasília, BR</li>
+      <li>Head of IT @ Nexara · Clean Architecture, Next.js, FastAPI, PostgreSQL</li>
+    </ul>
+    <div class="links">
+      <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn ↗</a>
+      <a href="https://github.com/Felipebc2" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="#contact">Contact</a>
+      <a class="seal seal-m" href="https://github.com/Felipebc2" target="_blank" rel="noopener" aria-label="See my code on GitHub">
+        <svg viewBox="0 0 116 116" aria-hidden="true"><defs><path id="sealpath2" d="M58,58 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/></defs><g class="ring"><text><textPath href="#sealpath2" startOffset="0">• See my code • See my code </textPath></text></g><text class="mark" x="58" y="68" text-anchor="middle">↗</text></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- GitHub seal placeholder: on the seam, above the scene -->
+  <a class="seal" href="https://github.com/Felipebc2" target="_blank" rel="noopener" aria-label="See my code on GitHub">
+    <svg viewBox="0 0 116 116" aria-hidden="true">
+      <defs><path id="sealpath" d="M58,58 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/></defs>
+      <g class="ring"><text><textPath href="#sealpath" startOffset="0">• See my code • See my code </textPath></text></g>
+      <text class="mark" x="58" y="71" text-anchor="middle">↗</text>
+    </svg>
+  </a>
+
+  <div class="scene" id="scene" role="group" aria-label="">
+    <div class="tb" id="tb" aria-label="Canvas toolbar">
+      <button class="pill" id="ship" type="button" aria-pressed="false"><span class="label">⚡ Ship faster</span><span class="seg"><span class="on">1×</span><span>·</span><span>2×</span><span>·</span><span>4×</span></span></button>
+      <button class="pill ghostly" id="rebuild" type="button" hidden>↻ rebuild</button>
+    </div>
+    <div class="stage" id="stage" aria-hidden="true">
+      <svg class="canvas" id="canvas" viewBox="0 0 724 800">
+        <defs>
+          <marker id="mk-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
+          <marker id="mk-head-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
+          <marker id="mk-head-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
+        </defs>
+        <g id="stack"></g>
+        <g id="sels"></g>
+        <g class="pin" id="pin" opacity="0"><circle r="8"/><text y="3" text-anchor="middle">F</text></g>
+        <g id="fx" class="fx"></g>
+        <text id="measure" style="font:500 18px var(--font-mono);opacity:0;pointer-events:none"></text>
+      </svg>
+      <div class="overlay" id="overlay">
+        <div class="term" id="term"><div class="hd"><i></i><i></i><i></i>&nbsp;terminal</div><div class="ls"></div></div>
+        <div class="chip ok" id="chipOk"><span class="ring"></span><span class="txt">✓ deployed</span><span class="bar"><i></i></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile" id="mobile" aria-hidden="true"></div>
+</section>
+
+<!-- Motion (vanilla). Pinned. window.Motion -->
+<script src="https://cdn.jsdelivr.net/npm/motion@12.23.24/dist/motion.js"></script>
+<script>
+(() => {
+'use strict';
+const { animate, cubicBezier, spring, mix, clamp } = window.Motion;
+
+/* =====================================================================
+   i18n — every visible string. [long, short] pairs: short used at ≥2×.
+   ===================================================================== */
+const I18N = {
+  en: {
+    you: 'You', ia: 'IA', fb: 'Felipebc2',
+    ship: '⚡ Ship faster', rebuild: '↻ rebuild', deployed: '✓ deployed', deploying: 'deploying', shipAria: 'Ship faster: speed {s}x',
+    aria: 'Animated canvas. Two multiplayer cursors, "IA" and "Felipebc2", build a Clean Architecture diagram with four layers: Entities, Use Cases, Interface Adapters and Frameworks & Drivers. IA scaffolds fast and makes a few mistakes; Felipebc2 reviews, fixes them, connects what is missing, runs the tests and approves. The scene ends deployed. Hovering speeds it up; after the end you can drag a node.',
+    chip: { dep: '⚠ dependency rule', circular: '↻ circular dependency', dup: '⚠ duplicate', orphan: '⚠ orphan node', hal: '🤔 not a real lib', fail: '✗ 1 failing', wrongLayer: '⚠ wrong layer' },
+    term: { tests: 'pytest -q', pass: '{n}/24 passed ✓', fail: '{n}/24 passed · 1 failed ✗', rerun: 'pytest -q --lf', deploy: 'deploy → production ✓', wait: '{n}/24' },
+    say: {
+      scaffold: ['scaffolding use cases…', 'scaffolding…'], repo: ['adding repository', '+repository'], wiring: ['wiring adapters', 'wiring…'],
+      connect: ['connecting layers', 'connecting…'], deploying: ['deploying…', 'deploy'], thumbs: ['👍', '👍'],
+      watching: ['watching…', '👀'], reviewing: ['reviewing…', 'review'], notright: ["hmm… that's not right", 'hmm…'], close: ['close, IA :D', 'close :D'],
+      wrong: ['wrong layer → adapters', '→ adapters'], fixdep: ['fixing dependency', 'fix dep'], fixtypo: ['fixing typo', 'typo'],
+      circular: ['breaking the cycle', 'cycle ✂'], dup: ['one is enough', 'dup ✂'], hal: ['left-pad-ai? no :D', 'no :D'], orphan: ['who do you talk to?', 'orphan'],
+      naming: ['PascalCase, please', 'naming'], failing: ['edge case…', 'edge case'],
+      missing: ["connecting what's missing", 'connecting…'], tests: ['running tests… {n}/24', 'tests {n}/24'], testsOk: ['24/24 ✓', '24/24 ✓'], testsFail: ['23/24 ✗ D:', '23/24 ✗'],
+      lgtm: ['LGTM', 'LGTM'], ship: ['ship it', 'ship it'],
+      oops: ['oops D:', 'oops'], mybad: ['my bad :(', 'my bad'], fixed: ['fixed?', 'fixed?'], undo: ['⌘Z', '⌘Z'], yours: ['all yours', 'yours'], goahead: ['go ahead', 'go'],
+      rename: ['rename?', 'rename?'], align: ['aligning', 'align'], group: ['nudging these', 'nudge'], nice: ['nice :)', 'nice :)'], nope: ['nope :)', 'nope :)'], angry: ['>:(', '>:('], enough: ['ok, enough >:(', 'enough >:('], resolved: ['resolved ✓', '✓']
+    },
+    commit: {
+      dep: 'fix(entities): remove outward dependency on PostgreSQL', wrongLayer: 'fix(adapters): move {n} to interface layer', typo: 'fix({l}): rename {a} → {b}',
+      failing: 'fix(use-cases): cover edge case in {n}', circular: 'fix(use-cases): break {a} ↔ {b} cycle', dup: 'chore(adapters): remove duplicate {n}',
+      hal: 'chore(deps): drop left-pad-ai (does not exist)', orphan: 'fix(adapters): wire {a} to {b}', naming: 'style({l}): {a} → {b}'
+    }
+  },
+  pt: {
+    you: 'Você', ia: 'IA', fb: 'Felipebc2',
+    ship: '⚡ Mais rápido', rebuild: '↻ reconstruir', deployed: '✓ no ar', deploying: 'publicando', shipAria: 'Mais rápido: velocidade {s}x',
+    aria: 'Canvas animado. Dois cursores multiplayer, "IA" e "Felipebc2", constroem um diagrama de Clean Architecture em quatro camadas: Entities, Use Cases, Interface Adapters e Frameworks & Drivers. A IA monta rápido e comete alguns erros; Felipebc2 revisa, corrige, conecta o que falta, roda os testes e aprova. A cena termina no ar. Passar o mouse acelera; depois do fim dá para arrastar um nó.',
+    chip: { dep: '⚠ regra de dependência', circular: '↻ dependência circular', dup: '⚠ duplicado', orphan: '⚠ nó órfão', hal: '🤔 essa lib não existe', fail: '✗ 1 falhando', wrongLayer: '⚠ camada errada' },
+    term: { tests: 'pytest -q', pass: '{n}/24 passaram ✓', fail: '{n}/24 passaram · 1 falhou ✗', rerun: 'pytest -q --lf', deploy: 'deploy → produção ✓', wait: '{n}/24' },
+    say: {
+      scaffold: ['montando use cases…', 'montando…'], repo: ['adicionando repository', '+repository'], wiring: ['ligando adapters', 'ligando…'],
+      connect: ['conectando camadas', 'conectando…'], deploying: ['publicando…', 'deploy'], thumbs: ['👍', '👍'],
+      watching: ['observando…', '👀'], reviewing: ['revisando…', 'revisão'], notright: ['hmm… isso não tá certo', 'hmm…'], close: ['quase, IA :D', 'quase :D'],
+      wrong: ['camada errada → adapters', '→ adapters'], fixdep: ['corrigindo dependência', 'dep ✗'], fixtypo: ['corrigindo typo', 'typo'],
+      circular: ['quebrando o ciclo', 'ciclo ✂'], dup: ['um já basta', 'dup ✂'], hal: ['left-pad-ai? não :D', 'não :D'], orphan: ['com quem você fala?', 'órfão'],
+      naming: ['PascalCase, por favor', 'nome'], failing: ['caso de borda…', 'borda'],
+      missing: ['conectando o que falta', 'conectando…'], tests: ['rodando testes… {n}/24', 'testes {n}/24'], testsOk: ['24/24 ✓', '24/24 ✓'], testsFail: ['23/24 ✗ D:', '23/24 ✗'],
+      lgtm: ['LGTM', 'LGTM'], ship: ['ship it', 'ship it'],
+      oops: ['opa D:', 'opa'], mybad: ['foi mal :(', 'foi mal'], fixed: ['arrumei?', 'arrumei?'], undo: ['⌘Z', '⌘Z'], yours: ['pode ir', 'vai'], goahead: ['vou lá', 'vou'],
+      rename: ['renomear?', 'renomear?'], align: ['alinhando', 'alinhar'], group: ['ajustando esses', 'ajuste'], nice: ['boa :)', 'boa :)'], nope: ['não :)', 'não :)'], angry: ['>:(', '>:('], enough: ['chega >:(', 'chega >:('], resolved: ['resolvido ✓', '✓']
+    },
+    commit: {
+      dep: 'fix(entities): remove dependência para fora (PostgreSQL)', wrongLayer: 'fix(adapters): move {n} para a camada de interface', typo: 'fix({l}): renomeia {a} → {b}',
+      failing: 'fix(use-cases): cobre caso de borda em {n}', circular: 'fix(use-cases): quebra ciclo {a} ↔ {b}', dup: 'chore(adapters): remove {n} duplicado',
+      hal: 'chore(deps): remove left-pad-ai (não existe)', orphan: 'fix(adapters): liga {a} a {b}', naming: 'style({l}): {a} → {b}'
+    }
+  }
+};
+let L = I18N.en;
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (_, k) => o[k] ?? '');
+
+/* ---- inline icons (Simple Icons, CC0). Monochrome paths, 24×24 ---- */
+const ICONS = {
+  next: 'M18.665 21.978C16.758 23.255 14.465 24 12 24 5.377 24 0 18.623 0 12S5.377 0 12 0s12 5.377 12 12c0 3.583-1.574 6.801-4.067 9.001L9.219 7.2H7.2v9.596h1.615V9.251l9.85 12.727Zm-3.332-8.533 1.6 2.061V7.2h-1.6v6.245Z',
+  fastapi: 'M12 .0387C5.3729.0384.0003 5.3931 0 11.9988c-.001 6.6066 5.372 11.9628 12 11.9625 6.628.0003 12.001-5.3559 12-11.9625-.0003-6.6057-5.3729-11.9604-12-11.96m-.829 5.4153h7.55l-7.5805 5.3284h5.1828L5.279 18.5436q2.9466-6.5444 5.892-13.0896',
+  postgres: 'M23.5594 14.7228a.5269.5269 0 0 0-.0563-.1191c-.139-.2632-.4768-.3418-1.0074-.2321-1.6533.3411-2.2935.1312-2.5256-.0191 1.342-2.0482 2.445-4.522 3.0411-6.8297.2714-1.0507.7982-3.5237.1222-4.7316a1.5641 1.5641 0 0 0-.1509-.235C21.6931.9086 19.8007.0248 17.5099.0005c-1.4947-.0158-2.7705.3461-3.1161.4794a9.449 9.449 0 0 0-.5159-.0816 8.044 8.044 0 0 0-1.3114-.1278c-1.1822-.0184-2.2038.2642-3.0498.8406-.8573-.3211-4.7888-1.645-7.2219.0788C.9359 2.1526.3086 3.8733.4302 6.3043c.0409.818.5069 3.334 1.2423 5.7436.4598 1.5065.9387 2.7019 1.4334 3.582.553.9942 1.1259 1.5933 1.7143 1.7895.4474.1491 1.1327.1441 1.8581-.7279.8012-.9635 1.5903-1.8258 1.9446-2.2069.4351.2355.9064.3625 1.39.3772a.0569.0569 0 0 0 .0004.0041 11.0312 11.0312 0 0 0-.2472.3054c-.3389.4302-.4094.5197-1.5002.7443-.3102.064-1.1344.2339-1.1464.8115-.0025.1224.0329.2309.0919.3268.2269.4231.9216.6097 1.015.6331 1.3345.3335 2.5044.092 3.3714-.6787-.017 2.231.0775 4.4174.3454 5.0874.2212.5529.7618 1.9045 2.4692 1.9043.2505 0 .5263-.0291.8296-.0941 1.7819-.3821 2.5557-1.1696 2.855-2.9059.1503-.8707.4016-2.8753.5388-4.1012.0169-.0703.0357-.1207.057-.1362.0007-.0005.0697-.0471.4272.0307a.3673.3673 0 0 0 .0443.0068l.2539.0223.0149.001c.8468.0384 1.9114-.1426 2.5312-.4308.6438-.2988 1.8057-1.0323 1.5951-1.6698zM2.371 11.8765c-.7435-2.4358-1.1779-4.8851-1.2123-5.5719-.1086-2.1714.4171-3.6829 1.5623-4.4927 1.8367-1.2986 4.8398-.5408 6.108-.13-.0032.0032-.0066.0061-.0098.0094-2.0238 2.044-1.9758 5.536-1.9708 5.7495-.0002.0823.0066.1989.0162.3593.0348.5873.0996 1.6804-.0735 2.9184-.1609 1.1504.1937 2.2764.9728 3.0892.0806.0841.1648.1631.2518.2374-.3468.3714-1.1004 1.1926-1.9025 2.1576-.5677.6825-.9597.5517-1.0886.5087-.3919-.1307-.813-.5871-1.2381-1.3223-.4796-.839-.9635-2.0317-1.4155-3.5126zm6.0072 5.0871c-.1711-.0428-.3271-.1132-.4322-.1772.0889-.0394.2374-.0902.4833-.1409 1.2833-.2641 1.4815-.4506 1.9143-1.0002.0992-.126.2116-.2687.3673-.4426a.3549.3549 0 0 0 .0737-.1298c.1708-.1513.2724-.1099.4369-.0417.156.0646.3078.26.3695.4752.0291.1016.0619.2945-.0452.4444-.9043 1.2658-2.2216 1.2494-3.1676 1.0128zm2.094-3.988-.0525.141c-.133.3566-.2567.6881-.3334 1.003-.6674-.0021-1.3168-.2872-1.8105-.8024-.6279-.6551-.9131-1.5664-.7825-2.5004.1828-1.3079.1153-2.4468.079-3.0586-.005-.0857-.0095-.1607-.0122-.2199.2957-.2621 1.6659-.9962 2.6429-.7724.4459.1022.7176.4057.8305.928.5846 2.7038.0774 3.8307-.3302 4.7363-.084.1866-.1633.3629-.2311.5454zm7.3637 4.5725c-.0169.1768-.0358.376-.0618.5959l-.146.4383a.3547.3547 0 0 0-.0182.1077c-.0059.4747-.054.6489-.115.8693-.0634.2292-.1353.4891-.1794 1.0575-.11 1.4143-.8782 2.2267-2.4172 2.5565-1.5155.3251-1.7843-.4968-2.0212-1.2217a6.5824 6.5824 0 0 0-.0769-.2266c-.2154-.5858-.1911-1.4119-.1574-2.5551.0165-.5612-.0249-1.9013-.3302-2.6462.0044-.2932.0106-.5909.019-.8918a.3529.3529 0 0 0-.0153-.1126 1.4927 1.4927 0 0 0-.0439-.208c-.1226-.4283-.4213-.7866-.7797-.9351-.1424-.059-.4038-.1672-.7178-.0869.067-.276.1831-.5875.309-.9249l.0529-.142c.0595-.16.134-.3257.213-.5012.4265-.9476 1.0106-2.2453.3766-5.1772-.2374-1.0981-1.0304-1.6343-2.2324-1.5098-.7207.0746-1.3799.3654-1.7088.5321a5.6716 5.6716 0 0 0-.1958.1041c.0918-1.1064.4386-3.1741 1.7357-4.4823a4.0306 4.0306 0 0 1 .3033-.276.3532.3532 0 0 0 .1447-.0644c.7524-.5706 1.6945-.8506 2.802-.8325.4091.0067.8017.0339 1.1742.081 1.939.3544 3.2439 1.4468 4.0359 2.3827.8143.9623 1.2552 1.9315 1.4312 2.4543-1.3232-.1346-2.2234.1268-2.6797.779-.9926 1.4189.543 4.1729 1.2811 5.4964.1353.2426.2522.4522.2889.5413.2403.5825.5515.9713.7787 1.2552.0696.087.1372.1714.1885.245-.4008.1155-1.1208.3825-1.0552 1.717-.0123.1563-.0423.4469-.0834.8148-.0461.2077-.0702.4603-.0994.7662zm.8905-1.6211c-.0405-.8316.2691-.9185.5967-1.0105a2.8566 2.8566 0 0 0 .135-.0406 1.202 1.202 0 0 0 .1342.103c.5703.3765 1.5823.4213 3.0068.1344-.2016.1769-.5189.3994-.9533.6011-.4098.1903-1.0957.333-1.7473.3636-.7197.0336-1.0859-.0807-1.1721-.151zm.5695-9.2712c-.0059.3508-.0542.6692-.1054 1.0017-.055.3576-.112.7274-.1264 1.1762-.0142.4368.0404.8909.0932 1.3301.1066.887.216 1.8003-.2075 2.7014a3.5272 3.5272 0 0 1-.1876-.3856c-.0527-.1276-.1669-.3326-.3251-.6162-.6156-1.1041-2.0574-3.6896-1.3193-4.7446.3795-.5427 1.3408-.5661 2.1781-.463zm.2284 7.0137a12.3762 12.3762 0 0 0-.0853-.1074l-.0355-.0444c.7262-1.1995.5842-2.3862.4578-3.4385-.0519-.4318-.1009-.8396-.0885-1.2226.0129-.4061.0666-.7543.1185-1.0911.0639-.415.1288-.8443.1109-1.3505.0134-.0531.0188-.1158.0118-.1902-.0457-.4855-.5999-1.938-1.7294-3.253-.6076-.7073-1.4896-1.4972-2.6889-2.0395.5251-.1066 1.2328-.2035 2.0244-.1859 2.0515.0456 3.6746.8135 4.8242 2.2824a.908.908 0 0 1 .0667.1002c.7231 1.3556-.2762 6.2751-2.9867 10.5405zm-8.8166-6.1162c-.025.1794-.3089.4225-.6211.4225a.5821.5821 0 0 1-.0809-.0056c-.1873-.026-.3765-.144-.5059-.3156-.0458-.0605-.1203-.178-.1055-.2844.0055-.0401.0261-.0985.0925-.1488.1182-.0894.3518-.1226.6096-.0867.3163.0441.6426.1938.6113.4186zm7.9305-.4114c.0111.0792-.049.201-.1531.3102-.0683.0717-.212.1961-.4079.2232a.5456.5456 0 0 1-.075.0052c-.2935 0-.5414-.2344-.5607-.3717-.024-.1765.2641-.3106.5611-.352.297-.0414.6111.0088.6356.1851z',
+  redis: 'M22.71 13.145c-1.66 2.092-3.452 4.483-7.038 4.483-3.203 0-4.397-2.825-4.48-5.12.701 1.484 2.073 2.685 4.214 2.63 4.117-.133 6.94-3.852 6.94-7.239 0-4.05-3.022-6.972-8.268-6.972-3.752 0-8.4 1.428-11.455 3.685C2.59 6.937 3.885 9.958 4.35 9.626c2.648-1.904 4.748-3.13 6.784-3.744C8.12 9.244.886 17.05 0 18.425c.1 1.261 1.66 4.648 2.424 4.648.232 0 .431-.133.664-.365a100.49 100.49 0 0 0 5.54-6.765c.222 3.104 1.748 6.898 6.014 6.898 3.819 0 7.604-2.756 9.33-8.965.2-.764-.73-1.361-1.261-.73zm-4.349-5.013c0 1.959-1.926 2.922-3.685 2.922-.941 0-1.664-.247-2.235-.568 1.051-1.592 2.092-3.225 3.21-4.973 1.972.334 2.71 1.43 2.71 2.619z',
+  docker: 'M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.185v1.888c0 .102.083.185.185.185m-2.954-5.43h2.118a.186.186 0 00.186-.186V3.574a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.185.185.186m-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.185.185.186m-2.964 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.136a.186.186 0 00-.186.185v1.887c0 .102.084.185.186.186m5.893 2.715h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185m-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.083.185.185.185m-2.964 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.184-.186h-2.12a.186.186 0 00-.186.186v1.887c0 .102.084.185.186.185m-2.92 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.184.185v1.888c0 .102.082.185.185.185M23.763 9.89c-.065-.051-.672-.51-1.954-.51-.338.001-.676.03-1.01.087-.248-1.7-1.653-2.53-1.716-2.566l-.344-.199-.226.327c-.284.438-.49.922-.612 1.43-.23.97-.09 1.882.403 2.661-.595.332-1.55.413-1.744.42H.751a.751.751 0 00-.75.748 11.376 11.376 0 00.692 4.062c.545 1.428 1.355 2.48 2.41 3.124 1.18.723 3.1 1.137 5.275 1.137.983.003 1.963-.086 2.93-.266a12.248 12.248 0 003.823-1.389c.98-.567 1.86-1.288 2.61-2.136 1.252-1.418 1.998-2.997 2.553-4.4h.221c1.372 0 2.215-.549 2.68-1.009.309-.293.55-.65.707-1.046l.098-.288Z',
+};
+
+
+/* =====================================================================
+   Geometry — 4 isometric plates in an exploded stack (desktop only).
+   Each node lives in the 2D plane of its plate: (layer, lx, ly). z comes from the layer.
+   ===================================================================== */
+const NH = 52;                                   // node height (plate units)
+const STAGE_W = 724, STAGE_H = 800;              // stage (screen units before the CSS scale)
+const GAP = 165, TH = 18, K = 0.84, CX = 362, CY = 552;
+const LAYERS = ['fw', 'ia', 'uc', 'en'];
+const LI = { fw: 0, ia: 1, uc: 2, en: 3 };
+const PLATES = {   // rows sit toward the FRONT of each plate so nodes and riser heads are not hidden by the plate above
+  fw: { id: 'fw', title: 'Frameworks & Drivers', cls: 'l1', w: 520, h: 460, docker: true, rows: { top: 290, bottom: 400 }, slots: { top: [135, 300], bottom: [140, 320] }, extra: { top: [440, 290], bottom: [440, 290] } },
+  ia: { id: 'ia', title: 'Interface Adapters',   cls: 'l2', w: 450, h: 390, rows: { top: 245, bottom: 335 }, slots: { top: [225], bottom: [130, 335] }, extra: { top: [390, 245], bottom: [390, 245] } },
+  uc: { id: 'uc', title: 'Use Cases',            cls: 'l3', w: 400, h: 330, rows: { top: 195, bottom: 275 }, slots: { top: [140], bottom: [255] }, extra: { top: [300, 195], bottom: [300, 195] } },
+  en: { id: 'en', title: 'Entities',             cls: 'l4', w: 330, h: 250, rows: { mid: 160 }, slots: { mid: [] }, extra: { mid: [260, 60] } },
+};
+const LAYER_ORDER = ['en', 'uc', 'ia', 'fw'];
+// projection state (parallax changes yaw/pitch; the collapse/breathing change the per-layer z)
+const VIEW = { yaw: 0, pitch: 0, z: { fw: 0, ia: GAP, uc: 2 * GAP, en: 3 * GAP }, dy: { fw: 0, ia: 0, uc: 0, en: 0 } };
+function uvOf(layer, lx, ly) { const P = PLATES[layer]; return { u: ly - P.h / 2, v: -(lx - P.w / 2) }; }
+function lxyOf(layer, u, v) { const P = PLATES[layer]; return { lx: P.w / 2 - v, ly: u + P.h / 2 }; }
+function projUV(u, v, z, layer) {
+  const cs = Math.cos(VIEW.yaw), sn = Math.sin(VIEW.yaw);
+  const u2 = u * cs - v * sn, v2 = u * sn + v * cs;
+  const m = 0.5 * K * (1 + VIEW.pitch);
+  return { x: CX + (u2 - v2) * 0.866 * K, y: CY - z * K + (u2 + v2) * m + (layer ? VIEW.dy[layer] : 0) };
+}
+// a 3D point: {layer, lx, ly, dz} (on a plate), or {sx, sy} (screen)
+function P(pt) {
+  if (pt.sx != null) return { x: pt.sx, y: pt.sy };
+  const { u, v } = uvOf(pt.layer, pt.lx, pt.ly);
+  return projUV(u, v, VIEW.z[pt.layer] + (pt.dz || 0), pt.layer);
+}
+// affine matrix of a plate's top face: local (lx, ly) → screen
+function faceMatrix(layer) {
+  const o = P({ layer, lx: 0, ly: 0 }), ex = P({ layer, lx: 1, ly: 0 }), ey = P({ layer, lx: 0, ly: 1 });
+  return { a: ex.x - o.x, b: ex.y - o.y, c: ey.x - o.x, d: ey.y - o.y, e: o.x, f: o.y };
+}
+function toLocal(layer, x, y) { const m = faceMatrix(layer); const det = m.a * m.d - m.b * m.c; const dx = x - m.e, dy = y - m.f; return { lx: (dx * m.d - dy * m.c) / det, ly: (m.a * dy - m.b * dx) / det }; }
+const DOMAINS = {
+  orders:        { ent: ['Order', 'Customer'],        uc: ['PlaceOrder', 'CancelOrder'],   ctrl: 'OrderController',   repo: 'OrderRepository',  pres: 'OrderPresenter' },
+  auth:          { ent: ['User', 'Session'],          uc: ['LoginUser', 'RefreshToken'],   ctrl: 'AuthController',    repo: 'UserRepository',   pres: 'TokenPresenter' },
+  payments:      { ent: ['Payment', 'Invoice'],       uc: ['ChargeCard', 'RefundPayment'], ctrl: 'PaymentController', repo: 'PaymentGateway',   pres: 'ReceiptPresenter' },
+  notifications: { ent: ['Notification', 'Channel'], uc: ['SendAlert', 'ScheduleDigest'], ctrl: 'NotifyController',  repo: 'NotificationRepo', pres: 'DigestPresenter' },
+};
+const ERROR_POOL = ['dep', 'wrongLayer', 'typo', 'failing', 'circular', 'dup', 'hal', 'orphan', 'naming'];
+const MICRO_POOL = ['undo', 'pin', 'sameNode', 'guides', 'marquee', 'typeDelete'];
+
+/* ---- seeded RNG ---- */
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function fmix32(h) { h >>>= 0; h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b) >>> 0; h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35) >>> 0; h ^= h >>> 16; return h >>> 0; }  // murmur3 finalizer: small seeds stop being biased
+function makeR(seed) {
+  const rng = mulberry32(fmix32(seed));
+  const R = { rng, pick: a => a[Math.floor(rng() * a.length)], range: (a, b) => a + rng() * (b - a), J: d => d * (1 + (rng() * 2 - 1) * 0.12), chance: p => rng() < p };
+  R.shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rng() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  return R;
+}
+
+/* =====================================================================
+   DOM helpers & pools
+   ===================================================================== */
+const svgNS = 'http://www.w3.org/2000/svg';
+const el = (tag, attrs = {}, parent) => { const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; };
+const $ = s => document.querySelector(s);
+const scene = $('#scene'), stage = $('#stage'), overlay = $('#overlay'), canvas = $('#canvas');
+const gStack = $('#stack'), gFx = $('#fx'), gSels = $('#sels'), gHeads = $('#heads');
+const chipOk = $('#chipOk'), chipOkTxt = chipOk.querySelector('.txt'), chipOkBar = chipOk.querySelector('.bar i'), shipBtn = $('#ship'), rebuildBtn = $('#rebuild');
+const termEl = $('#term'), termLs = termEl.querySelector('.ls'), marqueeEl = $('#marquee'), pinEl = $('#pin'), gvEl = $('#gv'), ghEl = $('#gh'), measureEl = $('#measure');
+
+const cache = new Map();
+const setAttr = (e, k, v) => { let m = cache.get(e); if (!m) { m = {}; cache.set(e, m); } if (m[k] !== v) { m[k] = v; e.setAttribute(k, v); } };
+const setStyle = (e, k, v) => { let m = cache.get(e); if (!m) { m = {}; cache.set(e, m); } const kk = '$' + k; if (m[kk] !== v) { m[kk] = v; e.style[k] = v; } };
+const setText = (e, v) => { let m = cache.get(e); if (!m) { m = {}; cache.set(e, m); } if (m.text !== v) { m.text = v; e.textContent = v; } };
+const setCls = (e, c, on) => { let m = cache.get(e); if (!m) { m = {}; cache.set(e, m); } const kk = '.' + c; if (m[kk] !== on) { m[kk] = on; e.classList.toggle(c, on); } };
+
+// measurement
+const measureCache = new Map();
+function textW(s) { if (!measureCache.has(s)) { measureEl.textContent = s; let w = 0; try { w = measureEl.getComputedTextLength(); } catch (e) {} if (!w) w = s.length * 10.8; measureCache.set(s, w); } return measureCache.get(s); }
+const nodeW = n => Math.round(32 + Math.max(textW(n.label), textW(n.typed || '')) + (n.icon ? 30 : 0));
+
+// selection boxes pool (2), chips pool (5), toasts pool (3)
+const SELS = Array.from({ length: 2 }, () => { const g = el('g', { class: 'sel', style: 'display:none' }, gSels); const box = el('polygon', { class: 'box' }, g); const hs = Array.from({ length: 4 }, () => el('rect', { class: 'h', width: 6, height: 6 }, g)); return { g, box, hs }; });
+const CHIPS = Array.from({ length: 5 }, () => { const d = document.createElement('div'); d.className = 'chip warn'; overlay.appendChild(d); return d; });
+const TOASTS = Array.from({ length: 3 }, () => { const d = document.createElement('div'); d.className = 'toast'; overlay.appendChild(d); return d; });
+
+// cursors
+const CURSOR_PATH = 'M0 0 L0 16.2 L4.3 12.6 L7.2 18.6 L9.9 17.4 L7 11.6 L12.5 11.6 Z';
+function makeCursor(cls, name) {
+  const d = document.createElement('div'); d.className = 'cursor ' + cls;
+  d.innerHTML = `<svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><div class="tag"><span class="name">${name}</span><span class="bubble"></span></div>`;
+  overlay.appendChild(d);
+  const col = `var(--${cls === 'ia' ? 'ia' : 'action'})`;
+  const ghosts = [];
+  for (let i = 0; i < 6; i++) { const g = document.createElement('div'); g.className = 'ghost'; g.style.setProperty('--c', col); g.innerHTML = `<svg viewBox="0 0 14 19"><path d="${CURSOR_PATH}"/></svg>`; overlay.insertBefore(g, d); ghosts.push(g); }
+  return { el: d, svg: d.querySelector('svg'), name: d.querySelector('.name'), bubble: d.querySelector('.bubble'), ghosts,
+           smear: el('line', { 'stroke-linecap': 'round', 'stroke-width': 3, opacity: 0, stroke: col }, gFx),
+           speed: Array.from({ length: 3 }, () => el('line', { 'stroke-linecap': 'round', 'stroke-width': 1.2, opacity: 0, stroke: col }, gFx)),
+           ripple: el('circle', { fill: 'none', 'stroke-width': 1.5, opacity: 0, stroke: col }, gFx) };
+}
+const UI = { ia: makeCursor('ia', 'IA'), fb: makeCursor('fb', 'Felipebc2') };
+const youEl = document.createElement('div'); youEl.className = 'cursor you'; youEl.innerHTML = `<svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><div class="tag"><span class="name">You</span></div>`; overlay.appendChild(youEl);
+
+/* =====================================================================
+   Easing & motion helpers
+   ===================================================================== */
+const EASE_MOVE = cubicBezier(0.36, 0.02, 0.12, 1);
+const EASE_DRAG = cubicBezier(0.3, 0, 0.18, 1);
+const EASE_OUT = cubicBezier(0.22, 1, 0.36, 1);
+const EASE_IO = cubicBezier(0.65, 0, 0.35, 1);
+const OVER = new Map();
+function overshootEase(k) { const q = Math.round(k * 50) / 50; if (!OVER.has(q)) OVER.set(q, cubicBezier(0.55, -0.7 * q, 0.18, 1 + q)); return OVER.get(q); }
+function makeSpring(stiffness, damping) { const g = spring({ keyframes: [0, 1], stiffness, damping, mass: 1 }); return s => g.next(Math.max(0, s) * 1000).value; }
+const SPR_POP = makeSpring(520, 22), SPR_SNAP = makeSpring(700, 18), SPR_CHIP = makeSpring(420, 20), SPR_DROP = makeSpring(600, 16), SPR_BACK = makeSpring(300, 14);
+const qbez = (p0, c, p1, t) => { const u = 1 - t; return { x: u * u * p0.x + 2 * u * t * c.x + t * t * p1.x, y: u * u * p0.y + 2 * u * t * c.y + t * t * p1.y }; };
+const prog = (t, t0, t1) => clamp(0, 1, (t - t0) / Math.max(1e-6, t1 - t0));
+const lerp = (a, b, p) => a + (b - a) * p;
+
+/* =====================================================================
+   Orthogonal router — grid A* with bend penalty and lane spreading.
+   Runs at episode build (not per frame).
+   ===================================================================== */
+const CELL = 8, COLS = 80, ROWS = 60;
+const DIRS = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+function makeRouter(obstacles) {
+  const blocked = new Uint8Array(COLS * ROWS), used = new Uint8Array(COLS * ROWS);
+  const block = (x, y, w, h, pad) => { const c0 = Math.max(0, Math.floor((x - pad) / CELL)), c1 = Math.min(COLS - 1, Math.floor((x + w + pad) / CELL)), r0 = Math.max(0, Math.floor((y - pad) / CELL)), r1 = Math.min(ROWS - 1, Math.floor((y + h + pad) / CELL)); for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) blocked[r * COLS + c] = 1; };
+  obstacles.forEach(o => block(o.x, o.y, o.w, o.h, o.pad ?? 10));
+  // soft penalty for cells hugging the plate border (keeps arrows away from the edge)
+  const edge = new Uint8Array(COLS * ROWS);
+  if (obstacles.bounds) { const f = obstacles.bounds; for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) { const cx = c * CELL + CELL / 2, cy = r * CELL + CELL / 2;
+    if (cx < f.x || cx > f.x + f.w || cy < f.y || cy > f.y + f.h) { blocked[r * COLS + c] = 1; continue; }
+    const d = Math.min(cx - f.x, f.x + f.w - cx, cy - f.y, f.y + f.h - cy); edge[r * COLS + c] = d < 14 ? 6 : d < 24 ? 2 : 0; } }
+  const cellOf = p => [clamp(0, COLS - 1, Math.floor(p.x / CELL)), clamp(0, ROWS - 1, Math.floor(p.y / CELL))];
+  const g = new Float32Array(COLS * ROWS * 4), came = new Int32Array(COLS * ROWS * 4), closed = new Uint8Array(COLS * ROWS * 4);
+  function astar(sc, sd, tc, allow) {
+    g.fill(1e9); came.fill(-1); closed.fill(0);
+    const heap = []; const push = (f, s) => { heap.push([f, s]); let i = heap.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (heap[p][0] <= heap[i][0]) break; [heap[p], heap[i]] = [heap[i], heap[p]]; i = p; } };
+    const pop = () => { const top = heap[0], last = heap.pop(); if (heap.length) { heap[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < heap.length && heap[l][0] < heap[m][0]) m = l; if (r < heap.length && heap[r][0] < heap[m][0]) m = r; if (m === i) break; [heap[m], heap[i]] = [heap[i], heap[m]]; i = m; } } return top; };
+    const h = (c, r) => Math.abs(c - tc[0]) + Math.abs(r - tc[1]);
+    const s0 = (sc[1] * COLS + sc[0]) * 4 + sd; g[s0] = 0; push(h(sc[0], sc[1]), s0);
+    let best = -1, iter = 0;
+    while (heap.length && iter++ < 40000) {
+      const [, s] = pop(); if (closed[s]) continue; closed[s] = 1;
+      const cell = s >> 2, d = s & 3, c = cell % COLS, r = (cell / COLS) | 0;
+      if (c === tc[0] && r === tc[1]) { best = s; break; }
+      for (let nd = 0; nd < 4; nd++) {
+        if ((nd ^ 1) === d) continue; // no U-turn
+        const nc = c + DIRS[nd][0], nr = r + DIRS[nd][1]; if (nc < 0 || nr < 0 || nc >= COLS || nr >= ROWS) continue;
+        const ncell = nr * COLS + nc; if (blocked[ncell] && !allow.has(ncell)) continue;
+        const ns = ncell * 4 + nd; if (closed[ns]) continue;
+        const cost = 1 + (nd !== d ? 6 : 0) + used[ncell] * 1.5 + edge[ncell];
+        const ng = g[s] + cost; if (ng < g[ns]) { g[ns] = ng; came[ns] = s; push(ng + h(nc, nr), ns); }
+      }
+    }
+    if (best < 0) return null;
+    const cells = []; for (let s = best; s >= 0; s = came[s]) cells.push(s >> 2);
+    cells.reverse(); return { cells, cost: g[best] };
+  }
+  return {
+    route(from, to, sides) {
+      // sides: candidate {s: sourceSide, t: targetSide} list. Returns {pts, cells}
+      let bestR = null;
+      for (const cand of sides) {
+        const sp = portOf(from, cand.s), tp = portOf(to, cand.t);
+        const sOut = { x: sp.x + SIDE_N[cand.s][0] * 11, y: sp.y + SIDE_N[cand.s][1] * 11 }, tOut = { x: tp.x + SIDE_N[cand.t][0] * 11, y: tp.y + SIDE_N[cand.t][1] * 11 };
+        const sc = cellOf(sOut), tc = cellOf(tOut);
+        const allow = new Set([sc[1] * COLS + sc[0], tc[1] * COLS + tc[0]]);
+        for (const n of [from, to]) { const c0 = Math.max(0, Math.floor((n.px - n.w / 2 - 12) / CELL)), c1 = Math.min(COLS - 1, Math.floor((n.px + n.w / 2 + 12) / CELL)), r0 = Math.max(0, Math.floor((n.py - NH / 2 - 12) / CELL)), r1 = Math.min(ROWS - 1, Math.floor((n.py + NH / 2 + 12) / CELL)); for (let r = r0; r <= r1; r++) for (let c = c0; c <= c1; c++) allow.add(r * COLS + c); }
+        const r = astar(sc, SIDE_D[cand.s], tc, allow);
+        if (r && (!bestR || r.cost < bestR.cost)) bestR = { ...r, sp, tp, s: cand.s, t: cand.t };
+      }
+      if (!bestR) return null;
+      // polyline from cells (compress), then attach the port stubs and keep everything orthogonal
+      const pts = bestR.cells.map(cell => ({ x: (cell % COLS) * CELL + CELL / 2, y: ((cell / COLS) | 0) * CELL + CELL / 2 }));
+      const C = [pts[0]]; for (let i = 1; i < pts.length - 1; i++) { const a = C[C.length - 1], b = pts[i], c = pts[i + 1]; if ((a.x === b.x && b.x === c.x) || (a.y === b.y && b.y === c.y)) continue; C.push({ ...b }); } if (pts.length > 1) C.push({ ...pts[pts.length - 1] });
+      const vert = s => s === 'top' || s === 'bottom', n = C.length;
+      const sp = bestR.sp, tp = bestR.tp;
+      const s0 = { ...C[0] }, e0 = { ...C[n - 1] };
+      if (vert(bestR.s)) { s0.x = sp.x; if (n > 1 && C[1].x === C[0].x) C[1].x = sp.x; } else { s0.y = sp.y; if (n > 1 && C[1].y === C[0].y) C[1].y = sp.y; }
+      if (vert(bestR.t)) { e0.x = tp.x; if (n > 1 && C[n - 2].x === C[n - 1].x) C[n - 2].x = tp.x; } else { e0.y = tp.y; if (n > 1 && C[n - 2].y === C[n - 1].y) C[n - 2].y = tp.y; }
+      const raw = n === 1 ? [sp, s0, e0, tp] : [sp, s0, ...C.slice(1, -1), e0, tp];
+      // orthogonalize: insert a corner wherever two consecutive points are diagonal (continue the previous direction)
+      const Q = [raw[0]];
+      for (let i = 1; i < raw.length; i++) { const a = Q[Q.length - 1], b = raw[i]; if (a.x === b.x && a.y === b.y) continue;
+        if (a.x !== b.x && a.y !== b.y) { const prev = Q.length > 1 ? Q[Q.length - 2] : null; const wasVert = prev ? prev.x === a.x : vert(bestR.s); Q.push(wasVert ? { x: a.x, y: b.y } : { x: b.x, y: a.y }); }
+        Q.push({ x: b.x, y: b.y }); }
+      // remove one-cell jogs in the interior (shift the short segment onto its neighbour)
+      for (let i = 2; i < Q.length - 3; i++) { const a = Q[i], b = Q[i + 1], dx = b.x - a.x, dy = b.y - a.y; if (Math.hypot(dx, dy) < 9) { Q[i + 1] = { x: a.x, y: a.y }; Q[i + 2] = { x: Q[i + 2].x - dx, y: Q[i + 2].y - dy }; } }
+      const F = [Q[0]]; for (let i = 1; i < Q.length - 1; i++) { const a = F[F.length - 1], b = Q[i], c = Q[i + 1]; if ((a.x === b.x && a.y === b.y) || (a.x === b.x && b.x === c.x) || (a.y === b.y && b.y === c.y)) continue; F.push(b); } F.push(Q[Q.length - 1]);
+      bestR.cells.forEach(c => { used[c] = Math.min(4, used[c] + 2); const cc = c % COLS, rr = (c / COLS) | 0; for (const [dx, dy] of DIRS) { const nc = cc + dx, nr = rr + dy; if (nc >= 0 && nr >= 0 && nc < COLS && nr < ROWS) used[nr * COLS + nc] = Math.min(4, used[nr * COLS + nc] + 1); } });
+      return { pts: F, s: bestR.s, t: bestR.t };
+    }
+  };
+}
+const SIDE_N = { top: [0, -1], bottom: [0, 1], left: [-1, 0], right: [1, 0] };
+const SIDE_D = { right: 0, left: 1, bottom: 2, top: 3 };
+function portOf(n, side) { const x = n.px ?? n.x, y = n.py ?? n.y; return side === 'top' ? { x, y: y - NH / 2 } : side === 'bottom' ? { x, y: y + NH / 2 } : side === 'left' ? { x: x - n.w / 2, y } : { x: x + n.w / 2, y }; }
+function sideCandidates(a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y;
+  const sv = dy < 0 ? 'top' : 'bottom', sh = dx < 0 ? 'left' : 'right';
+  const tv = dy < 0 ? 'bottom' : 'top', th = dx < 0 ? 'right' : 'left';
+  const out = [{ s: sv, t: tv }];
+  if (Math.abs(dx) > 30) { out.push({ s: sv, t: th }); out.push({ s: sh, t: tv }); }
+  if (Math.abs(dy) > 60 && Math.abs(dx) > 120) out.push({ s: sv, t: tv === 'bottom' ? 'top' : 'bottom' });
+  return out;
+}
+function roundedPath(P, r0 = 8) {
+  if (P.length < 2) return '';
+  let d = `M${P[0].x} ${P[0].y}`;
+  for (let i = 1; i < P.length - 1; i++) {
+    const a = P[i - 1], b = P[i], c = P[i + 1];
+    const l1 = Math.hypot(b.x - a.x, b.y - a.y), l2 = Math.hypot(c.x - b.x, c.y - b.y);
+    const r = Math.min(r0, l1 / 2, l2 / 2);
+    const u1 = { x: (b.x - a.x) / (l1 || 1), y: (b.y - a.y) / (l1 || 1) }, u2 = { x: (c.x - b.x) / (l2 || 1), y: (c.y - b.y) / (l2 || 1) };
+    d += ` L${(b.x - u1.x * r).toFixed(1)} ${(b.y - u1.y * r).toFixed(1)} Q${b.x} ${b.y} ${(b.x + u2.x * r).toFixed(1)} ${(b.y + u2.y * r).toFixed(1)}`;
+  }
+  const e = P[P.length - 1]; d += ` L${e.x} ${e.y}`;
+  return d;
+}
+// cheap Z-route (used while a node is being dragged in the easter egg)
+function zRoute(a, b) { const sp = portOf(a, b.y < a.y ? 'top' : 'bottom'), tp = portOf(b, b.y < a.y ? 'bottom' : 'top'); const my = (sp.y + tp.y) / 2; return [sp, { x: sp.x, y: my }, { x: tp.x, y: my }, tp]; }
+
+/* =====================================================================
+   Episode generator — seeded. Produces nodes, arrows and a declarative
+   event list on a master clock (seconds at 1×). render(t) stays pure.
+   ===================================================================== */
+let ep_routers = {};
+const LS_KEY = 'hero.lastErrors';
+const lsGet = () => { try { return localStorage.getItem(LS_KEY) || ''; } catch (e) { return ''; } };
+const lsSet = v => { try { localStorage.setItem(LS_KEY, v); } catch (e) {} };
+
+function drawParams(seed, noAvoid) {
+  const R = makeR(seed);
+  const domainKey = R.pick(Object.keys(DOMAINS));
+  const last = noAvoid ? '' : lsGet();
+  let errors, tries = 0;
+  do { errors = R.shuffle(ERROR_POOL).slice(0, 3).sort(); } while (errors.join() === last && tries++ < 30);
+  const micros = R.shuffle(MICRO_POOL).slice(0, Math.floor(R.rng() * 4));
+  const mode = R.chance(0.5) ? 'B' : 'C';
+  return { R, domainKey, errors, micros, mode };
+}
+function buildEpisode(seed, index, isFinal, fbStart) {
+  ep_routers = {};
+  const PR = drawParams(seed, false), R = PR.R;
+  const domainKey = PR.domainKey, D = DOMAINS[domainKey];
+  const errors = PR.errors; let micros = PR.micros; const mode = PR.mode;
+  const has = k => errors.includes(k);
+  const hasM = k => micros.includes(k);
+  const snake = s => s.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+  const swapTypo = s => { const i = 2 + Math.floor(R.rng() * (s.length - 4)); return s.slice(0, i) + s[i + 1] + s[i] + s.slice(i + 2); };
+
+  /* ---- nodes ---- */
+  const nodes = [
+    { id: 'ent1', label: D.ent[0], layer: 'en', band: 'mid', slot: 0 }, { id: 'ent2', label: D.ent[1], layer: 'en', band: 'mid', slot: 1 },
+    { id: 'uc1', label: D.uc[0], layer: 'uc', band: 'top', slot: 0 }, { id: 'uc2', label: D.uc[1], layer: 'uc', band: 'bottom', slot: 0 },
+    { id: 'ctrl', label: D.ctrl, layer: 'ia', band: 'top', slot: 0 }, { id: 'repo', label: D.repo, layer: 'ia', band: 'bottom', slot: 0 }, { id: 'pres', label: D.pres, layer: 'ia', band: 'bottom', slot: 1 },
+    { id: 'web', label: 'Web UI', icon: 'next', layer: 'fw', band: 'top', slot: 0 }, { id: 'api', label: 'REST API', icon: 'fastapi', layer: 'fw', band: 'top', slot: 1 },
+    { id: 'db', label: 'PostgreSQL', icon: 'postgres', layer: 'fw', band: 'bottom', slot: 0 }, { id: 'cache', label: 'Redis', icon: 'redis', layer: 'fw', band: 'bottom', slot: 1 },
+  ];
+  const N = Object.fromEntries(nodes.map(n => [n.id, n]));
+  // error → node assignment (disjoint where it matters)
+  const E = {};
+  if (has('wrongLayer')) E.wrongLayer = 'repo';
+  if (has('dup')) E.dup = E.wrongLayer ? 'pres' : 'repo';
+  if (has('naming')) E.naming = ['repo', 'pres', 'ctrl'].find(id => id !== E.wrongLayer && id !== E.dup);
+  if (has('typo')) E.typo = R.pick(['uc2', 'ctrl', 'uc1'].filter(id => id !== E.naming && !(id === 'uc1' && has('failing'))));
+  if (has('orphan')) E.orphan = E.dup === 'pres' ? 'cache' : 'pres';
+  if (has('failing')) E.failing = 'uc1';
+  if (has('dep') || E.orphan === 'cache') micros = micros.filter(m => m !== 'marquee');
+  if (E.typo) N[E.typo].typed = swapTypo(N[E.typo].label);
+  if (E.naming) N[E.naming].typed = snake(N[E.naming].label);
+  if (has('hal')) nodes.push({ id: 'hal', label: 'left-pad-ai', layer: 'fw', band: 'top', extra: true });
+  if (E.dup) nodes.push({ id: 'dup', label: N[E.dup].label, layer: 'ia', band: 'bottom', dupOf: E.dup, extra: true });
+  nodes.forEach(n => { N[n.id] = n; n.w = nodeW(n); n.spans = []; n.types = []; n.moves = []; n.flags = []; });
+  // positions: plate-local (lx, ly) on the node's own plate
+  for (const n of nodes) {
+    const Pl = PLATES[n.layer];
+    if (n.layer === 'en') continue;
+    n.ly = Pl.rows[n.band];
+    if (n.extra) { n.lx = Pl.extra[n.band][0]; n.ly = Pl.extra[n.band][1]; } else n.lx = Pl.slots[n.band][n.slot];
+  }
+  { const a = N.ent1, b = N.ent2, total = a.w + 20 + b.w, cx = PLATES.en.w / 2; a.lx = cx - total / 2 + a.w / 2; b.lx = cx + total / 2 - b.w / 2; a.ly = b.ly = PLATES.en.rows.mid; }
+  if (N.dup) { N.dup.lx = N[E.dup].lx + 24; N.dup.ly = N[E.dup].ly + 18; }
+  // start state (plate + position before the fixes / micro moves)
+  nodes.forEach(n => { n.sLayer = n.layer; n.slx = n.lx; n.sly = n.ly; });
+  if (E.wrongLayer) { N.repo.sLayer = 'uc'; N.repo.slx = PLATES.uc.extra.top[0]; N.repo.sly = PLATES.uc.extra.top[1]; }
+  const moved = new Set();
+  if (E.wrongLayer) moved.add('repo');
+  if (hasM('marquee')) { ['db', 'cache'].forEach(id => { N[id].sly = N[id].ly + 12; moved.add(id); }); }
+  if (hasM('guides')) { N.ent2.slx = N.ent2.lx + 8; N.ent2.sly = N.ent2.ly + 6; moved.add('ent2'); }
+  nodes.forEach(n => { n.cur = { layer: n.sLayer, lx: n.slx, ly: n.sly }; }); // "current" during the build (cursor targets)
+
+  /* ---- arrows (all point inward) ---- */
+  const ARR = [['web', 'ctrl'], ['api', 'ctrl'], ['ctrl', 'uc1'], ['ctrl', 'uc2'], ['uc1', 'ent1'], ['uc2', 'ent2'], ['pres', 'uc2'], ['repo', 'uc1'], ['db', 'repo'], ['cache', 'repo']];
+  const arrows = ARR.map(([f, t], i) => ({ id: 'a' + i, from: N[f], to: N[t], kind: 'normal' }));
+  const AR = Object.fromEntries(arrows.map(a => [a.from.id + '>' + a.to.id, a]));
+  if (has('dep')) arrows.push({ id: 'bad', from: N.ent1, to: N.db, kind: 'bad' });
+  if (has('circular')) { arrows.push({ id: 'c1', from: N.uc1, to: N.uc2, kind: 'circ' }); arrows.push({ id: 'c2', from: N.uc2, to: N.uc1, kind: 'circ2' }); }
+  // cross-layer arrows are risers (vertical, anchored on the FRONT edge of the outer node); same-plate arrows are routed orthogonally on the face
+  for (const a of arrows) {
+    if (a.from.layer !== a.to.layer) {
+      a.riser = true; const src = a.kind === 'bad' ? a.from : a.from;   // the bad one hangs DOWN from the entity
+      a.anchor = { layer: src.sLayer, lx: src.slx, ly: src.sly + NH / 2 - 6 };  // start plate of the source (the wrongLayer node's risers are drawn after it moved → fixed below)
+      a.up = LI[a.to.layer] > LI[a.from.layer];
+      a.topLayer = a.up ? a.to.layer : a.from.layer; a.bottomLayer = a.up ? a.from.layer : a.to.layer;
+    } else {
+      const layer = a.from.layer, Pl = PLATES[layer];
+      const obstacles = nodes.filter(n => !n.extra && n.layer === layer && n !== a.from && n !== a.to).map(n => ({ x: n.lx - n.w / 2, y: n.ly - NH / 2, w: n.w, h: NH }));
+      obstacles.bounds = { x: 0, y: 0, w: Pl.w, h: Pl.h };
+      if (!ep_routers[layer]) ep_routers[layer] = makeRouter(obstacles);
+      nodes.forEach(n => { n.px = n.lx; n.py = n.ly; });
+      const r = ep_routers[layer].route(a.from, a.to, sideCandidates({ x: a.from.lx, y: a.from.ly }, { x: a.to.lx, y: a.to.ly }));
+      a.pts = r ? r.pts : zRoute(a.from, a.to); a.layer = layer;
+    }
+  }
+  // risers from nodes that move first (wrongLayer / marquee / guides) use the FINAL anchor — they are drawn after the move
+  for (const a of arrows) if (a.riser && moved.has(a.from.id)) a.anchor = { layer: a.from.layer, lx: a.from.lx, ly: a.from.ly + NH / 2 - 6 };
+
+  /* ---- timeline ---- */
+  const ep = { seed, index, isFinal, domain: domainKey, errors, micros, mode, nodes, N, arrows, AR, chips: [], sels: [], toasts: [], termLines: [], commits: [], acts: {}, wander: [] };
+  const S = (sx, sy) => ({ sx, sy });
+  const ACT = { ia: { moves: [], clicks: [], says: [], pos0: S(820, 60), flip: 1 }, fb: { moves: [], clicks: [], says: [], pos0: fbStart || S(-80, 760), flip: -1 } };
+  ep.actors = ACT;
+  let now = 0;
+  const act = name => { ep.acts[name] = now; };
+  const pos = k => { const m = ACT[k].moves; return m.length ? m[m.length - 1].to : ACT[k].pos0; };
+  function ctrlFor(k, from3, to3, bend) {   // control point in screen space (default view)
+    const from = P(from3), to = P(to3);
+    const a = ACT[k], dx = to.x - from.x, dy = to.y - from.y, len = Math.hypot(dx, dy) || 1;
+    if (bend == null) { bend = len < 70 ? 0 : R.range(0.08, 0.2) * a.flip; a.flip *= -1; }
+    return S((from.x + to.x) / 2 + (dy / len) * bend * len, (from.y + to.y) / 2 - (dx / len) * bend * len);
+  }
+  const off = (pt, dx, dy) => pt.sx != null ? S(pt.sx + dx, pt.sy + dy) : { ...pt, lx: pt.lx + dx, ly: pt.ly + dy };
+  function moveTo(k, to, dur, o = {}) {
+    const from = { ...pos(k) }; dur = o.raw ? dur : R.J(dur);
+    ACT[k].moves.push({ t0: now, t1: now + dur, from, to, c: o.c || ctrlFor(k, from, to, o.bend), ease: o.ease || EASE_MOVE, human: !o.c && !o.noHuman });
+    now += dur; return to;
+  }
+  const wait = d => { now += R.J(d); };
+  function click(k, o = {}) { now += o.pause ?? R.range(0.05, 0.1); const p = pos(k); ACT[k].clicks.push({ t: now, pt: p }); now += 0.07; }
+  function say(k, key, t0, t1) { ACT[k].says.push({ key, t0, t1 }); }
+  function typing(n, from, to, t0, cps) {
+    let i = 0; while (i < from.length && i < to.length && from[i] === to[i]) i++;
+    const frames = []; for (let k = from.length; k > i; k--) frames.push(from.slice(0, k - 1)); for (let k = i + 1; k <= to.length; k++) frames.push(to.slice(0, k));
+    if (!frames.length) frames.push(to);
+    const dur = frames.length / cps; n.types.push({ t0, t1: t0 + dur, frames }); return t0 + dur;
+  }
+  const nodeCursor = n => ({ layer: n.cur.layer, lx: n.cur.lx - n.w / 2 + 22, ly: n.cur.ly + 8 });
+  function nodeIn(n, o = {}) {
+    n.spans.push([now, Infinity]);
+    const target = n.typed || n.label; let tEnd;
+    if (o.typeDelete) { // types, stumbles, deletes, retypes
+      const k = 3 + Math.floor(R.rng() * 3), wrong = target.slice(0, k) + R.pick(['xz', 'qw', 'kk']);
+      const t1 = typing(n, '', wrong, now + 0.05, R.range(40, 50)); tEnd = typing(n, wrong, target, t1 + 0.18, R.range(36, 46));
+    } else tEnd = typing(n, '', target, now + 0.05, R.range(40, 52));
+    return tEnd;
+  }
+  const drawT = a => { if (a.riser) { a.len = Math.abs(LI[a.topLayer] - LI[a.bottomLayer]) * GAP * K; return clamp(0.26, 0.46, a.len / 700); } a.len = Math.max(60, a.pts.reduce((s, p, i) => i ? s + Math.hypot(p.x - a.pts[i - 1].x, p.y - a.pts[i - 1].y) : 0, 0)); return clamp(0.2, 0.38, a.len / 600); };
+  function drawArrow(k, a, o = {}) {
+    const start = a.riser ? { layer: a.anchor.layer, lx: a.anchor.lx, ly: a.anchor.ly } : { layer: a.layer, lx: a.pts[0].x, ly: a.pts[0].y };
+    const end = a.riser ? { layer: a.anchor.layer, lx: a.anchor.lx, ly: a.anchor.ly, dz: (LI[a.up ? a.to.layer : a.to.layer] - LI[a.anchor.layer]) * GAP } : { layer: a.layer, lx: a.pts[a.pts.length - 1].x, ly: a.pts[a.pts.length - 1].y };
+    moveTo(k, start, o.pre ?? 0.3);
+    const dur = R.J(o.dur ?? drawT(a)); a.draw = { t0: now, t1: now + dur };
+    ACT[k].moves.push({ t0: now, t1: now + dur, arrow: a, ease: EASE_IO, from: start, to: end }); now += dur;
+    if (a.kind === 'bad') a.bad = { t0: now + 0.05, t1: Infinity };
+  }
+  function removeArrow(a, dur = 0.26) { a.remove = { t0: now, t1: now + dur }; if (a.bad) a.bad.t1 = now; now += dur; }
+  function chip(key, n, t0, t1, dx = 0, dy = 0) { ep.chips.push({ key, pt: { layer: n.cur.layer, lx: n.cur.lx - n.w / 2 + 6, ly: n.cur.ly - NH / 2 }, dx, dy: dy - 38, t0, t1 }); return ep.chips[ep.chips.length - 1]; }
+  function commit(key, vars) { ep.commits.push({ t: now, key, vars }); }
+  function nodeMove(n, to, dur, o = {}) { // node is carried by the cursor; across plates it lifts in z (arc) and settles with a spring
+    const from = { ...n.cur };
+    n.moves.push({ t0: now, t1: now + dur, from, to, lift: from.layer !== to.layer ? 70 : 0, ease: EASE_DRAG });
+    ACT.fb.moves.push({ t0: now, t1: now + dur, follow: n, dx: 22 - n.w / 2, dy: 8, to: { layer: to.layer, lx: to.lx + 22 - n.w / 2, ly: to.ly + 8 } });
+    now += dur; n.cur = { ...to };
+  }
+  const selOn = (n, t0, t1) => ep.sels.push({ node: n, t0, t1 });
+
+  /* ---- ACT 1 · entrance ---- */
+  act('1 Entrada');
+  ep.plates = LAYERS.map((l, i) => ({ layer: l, t0: 0.05 + i * 0.22, t1: 0.05 + i * 0.22 + 0.7 }));   // plates drop in bottom → top (episode 0) / reopen (later episodes)
+  const SPOT = { fbIdle: S(70, 520), iaIdle: S(44, 190), fbTest: S(690, 690) };
+  now = 0.5; moveTo('ia', S(600, 140), 1.0, { bend: 0.12 });
+  now = 0.8; moveTo('fb', SPOT.fbIdle, 1.05, { bend: -0.12 });
+  now = 1.7;
+
+  /* ---- ACT 2 · IA scaffolds ---- */
+  act('2 IA monta');
+  const insideOut = R.chance(0.5);
+  const layers = insideOut ? ['en', 'uc', 'ia', 'fw'] : ['fw', 'ia', 'uc', 'en'];
+  const plain = nodes.filter(n => !n.extra);
+  const creation = [];
+  for (const l of layers) { const group = R.shuffle(plain.filter(n => n.layer === l)); for (const n of group) { creation.push(n); if (n.id === E.dup) creation.push(N.dup); if (n.layer === 'fw' && N.hal && n === group[group.length - 1]) creation.push(N.hal); } }
+  const undoNode = hasM('undo') ? R.pick(creation.filter(n => !n.extra && !n.typed && n.id !== E.failing).slice(1, -1)) : null;
+  const typeDelNode = hasM('typeDelete') ? R.pick(creation.filter(n => !n.extra && !n.typed && n !== undoNode)) : null;
+  const sameNode = hasM('sameNode') ? R.pick(creation.filter(n => !n.extra && n !== undoNode && n !== typeDelNode).slice(2, -1)) : null;
+  say('ia', 'scaffold', now, now + 2.4);
+  say('fb', 'watching', now + 0.8, now + 5.5);
+  let saidRepo = false, saidWiring = false;
+  for (const n of creation) {
+    if (n.id === 'repo' && !saidRepo) { saidRepo = true; say('ia', 'repo', now, now + 1.4); }
+    if (n.layer === 'fw' && !saidWiring) { saidWiring = true; say('ia', 'wiring', now, now + 1.5); }
+    const c = nodeCursor(n);
+    moveTo('ia', c, n.dupOf ? 0.16 : R.range(0.18, 0.26));
+    click('ia');
+    if (n.dupOf) { // ⌘V-ish paste: appears complete, no typing
+      n.spans.push([now, Infinity]); n.types.push({ t0: now, t1: now + 0.01, frames: [n.label] }); now += 0.22; continue;
+    }
+    const tEnd = nodeIn(n, { typeDelete: n === typeDelNode });
+    now = tEnd + R.range(0.04, 0.1);
+    if (n === undoNode) { say('ia', 'undo', now, now + 0.6); now += 0.12; n.spans[0][1] = now; now += 0.42; n.spans.push([now, Infinity]); n.types.push({ t0: now, t1: now + 0.01, frames: [n.label] }); now += 0.3; }
+    if (n === sameNode) { // both cursors on the same node; IA yields
+      const tf = now - 0.25; const save = now; now = tf; moveTo('fb', off(c, 30, 20), 0.5, { bend: 0.1 }); const tArrive = now; now = Math.max(save, tArrive);
+      say('ia', 'yours', now, now + 0.9); say('fb', 'goahead', now + 0.3, now + 1.1);
+      moveTo('ia', off(c, 80, -60), 0.3, { bend: 0.15 }); now += 0.25;
+      const t2 = now; now = tArrive + 0.9; moveTo('fb', SPOT.fbIdle, 0.7, { bend: -0.1 }); now = Math.max(now, t2);
+    }
+  }
+  // arrows by IA
+  const settled = id => !moved.has(id);
+  const excluded = new Set();
+  if (E.orphan) excluded.add(E.orphan === 'pres' ? 'pres>uc2' : 'cache>repo');
+  if (has('dep')) excluded.add('db>repo');
+  const normal = arrows.filter(a => a.kind === 'normal');
+  const cand = R.shuffle(normal.filter(a => settled(a.from.id) && settled(a.to.id) && !excluded.has(a.from.id + '>' + a.to.id)));
+  const iaArrows = cand.slice(0, Math.min(cand.length, 5 + Math.floor(R.rng() * 2)));
+  const restArrows = R.shuffle(normal.filter(a => !iaArrows.includes(a) && !excluded.has(a.from.id + '>' + a.to.id)));
+  say('ia', 'connect', now, now + 2.4);
+  const iaSeq = iaArrows.slice();
+  if (has('circular')) iaSeq.splice(1 + Math.floor(R.rng() * (iaSeq.length - 1)), 0, arrows.find(a => a.id === 'c1'), arrows.find(a => a.id === 'c2'));
+  if (has('dep')) iaSeq.push(arrows.find(a => a.id === 'bad'));
+  iaSeq.forEach((a, i) => drawArrow('ia', a, { pre: i ? R.range(0.12, 0.2) : 0.28 }));
+  if (has('circular')) { const c1 = arrows.find(a => a.id === 'c1'), c2 = arrows.find(a => a.id === 'c2'); c1.bad = { t0: c2.draw.t1 + 0.3, t1: Infinity }; c2.bad = { t0: c2.draw.t1 + 0.3, t1: Infinity }; }
+  const tIAdone = now;
+  moveTo('ia', SPOT.iaIdle, 0.7, { bend: 0.1 });
+  const tIAidle = now;
+
+  /* ---- ACT 3 · the mistakes light up ---- */
+  now = tIAdone; act('3 Erros');
+  let tf = now + 0.1;
+  const flag = (kind, n, chipKey) => { const f = { kind, t0: tf, t1: Infinity }; n.flags.push(f); const c = chipKey ? chip(chipKey, n, tf, Infinity) : null; tf += 0.28; return { f, c }; };
+  const FL = {};
+  if (has('dep')) { const a = arrows.find(x => x.id === 'bad'); FL.dep = { c: ep.chips[ep.chips.push({ key: 'dep', pt: { ...a.anchor, dz: -(LI.en - LI.fw) * GAP / 2 }, dx: 14, dy: -10, t0: tf, t1: Infinity }) - 1] }; tf += 0.28; }
+  if (E.wrongLayer) FL.wrongLayer = flag('badge', N.repo, 'wrongLayer');
+  if (E.typo) FL.typo = flag('squig', N[E.typo]);
+  if (E.naming) FL.naming = flag('squig', N[E.naming]);
+  if (has('circular')) { FL.circular = { c: chip('circular', N.uc1, tf, Infinity, 20, 38) }; tf += 0.28; }
+  if (E.dup) FL.dup = flag('badge', N.dup, null);
+  if (N.hal) FL.hal = flag('badge', N.hal, 'hal');
+  if (E.orphan) FL.orphan = flag('orphan', N[E.orphan], 'orphan');
+  say('fb', R.chance(0.5) ? 'notright' : 'close', now + 0.15, now + 1.5);
+  // review hover: fb drifts to the first flagged thing
+  const firstBad = E.wrongLayer ? N.repo : E.dup ? N.dup : N.hal ? N.hal : E.typo ? N[E.typo] : E.naming ? N[E.naming] : E.orphan ? N[E.orphan] : N.uc1;
+  moveTo('fb', off(nodeCursor(firstBad), -30, 44), 0.85, { bend: 0.1 });
+  if (hasM('pin')) { // comment pin on a quiet node
+    const pn = R.pick(nodes.filter(n => !n.extra && !n.flags.length && n.id !== E.failing && n.id !== firstBad.id)) || N.ctrl;
+    const pp = { layer: pn.cur.layer, lx: pn.cur.lx + pn.w / 2 - 6, ly: pn.cur.ly - 18 }; moveTo('fb', pp, 0.4); click('fb');
+    ep.pin = { pt: off(pp, 12, -6), t0: now, tRes: Infinity, t1: Infinity }; say('fb', 'rename', now, now + 1.1); now += 0.35;
+  }
+  now = Math.max(now, tf) + 0.1;
+
+  /* ---- ACT 4 · fixes ---- */
+  act('4 Correções');
+  const vars = (a, b, l) => ({ a, b, l, n: a });
+  if (E.wrongLayer) {
+    const n = N.repo; const c = nodeCursor(n); moveTo('fb', c, 0.36); say('fb', 'wrong', now, now + 1.5); click('fb', { pause: 0.12 });
+    const t0 = now, dur = R.J(0.95); selOn(n, t0 - 0.05, t0 + dur + 0.3); nodeMove(n, { layer: n.layer, lx: n.lx, ly: n.ly }, dur); FL.wrongLayer.f.t1 = t0 + dur * 0.8; FL.wrongLayer.c.t1 = t0 + 0.05;
+    commit('wrongLayer', vars(n.label)); wait(0.22);
+  }
+  if (E.dup) {
+    const n = N.dup; const c = nodeCursor(n); moveTo('fb', off(c, 30, 0), 0.42); say('fb', 'dup', now, now + 1.3); click('fb', { pause: 0.1 });
+    selOn(n, now, now + 0.42); now += 0.34; n.spans[0][1] = now; FL.dup.f.t1 = now; say('ia', 'mybad', now, now + 0.9);
+    commit('dup', vars(n.label)); wait(0.22);
+  }
+  if (N.hal) {
+    const n = N.hal; const c = nodeCursor(n); moveTo('fb', off(c, 30, 0), 0.46, { bend: 0.12 }); say('fb', 'hal', now, now + 1.5); click('fb', { pause: 0.12 });
+    selOn(n, now, now + 0.5); now += 0.42; n.spans[0][1] = now; FL.hal.f.t1 = now; FL.hal.c.t1 = now; say('ia', 'oops', now, now + 0.9);
+    commit('hal', {}); wait(0.22);
+  }
+  if (has('dep')) {
+    const a = arrows.find(x => x.id === 'bad'); const m = { ...a.anchor, dz: -(LI.en - LI.fw) * GAP / 2 };
+    moveTo('fb', off(m, 6, 6), 0.42, { bend: -0.1 }); say('fb', 'fixdep', now, now + 1.6); click('fb', { pause: 0.12 });
+    a.morph = { t0: now, t1: now + 0.55 }; now += 0.6;   // the head travels up the riser → inverted
+    removeArrow(a); FL.dep.c.t1 = a.morph.t0; now += 0.12;
+    drawArrow('fb', AR['db>repo'], { pre: 0.3 }); commit('dep', {}); say('ia', 'fixed', now, now + 0.9); wait(0.2);
+  }
+  if (has('circular')) {
+    const c2 = arrows.find(x => x.id === 'c2'), c1 = arrows.find(x => x.id === 'c1'); const mp = c2.pts[Math.floor(c2.pts.length / 2)]; const m = { layer: c2.layer, lx: mp.x, ly: mp.y };
+    moveTo('fb', off(m, 4, 4), 0.44, { bend: 0.1 }); say('fb', 'circular', now, now + 1.4); click('fb', { pause: 0.12 });
+    removeArrow(c2); c1.bad.t1 = now; FL.circular.c.t1 = now; commit('circular', vars(N.uc2.label, N.uc1.label)); wait(0.22);
+  }
+  if (E.orphan) {
+    const n = N[E.orphan]; const a = E.orphan === 'pres' ? AR['pres>uc2'] : AR['cache>repo'];
+    moveTo('fb', { layer: n.cur.layer, lx: n.cur.lx + n.w / 2 - 10, ly: n.cur.ly + 4 }, 0.4); say('fb', 'orphan', now, now + 1.3); wait(0.2);
+    drawArrow('fb', a, { pre: 0.28 }); FL.orphan.f.t1 = a.draw.t1; FL.orphan.c.t1 = a.draw.t0; commit('orphan', vars(n.label, a.to.label)); wait(0.2);
+  }
+  for (const kind of ['typo', 'naming']) {
+    if (!E[kind]) continue;
+    const n = N[E[kind]]; const c = nodeCursor(n); moveTo('fb', off(c, 8, 0), 0.44, { bend: 0.1 }); say('fb', kind === 'typo' ? 'fixtypo' : 'naming', now, now + 1.5);
+    click('fb', { pause: 0.1 }); now -= 0.06; click('fb', { pause: 0 });
+    const tEnd = typing(n, n.typed, n.label, now + 0.08, R.range(14, 18)); FL[kind].f.t1 = now + 0.08 + 0.3;
+    commit(kind, vars(n.typed, n.label, n.layer === 'uc' ? 'use-cases' : 'adapters')); now = tEnd + 0.25;
+  }
+
+  /* ---- ACT 5 · tidy, connect what's missing, test ---- */
+  act('5 Conecta e testa');
+  if (hasM('marquee')) {
+    const a = N.db, b = N.cache; const x0 = Math.min(a.cur.lx - a.w / 2, b.cur.lx - b.w / 2) - 14, y0 = a.cur.ly - NH / 2 - 14, x1 = Math.max(a.cur.lx + a.w / 2, b.cur.lx + b.w / 2) + 14, y1 = a.cur.ly + NH / 2 + 14;
+    moveTo('fb', { layer: 'fw', lx: x0, ly: y0 }, 0.5, { bend: 0.1 }); click('fb', { pause: 0.08 });
+    const t0 = now, d1 = R.J(0.42); ep.marquee = { t0, t1: t0 + d1, t2: 0, x0, y0, x1, y1, layer: 'fw' }; moveTo('fb', { layer: 'fw', lx: x1, ly: y1 }, d1, { ease: EASE_DRAG, bend: 0.03 }); now += 0.12;
+    say('fb', 'group', now, now + 1.3);
+    // grab the group and slide it back to its row
+    const gx = (a.cur.lx + b.cur.lx) / 2, gy = a.cur.ly + 2; moveTo('fb', { layer: 'fw', lx: gx, ly: gy }, 0.28); click('fb', { pause: 0.08 });
+    const t1 = now, d2 = R.J(0.5); ep.marquee.t2 = t1 + d2 + 0.2;
+    [a, b].forEach(n => { n.moves.push({ t0: t1, t1: t1 + d2, from: { ...n.cur }, to: { layer: 'fw', lx: n.lx, ly: n.ly }, lift: 0, ease: EASE_DRAG }); n.cur = { layer: 'fw', lx: n.lx, ly: n.ly }; });
+    ACT.fb.moves.push({ t0: t1, t1: t1 + d2, follow: a, dx: gx - a.lx, dy: 2, to: { layer: 'fw', lx: gx, ly: a.ly + 2 } }); now += d2;
+    selOn(a, t1 - 0.3, t1 + d2 + 0.25); selOn(b, t1 - 0.3, t1 + d2 + 0.25); wait(0.22);
+  }
+  if (hasM('guides')) {
+    const n = N.ent2; const c = nodeCursor(n); moveTo('fb', c, 0.46, { bend: 0.1 }); say('fb', 'align', now, now + 1.2); click('fb', { pause: 0.1 });
+    const t0 = now, d = R.J(0.5); selOn(n, t0 - 0.05, t0 + d + 0.35); nodeMove(n, { layer: 'en', lx: n.lx, ly: n.ly }, d);
+    ep.guides = { t0: t0 + d * 0.55, t1: t0 + d + 0.4, layer: 'en', hx0: 8, hx1: PLATES.en.w - 8, hy: n.ly, vx: n.lx, vy0: 8, vy1: PLATES.en.h - 8 };
+    wait(0.22);
+  }
+  if (ep.pin) { moveTo('fb', off(ep.pin.pt, -2, 10), 0.42, { bend: 0.1 }); click('fb', { pause: 0.08 }); ep.pin.tRes = now; ep.pin.t1 = now + 0.9; say('fb', 'resolved', now, now + 0.9); wait(0.22); }
+  say('fb', 'missing', now, now + Math.max(1.2, restArrows.length * 0.62));
+  restArrows.forEach((a, i) => drawArrow('fb', a, { pre: i ? R.range(0.18, 0.26) : 0.34 }));
+  moveTo('fb', SPOT.fbTest, 0.5, { bend: -0.1 });
+  // tests
+  const T = ep.tests = { mode, t0: now, t1: now + R.J(1.1), fail: null, rerun: null };
+  if (mode === 'B') { ep.term = { t0: now - 0.1, t1: Infinity }; ep.commits.forEach((c, i) => ep.termLines.push({ t: now + 0.08 + i * 0.1, key: 'commit', c })); T.t0 = now + 0.2 + ep.commits.length * 0.1; T.t1 = T.t0 + R.J(1.1); ep.termLines.push({ t: T.t0, key: 'tests' }); }
+  say('fb', 'tests', T.t0, T.t1); now = T.t1;
+  if (E.failing) {
+    T.fail = { t: T.t1 }; say('fb', 'testsFail', now, now + 1.0); const n = N.uc1; n.flags.push({ kind: 'fail', t0: now + 0.05, t1: Infinity }); const ch = chip('fail', n, now + 0.1, Infinity);
+    if (mode === 'B') ep.termLines.push({ t: now, key: 'fail' });
+    now += 0.5; const c = nodeCursor(n); moveTo('fb', off(c, 20, 0), 0.5, { bend: 0.1 }); say('fb', 'failing', now, now + 1.3); click('fb', { pause: 0.1 }); now -= 0.06; click('fb', { pause: 0 });
+    n.types.push({ t0: now + 0.05, t1: now + 0.06, frames: [n.label], edit: now + 0.7 }); now += 0.75; n.flags[n.flags.length - 1].t1 = now; ch.t1 = now; commit('failing', vars(n.label));
+    moveTo('fb', SPOT.fbTest, 0.45, { bend: -0.1 }); T.rerun = { t0: now, t1: now + R.J(0.8) }; if (mode === 'B') { ep.termLines.push({ t: now - 0.05, key: 'commit', c: ep.commits[ep.commits.length - 1] }); ep.termLines.push({ t: now, key: 'rerun' }); }
+    say('fb', 'tests', now, T.rerun.t1); now = T.rerun.t1;
+  }
+  say('fb', 'testsOk', now, now + 0.9); if (mode === 'B') ep.termLines.push({ t: now, key: 'pass' }); now += 0.95;
+
+  /* ---- ACT 6 · approve, ship, deployed ---- */
+  act('6 Aprova');
+  say('fb', 'lgtm', now, now + 0.6); now += 0.62;
+  say('fb', 'ship', now, now + 1.3);
+  now = Math.max(now, tIAidle);
+  const tDeployStart = now + 0.1;
+  say('ia', 'deploying', tDeployStart, tDeployStart + 0.9);
+  ep.deployStart = tDeployStart; ep.deployed = tDeployStart + 0.9;
+  if (mode === 'B') { ep.termLines.push({ t: ep.deployed, key: 'deploy' }); ep.term.t1 = ep.deployed + 1.3; }
+  say('ia', 'thumbs', ep.deployed + 0.05, ep.deployed + 0.9);
+  ACT.ia.fade = { t0: ep.deployed + 0.6, t1: ep.deployed + 1.1 };
+  moveTo('fb', SPOT.fbTest, 0.9, { bend: 0.08 });
+  now = Math.max(now, ep.deployed + 1.15);
+  ep.MAIN = now;
+
+  /* ---- idle life (wander) + collapse ---- */
+  act('7 Vida mínima');
+  ep.idle = { t0: now + 1.4, t1: now + 13.4 };   // breathing first, then the wander
+  const wanderPool = R.shuffle(nodes.filter(n => !n.extra));
+  for (let i = 0; i < 10; i++) { const n = wanderPool[i % wanderPool.length]; ep.wander.push({ node: n, nudge: R.chance(0.3) ? { x: R.pick([-1, 1]), y: R.pick([0, 1]) } : null }); }
+  if (!isFinal) { act('8 Recolhe'); ep.collapse = { t0: ep.idle.t1, t1: ep.idle.t1 + 1.15 }; ep.END = ep.collapse.t1 + 1.6; }  // 1.6 s of empty canvas before the next episode
+  else ep.END = ep.idle.t1;
+  // toasts (mode C)
+  if (mode === 'C') ep.commits.forEach(c => ep.toasts.push({ t0: c.t, t1: c.t + 2.2, c }));
+  // index
+  ep.chips.forEach(c => { if (c.t1 === Infinity) c.t1 = ep.MAIN; });
+  nodes.forEach(n => { n.flags.forEach(f => { if (f.t1 === Infinity) f.t1 = ep.MAIN; }); });
+  arrows.forEach(a => { if (!a.riser) a.d = roundedPath(a.pts); });
+  lsSet(errors.join());
+  return ep;
+}
+
+/* =====================================================================
+   DOM per episode — 4 plates (painter's order, bottom → top), risers in the gaps
+   ===================================================================== */
+let ep = null;
+const PL = {};   // plate DOM: { g, sides:[..], face, content, shadows, nodes, arrows, title, dock, guides, marquee, heads }
+const GAPG = []; // riser groups per gap (0..2)
+function squiggle(x, y, w) { let d = `M${x} ${y}`; for (let i = 0; i < w; i += 6) d += ' q1.5 -2.4 3 0 t3 0'; return d; }
+function buildStackDOM() {
+  gStack.replaceChildren();
+  LAYERS.forEach((layer, i) => {
+    const Pl = PLATES[layer];
+    const g = el('g', { class: 'plate ' + Pl.cls, 'data-layer': layer }, gStack);
+    const sideL = el('polygon', { class: 'side sideL' }, g), sideR = el('polygon', { class: 'side sideR' }, g), face = el('polygon', { class: 'face' }, g);
+    const content = el('g', { class: 'content' }, g);
+    const title = el('text', { class: 'ptitle', x: 22, y: Pl.h - 18 }, content); title.textContent = Pl.title;
+    const dock = null;   // no Docker icon next to the Frameworks title (it sat on top of the text in the projection)
+    const guides = { v: el('line', { class: 'guide', opacity: 0 }, content), h: el('line', { class: 'guide', opacity: 0 }, content) };
+    const marquee = el('rect', { class: 'marquee', opacity: 0 }, content);
+    const shadows = el('g', { class: 'shadows' }, content), arrows = el('g', { class: 'arrows' }, content), nodes = el('g', { class: 'nodes' }, content);
+    const heads = el('g', { class: 'heads' }, g);
+    PL[layer] = { g, sideL, sideR, face, content, title, dock, guides, marquee, shadows, arrows, nodes, heads };
+    if (i < 3) GAPG[i] = el('g', { class: 'gap', 'data-gap': i }, gStack);
+  });
+}
+buildStackDOM();
+function buildDOM(e) {
+  LAYERS.forEach(l => { PL[l].shadows.replaceChildren(); PL[l].arrows.replaceChildren(); PL[l].nodes.replaceChildren(); PL[l].heads.replaceChildren(); });
+  GAPG.forEach(g => g.replaceChildren()); gFx.replaceChildren(); termLs.replaceChildren();
+  for (const a of e.arrows) {
+    if (a.riser) {
+      a.segs = GAPG.map(g => el('line', { class: 'riser', opacity: 0 }, g));
+      a.port = el('circle', { class: 'port', r: 3.5, opacity: 0 }, GAPG[0]);
+      a.head = el('polygon', { class: 'rhead', opacity: 0 }, PL[a.topLayer].heads);
+      a.land = el('circle', { class: 'port', r: 3.5, opacity: 0 }, PL[a.topLayer].heads);          // where the riser meets the plate
+      a.face = el('path', { class: 'arrow rface', opacity: 0, 'marker-end': 'none' }, PL[a.topLayer].arrows);   // on the plate: from the landing point to the target node
+      a.pulse = el('circle', { class: 'pulse', r: 4, opacity: 0 }, gFx);
+    } else {
+      const host = PL[a.layer].arrows;
+      a.path = el('path', { class: 'arrow', d: a.d, 'marker-end': 'url(#mk-head)' }, host);
+      a.len = a.path.getTotalLength(); a.path.setAttribute('stroke-dasharray', a.len);
+      a.port0 = el('circle', { class: 'port', r: 3, opacity: 0, cx: a.pts[0].x, cy: a.pts[0].y }, host);
+      a.port1 = el('circle', { class: 'port', r: 3, opacity: 0, cx: a.pts[a.pts.length - 1].x, cy: a.pts[a.pts.length - 1].y }, host);
+    }
+  }
+  for (const n of e.nodes) {
+    const host = PL[n.sLayer];
+    n.shadow = el('ellipse', { class: 'shadow', rx: n.w / 2 + 6, ry: NH / 2 + 4, opacity: 0 }, host.shadows);   // only shown while a node is lifted (drag / carry)
+    const g = el('g', { class: 'node', 'data-id': n.id }, host.nodes); n.g = g; n.host = n.sLayer;
+    n.inner = el('g', {}, g);
+    el('rect', { class: 'depth', x: -n.w / 2 - 3, y: -NH / 2 + 3, width: n.w, height: NH, rx: 10 }, n.inner);   // a thin bottom face: the node has a little thickness
+    el('rect', { class: 'box', x: -n.w / 2, y: -NH / 2, width: n.w, height: NH, rx: 10 }, n.inner);
+    const tx = -n.w / 2 + 16 + (n.icon ? 30 : 0);
+    if (n.icon) el('path', { class: 'ico', d: ICONS[n.icon], transform: `translate(${-n.w / 2 + 14} -11) scale(0.92)` }, n.inner);
+    n.text = el('text', { x: tx, y: 6 }, n.inner); n.textX = tx;
+    n.caret = el('rect', { class: 'caret', x: tx, y: -10, width: 2, height: 20, opacity: 0 }, n.inner);
+    n.squig = el('path', { class: 'squig', d: squiggle(tx, 15, Math.max(textW(n.label), textW(n.typed || ''))), opacity: 0 }, n.inner);
+    n.badge = el('circle', { class: 'badge', cx: n.w / 2 - 2, cy: -NH / 2 + 2, r: 4, opacity: 0 }, n.inner);
+    n.badgeRing = el('circle', { class: 'badge-ring', cx: n.w / 2 - 2, cy: -NH / 2 + 2, r: 4, opacity: 0 }, n.inner);
+  }
+  if (e.term) { e.termLines.sort((a, b) => a.t - b.t); e.termLines.forEach(l => { const d = document.createElement('div'); d.className = 'ln'; d.style.display = 'none'; termLs.appendChild(d); l.el = d; }); }
+  cache.clear();
+}
+const commitText = c => fmt(L.commit[c.key], c.vars || {});
+
+/* =====================================================================
+   Render — pure function of master time t (+ live speed for FX, + egg overrides, + parallax state)
+   ===================================================================== */
+const S = { speed: 1, visual: 1 };
+const egg = { drag: null, hold: {}, queue: [], back: null, fb: null, say: null, hover: null, busy: false, fixing: false, messed: 0, banned: false, saidAngry: false, you: { x: 370, y: 400 }, grab: null };
+const PX = { tx: 0, ty: 0, yaw: 0, pitch: 0, vy: 0, vp: 0, last: 0, on: false };   // parallax target / spring state
+function parallaxTick() {
+  const now = performance.now(); const dt = Math.min(0.05, (now - (PX.last || now)) / 1000); PX.last = now;
+  const kS = 90, kD = 2 * Math.sqrt(kS);   // critically damped spring on the angles
+  const ty = PX.on ? PX.tx * 4 * Math.PI / 180 : 0, tp = PX.on ? PX.ty * 0.02 : 0;
+  PX.vy += (kS * (ty - PX.yaw) - kD * PX.vy) * dt; PX.yaw += PX.vy * dt;
+  PX.vp += (kS * (tp - PX.pitch) - kD * PX.vp) * dt; PX.pitch += PX.vp * dt;
+  if (Math.abs(PX.yaw) < 1e-4 && Math.abs(PX.vy) < 1e-4) PX.yaw = PX.vy = 0;
+  VIEW.yaw = PX.yaw; VIEW.pitch = PX.pitch;
+}
+const asScreen = pt => P(pt);
+function posAt(a, t, humanK) {
+  const mv = a.moves; let m = null;
+  for (let i = 0; i < mv.length; i++) { if (mv[i].t0 <= t) m = mv[i]; else break; }
+  if (!m) return P(a.pos0);
+  const p = prog(t, m.t0, m.t1);
+  if (m.follow) { const n = m.follow; return P({ layer: n.cur.layer, lx: n.cur.lx + m.dx, ly: n.cur.ly + m.dy, dz: n.cur.dz }); }
+  if (m.arrow) {
+    if (t >= m.t1) return P(m.to);
+    const e = m.ease(p);
+    if (m.arrow.riser) { const A = P(m.from), B = P(m.to); return { x: lerp(A.x, B.x, e), y: lerp(A.y, B.y, e) }; }
+    const pt = m.arrow.path.getPointAtLength(m.arrow.len * e); return P({ layer: m.arrow.layer, lx: pt.x, ly: pt.y });
+  }
+  const A = P(m.from), B = P(m.to);
+  if (t >= m.t1) return B;
+  let e = m.ease(p);
+  if (m.human && humanK > 0) e = mix(e, overshootEase(humanK)(p), clamp(0, 1, humanK * 3));
+  const c = m.c ? P(m.c) : { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
+  return qbez(A, c, B, e);
+}
+// node state at t: {layer, lx, ly, dz}
+function nodeStateAt(n, t) {
+  let st = { layer: n.sLayer, lx: n.slx, ly: n.sly, dz: 0 };
+  for (const m of n.moves) {
+    if (t < m.t0) break;
+    if (t >= m.t1) { st = { layer: m.to.layer, lx: m.to.lx, ly: m.to.ly, dz: 0 }; continue; }
+    const p = m.ease(prog(t, m.t0, m.t1));
+    if (m.lift && m.from.layer !== m.to.layer) { const A = P(m.from), B = P(m.to); const sx = lerp(A.x, B.x, p), sy = lerp(A.y, B.y, p); const layer = p < 0.5 ? m.from.layer : m.to.layer; const l = toLocal(layer, sx, sy); st = { layer, lx: l.lx, ly: l.ly, dz: m.lift * Math.sin(Math.PI * p) }; }
+    else st = { layer: m.to.layer, lx: lerp(m.from.lx, m.to.lx, p), ly: lerp(m.from.ly, m.to.ly, p), dz: m.lift ? m.lift * Math.sin(Math.PI * p) : 0 };
+  }
+  return st;
+}
+function testProgress(t) {
+  const T = ep.tests; if (!T) return null;
+  if (T.rerun && t >= T.rerun.t0) return { n: Math.min(24, Math.round(prog(t, T.rerun.t0, T.rerun.t1) * 24)), done: t >= T.rerun.t1, fail: false, run: true };
+  if (t >= T.t0) { const n = Math.round(prog(t, T.t0, T.t1) * 24); const done = t >= T.t1; return { n: T.fail && done ? 23 : n, done, fail: !!(T.fail && done), run: true }; }
+  return { n: 0, done: false, fail: false, run: false };
+}
+function bubbleText(key, t) {
+  const short = S.visual >= 1.8 ? 1 : 0; let txt = L.say[key][short];
+  if (key === 'tests') { const tp = testProgress(t); txt = txt.replace('{n}', tp ? tp.n : 0); }
+  return txt;
+}
+const WSEG = 2.0;
+function wanderAt(tau) {
+  const W = ep.wander, n = W.length, i = Math.floor(tau / WSEG), k = (tau - i * WSEG) / WSEG;
+  const tgt = j => { const w = W[((j % n) + n) % n], nd = w.node; return P({ layer: nd.cur.layer, lx: nd.cur.lx + nd.w / 2 - 18, ly: nd.cur.ly + 12 }); };
+  const from = i === 0 ? { x: 690, y: 690 } : tgt(i - 1), to = tgt(i);
+  const e = EASE_IO(clamp(0, 1, (k - 0.12) / 0.6));
+  return { x: lerp(from.x, to.x, e) + Math.sin(tau * 1.7) * 2.5, y: lerp(from.y, to.y, e) + Math.cos(tau * 1.1) * 2, hover: k > 0.72 ? W[i % n].node : null, idx: i, k };
+}
+let glowCache = -1;
+const layerZ = (layer, gk) => LI[layer] * GAP * gk;
+const polyPts = pts => pts.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+function plateCorners(layer) { const Pl = PLATES[layer]; return [P({ layer, lx: 0, ly: 0 }), P({ layer, lx: Pl.w, ly: 0 }), P({ layer, lx: Pl.w, ly: Pl.h }), P({ layer, lx: 0, ly: Pl.h })]; }
+
+function render(t) { try { renderFrame(t); } catch (err) { if (!render.warned) { render.warned = true; console.error('render frame failed', err); } } }
+function renderFrame(t) {
+  parallaxTick();
+  const sp = S.visual, hot = clamp(0, 1, (sp - 1.15) / 2.2), humanK = hot * 0.22;
+  const idle = ep.idle && t >= ep.idle.t0, tau = idle ? t - ep.idle.t0 : 0;
+  const wd = idle ? wanderAt(tau) : null;
+  const colK = ep.collapse ? layer => EASE_IO(clamp(0, 1, (t - (ep.collapse.t0 + LAYER_ORDER.indexOf(layer) * 0.12)) / 0.36)) : () => 0;
+  const colA = ep.collapse ? EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.36)) : 0;
+
+  // ---- stack geometry: gap factor (reopen / breathing / collapse) + per-plate entrance drop
+  let gk = 1;
+  if (ep.index > 0) gk = clamp(0, 1.08, SPR_DROP(t - 0.25));
+  { const tb = ep.deployed + 0.65, d = t - tb; if (d >= 0 && d < 1.6) gk *= d < 0.16 ? 1 - 0.15 * EASE_OUT(d / 0.16) : 1 - 0.15 * (1 - SPR_BACK(d - 0.16)); }
+  if (ep.collapse && t >= ep.collapse.t0) gk *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.9));
+  for (const layer of LAYERS) {
+    VIEW.z[layer] = layerZ(layer, gk);
+    const pe = ep.plates[LI[layer]]; let dy = 0, op = 1;
+    if (ep.index === 0) { if (t < pe.t0) { dy = -60 * K; op = 0; } else { const q = t - pe.t0; dy = -60 * K * (1 - SPR_DROP(q)); op = clamp(0, 1, q / 0.12); } }
+    VIEW.dy[layer] = dy;
+    const D = PL[layer];
+    setStyle(D.g, 'opacity', op.toFixed(2));
+    const c = plateCorners(layer);                       // 0:(0,0) back-left? → bottom corner is c[3] (0,h), right corner c[2], top c[1]
+    setAttr(D.face, 'points', polyPts(c));
+    setAttr(D.sideL, 'points', polyPts([c[0], c[3], { x: c[3].x, y: c[3].y + TH }, { x: c[0].x, y: c[0].y + TH }]));
+    setAttr(D.sideR, 'points', polyPts([c[3], c[2], { x: c[2].x, y: c[2].y + TH }, { x: c[3].x, y: c[3].y + TH }]));
+    const m = faceMatrix(layer); setAttr(D.content, 'transform', `matrix(${m.a.toFixed(4)} ${m.b.toFixed(4)} ${m.c.toFixed(4)} ${m.d.toFixed(4)} ${m.e.toFixed(2)} ${m.f.toFixed(2)})`);
+    let tl = ep.index === 0 ? clamp(0, 1, (t - pe.t1) / 0.3) : clamp(0, 1, (t - 0.5) / 0.3);
+    if (ep.collapse && t >= ep.collapse.t0) tl *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3));   // layer titles fade with the collapse
+    setStyle(D.title, 'opacity', tl.toFixed(2)); if (D.dock) setStyle(D.dock, 'opacity', tl.toFixed(2));
+  }
+  // glow (one pulse after deploy)
+  { const d = t - ep.deployed; const g = d < 0 ? 0 : d < 0.22 ? d / 0.22 : clamp(0, 1, 1 - (d - 0.22) / 0.45); const gv = Math.round(g * 100) / 100; if (gv !== glowCache) { glowCache = gv; canvas.style.setProperty('--glow', gv); } }
+
+  // nudges (idle) + egg overrides
+  const nudge = {}; if (wd) { const W = ep.wander; for (let j = 0; j < Math.min(W.length, wd.idx + (wd.k > 0.8 ? 1 : 0)); j++) if (W[j].nudge) { const o = nudge[W[j].node.id] || { x: 0, y: 0 }; o.x += W[j].nudge.x; o.y += W[j].nudge.y; nudge[W[j].node.id] = o; } }
+  const hovered = egg.hover || (wd && wd.hover) || null;
+  for (const n of ep.nodes) {
+    let s = 0, o = 0, vis = false;
+    for (const sp2 of n.spans) { if (t < sp2[0]) break; if (t < sp2[1]) { const d = t - sp2[0]; s = 0.62 + 0.38 * SPR_POP(d); o = clamp(0, 1, d / 0.12); vis = true; } else { const dd = t - sp2[1]; if (dd < 0.22) { const k = EASE_IO(dd / 0.22); s = 1 - 0.5 * k; o = 1 - k; vis = true; } else vis = false; } }
+    if (!vis) { setStyle(n.inner, 'opacity', 0); setStyle(n.g, 'display', 'none'); setStyle(n.shadow, 'display', 'none'); n.cx = null; continue; }
+    setStyle(n.g, 'display', ''); setStyle(n.shadow, 'display', '');
+    let st = nodeStateAt(n, t);
+    const lastMove = n.moves.length ? n.moves[n.moves.length - 1] : null;
+    if (lastMove && t >= lastMove.t1 && t < lastMove.t1 + 0.8) { const k = SPR_DROP(t - lastMove.t1); s *= 1 + 0.035 * (1 - k); if (lastMove.lift) st.dz = 14 * (1 - k); }
+    if (nudge[n.id]) { st.lx += nudge[n.id].x; st.ly += nudge[n.id].y; }
+    if (egg.drag && egg.drag.n === n) st = { ...egg.drag.at, dz: 24 };
+    else if (egg.hold[n.id]) st = { ...egg.hold[n.id], dz: 0 };
+    else if (egg.back && egg.back.n === n) { const b = egg.back, A = P(b.from), B = P(b.to), sx = lerp(A.x, B.x, b.p), sy = lerp(A.y, B.y, b.p), layer = b.p < 0.5 ? b.from.layer : b.to.layer, l = toLocal(layer, sx, sy); st = { layer, lx: l.lx, ly: l.ly, dz: 60 * Math.sin(Math.PI * b.p) + (b.settle != null ? 14 * (1 - b.settle) : 0) }; }
+    else if (egg.settle && egg.settle.n === n) st.dz = 24 * (1 - egg.settle.p);
+    n.cur = st;
+    if (n.host !== st.layer) { PL[st.layer].nodes.appendChild(n.g); PL[st.layer].shadows.appendChild(n.shadow); n.host = st.layer; }
+    const ck = colK(st.layer); if (ck > 0) { s *= 1 - ck; o *= 1 - ck; }
+    const scr = P(st); n.cx = scr.x; n.cy = scr.y;
+    setAttr(n.g, 'transform', `translate(${(st.lx + st.dz).toFixed(1)} ${(st.ly - st.dz).toFixed(1)})`);
+    setAttr(n.inner, 'transform', `scale(${s.toFixed(3)})`);
+    setStyle(n.inner, 'opacity', o.toFixed(2));
+    const shk = clamp(0.35, 1, 1 - st.dz / 120);
+    setAttr(n.shadow, 'transform', `translate(${st.lx.toFixed(1)} ${(st.ly + 4).toFixed(1)}) scale(${(s * shk).toFixed(3)})`);
+    setStyle(n.shadow, 'opacity', (st.dz > 2 ? o * 0.22 * clamp(0, 1, st.dz / 24) : 0).toFixed(2));
+    // typing
+    let txt = '', caret = 0;
+    for (const ty of n.types) {
+      if (t < ty.t0) break;
+      const i = Math.min(ty.frames.length - 1, Math.floor(prog(t, ty.t0, ty.t1) * ty.frames.length));
+      txt = ty.frames[i];
+      caret = t < ty.t1 ? 1 : (ty.edit && t < ty.edit) ? (Math.floor((t - ty.t1) / 0.25) % 2 === 0 ? 1 : 0) : (t < ty.t1 + 0.9 && Math.floor((t - ty.t1) / 0.3) % 2 === 0) ? 1 : 0;
+    }
+    setText(n.text, txt);
+    setAttr(n.caret, 'x', (n.textX + textW(txt) + 1).toFixed(1)); setAttr(n.caret, 'opacity', caret);
+    let sq = 0, bd = 0, orphan = false, fail = false, badgeP = 0;
+    for (const f of n.flags) { const on = t >= f.t0 && t < f.t1; if (!on) continue; if (f.kind === 'squig') sq = 1; else if (f.kind === 'badge') { bd = 1; badgeP = (t - f.t0) % 1.4; } else if (f.kind === 'orphan') orphan = true; else if (f.kind === 'fail') fail = true; }
+    setAttr(n.squig, 'opacity', sq); setAttr(n.badge, 'opacity', bd);
+    setAttr(n.badgeRing, 'opacity', bd ? (0.7 * (1 - badgeP / 1.4)).toFixed(2) : 0); if (bd) setAttr(n.badgeRing, 'r', (4 + badgeP * 10).toFixed(1));
+    setCls(n.g, 'misplaced', bd === 1 && n.id === 'repo'); setCls(n.g, 'orphan', orphan); setCls(n.g, 'fail', fail);
+    setCls(n.g, 'hover', hovered === n); setCls(n.g, 'grab', !!(egg.drag && egg.drag.n === n));
+  }
+
+  // ---- arrows: risers (vertical, in the gaps) and same-plate orthogonal arrows
+  const pulseP = prog(t, ep.deployed, ep.deployed + 0.6), pulseOn = t >= ep.deployed && t < ep.deployed + 0.62;
+  for (const a of ep.arrows) {
+    const e = a.draw;
+    if (a.riser) {
+      const src = a.from, uv = uvOf(src.cur.layer, src.cur.lx, src.cur.ly + NH / 2 - 6);
+      let topL = a.up ? a.to.cur.layer : src.cur.layer, botL = a.up ? src.cur.layer : a.to.cur.layer;
+      const inverted = LI[topL] < LI[botL]; if (inverted) { const sw = topL; topL = botL; botL = sw; }   // a node dragged past the other end: nothing to draw, keep the hosts valid
+      const zTop = VIEW.z[topL] + (a.up ? 0 : src.cur.dz || 0), zBot = VIEW.z[botL] + (a.up ? src.cur.dz || 0 : 0);
+      const Tp = projUV(uv.u, uv.v, zTop, topL), Bp = projUV(uv.u, uv.v, zBot, botL);
+      const x = Tp.x, yTop = Tp.y, yBot = Bp.y;
+      let p = (!e || t < e.t0) ? 0 : EASE_IO(prog(t, e.t0, e.t1));
+      if (a.remove && t >= a.remove.t0) p *= 1 - EASE_IO(prog(t, a.remove.t0, a.remove.t1));
+      if (colA > 0) p *= 1 - colA;
+      const offP = n => { const Pl = PLATES[n.cur.layer]; return n.cur.lx < 0 || n.cur.lx > Pl.w || n.cur.ly < 0 || n.cur.ly > Pl.h; };
+      const offStack = offP(src) || offP(a.to);   // either end dragged off its plate: no arrow at all
+      const hide = p <= 0 || inverted || topL === botL || offStack;
+      const pv = clamp(0, 1, p / 0.72), pf = clamp(0, 1, (p - 0.72) / 0.28);   // vertical part first, then the run on the plate
+      const bad = !!(a.bad && t >= a.bad.t0 && t < a.bad.t1), hotA = !!e && !bad && t < e.t1 + 0.25 && !(a.remove && t >= a.remove.t0);
+      // drawn from the port end: up → from the bottom; down (bad) → from the top. The dep fix (morph) walks the head to the other end.
+      let headAt = a.up ? 'top' : 'bottom';
+      if (a.morph && t >= a.morph.t0) { const mp = EASE_IO(prog(t, a.morph.t0, a.morph.t1)); headAt = mp; }
+      const len = yBot - yTop, visLen = len * pv;
+      const y0 = a.up ? yBot - visLen : yTop, y1 = a.up ? yBot : yTop + visLen;   // visible span [y0, y1]
+      a.segs.forEach((sg, k) => {
+        const segTop = projUV(uv.u, uv.v, VIEW.z[LAYERS[k + 1]], LAYERS[k + 1]).y, segBot = projUV(uv.u, uv.v, VIEW.z[LAYERS[k]], LAYERS[k]).y;
+        const s0 = Math.max(y0, segTop), s1 = Math.min(y1, segBot);
+        const on = !hide && s1 > s0 + 0.5 && k >= LI[botL] && k < LI[topL];
+        setAttr(sg, 'opacity', on ? 1 : 0);
+        if (on) { setAttr(sg, 'x1', x.toFixed(1)); setAttr(sg, 'x2', x.toFixed(1)); setAttr(sg, 'y1', s0.toFixed(1)); setAttr(sg, 'y2', s1.toFixed(1)); }
+        setCls(sg, 'bad', bad); setCls(sg, 'hot', hotA);
+      });
+      // port dot at the start end, head at the far end
+      const portY = a.up ? yBot : yTop; const portG = GAPG[clamp(0, 2, a.up ? LI[botL] : LI[topL] - 1)];
+      if (a.port.parentNode !== portG) portG.appendChild(a.port);
+      setAttr(a.port, 'cx', x.toFixed(1)); setAttr(a.port, 'cy', portY.toFixed(1)); setAttr(a.port, 'opacity', hide ? 0 : 1); setCls(a.port, 'bad', bad);
+      let hy, dir;
+      if (typeof headAt === 'number') { hy = lerp(a.up ? yTop : yBot, a.up ? yBot : yTop, headAt); dir = headAt < 0.5 ? (a.up ? -1 : 1) : (a.up ? 1 : -1); }
+      else { hy = headAt === 'top' ? yTop : yBot; dir = headAt === 'top' ? -1 : 1; }
+      const headL = typeof headAt === 'number' ? (headAt < 0.5 ? (a.up ? topL : botL) : (a.up ? botL : topL)) : (headAt === 'top' ? topL : botL);
+      const headHost = PL[headL].heads; if (a.head.parentNode !== headHost) { headHost.appendChild(a.head); headHost.appendChild(a.land); PL[headL].arrows.appendChild(a.face); }
+      // on the landing plate: a short run from the landing point to the target node's nearest edge (the arrowhead points at the node)
+      const tgt = a.to, Pt = PLATES[headL]; let faceOn = false;
+      if (typeof headAt !== 'number' && !hide && tgt.cur.layer === headL && tgt.cur.lx >= 0 && tgt.cur.lx <= Pt.w && tgt.cur.ly >= 0 && tgt.cur.ly <= Pt.h) {
+        const L0 = lxyOf(headL, uv.u, uv.v), tx = tgt.cur.lx + (tgt.cur.dz || 0), ty = tgt.cur.ly - (tgt.cur.dz || 0);
+        let port, via;
+        if (Math.abs(L0.ly - ty) <= NH / 2 + 4) { port = { x: tx + (L0.lx < tx ? -1 : 1) * (tgt.w / 2 + 2), y: L0.ly }; via = null; }
+        else { port = { x: tx, y: ty + (L0.ly < ty ? -1 : 1) * (NH / 2 + 2) }; via = { x: tx, y: L0.ly }; }
+        const pts = [{ x: L0.lx, y: L0.ly }].concat(via && Math.abs(via.x - L0.lx) > 2 ? [via] : [], [port]);
+        const dist = Math.hypot(port.x - L0.lx, port.y - L0.ly);
+        if (dist > 14) { faceOn = true; const d = roundedPath(pts, 10); setAttr(a.face, 'd', d); if (a.faceD !== d) { a.faceD = d; a.faceLen = a.face.getTotalLength(); setAttr(a.face, 'stroke-dasharray', a.faceLen.toFixed(1)); }
+          setAttr(a.face, 'stroke-dashoffset', (a.faceLen * (1 - pf)).toFixed(1)); setAttr(a.face, 'marker-end', pf > 0.97 ? (bad ? 'url(#mk-head-bad)' : hotA ? 'url(#mk-head-hot)' : 'url(#mk-head)') : 'none'); }
+      }
+      setAttr(a.face, 'opacity', faceOn && pv >= 1 ? 1 : 0); setCls(a.face, 'bad', bad); setCls(a.face, 'hot', hotA);
+      const showLand = !hide && pv >= 0.999 && typeof headAt !== 'number'; setAttr(a.land, 'opacity', showLand ? 1 : 0); if (showLand) { setAttr(a.land, 'cx', x.toFixed(1)); setAttr(a.land, 'cy', hy.toFixed(1)); } setCls(a.land, 'bad', bad);
+      const showHead = !hide && !faceOn && (p > 0.985 || typeof headAt === 'number');
+      setAttr(a.head, 'opacity', showHead ? 1 : 0);
+      if (showHead) setAttr(a.head, 'points', `${x.toFixed(1)},${(hy + 1 * dir).toFixed(1)} ${(x - 5).toFixed(1)},${(hy - 9 * dir).toFixed(1)} ${(x + 5).toFixed(1)},${(hy - 9 * dir).toFixed(1)}`);
+      setCls(a.head, 'bad', bad); setCls(a.head, 'hot', hotA);
+      // light pulse climbing the riser after deploy
+      const pon = pulseOn && !hide && a.up; setAttr(a.pulse, 'opacity', pon ? (0.9 * Math.sin(Math.PI * pulseP)).toFixed(2) : 0);
+      if (pon) { setAttr(a.pulse, 'cx', x.toFixed(1)); setAttr(a.pulse, 'cy', lerp(yBot, yTop, pulseP).toFixed(1)); }
+      continue;
+    }
+    if (!e || t < e.t0) { setStyle(a.path, 'opacity', 0); setAttr(a.port0, 'opacity', 0); setAttr(a.port1, 'opacity', 0); continue; }
+    let p = EASE_IO(prog(t, e.t0, e.t1));
+    if (a.remove && t >= a.remove.t0) { p = 1 - EASE_IO(prog(t, a.remove.t0, a.remove.t1)); if (p <= 0) { setStyle(a.path, 'opacity', 0); setAttr(a.port0, 'opacity', 0); setAttr(a.port1, 'opacity', 0); continue; } }
+    if (colA > 0) p *= 1 - colA;
+    setStyle(a.path, 'opacity', 1);
+    const bad = !!(a.bad && t >= a.bad.t0 && t < a.bad.t1), hotA = !bad && t < e.t1 + 0.25 && !(a.remove && t >= a.remove.t0);
+    setCls(a.path, 'bad', bad); setCls(a.path, 'hot', hotA); setCls(a.port0, 'bad', bad); setCls(a.port1, 'bad', bad);
+    setAttr(a.path, 'marker-end', p < 0.985 ? 'none' : bad ? 'url(#mk-head-bad)' : hotA ? 'url(#mk-head-hot)' : 'url(#mk-head)');
+    setAttr(a.path, 'stroke-dashoffset', (a.len * (1 - p)).toFixed(1));
+    setAttr(a.port0, 'opacity', p > 0 ? 1 : 0);
+    const done = t >= e.t1; setAttr(a.port1, 'opacity', done && p > 0.99 ? 1 : 0);
+    const snap = SPR_SNAP(t - e.t1); setAttr(a.port1, 'r', (3 + 2.4 * (1 - snap) * (done ? 1 : 0)).toFixed(2));
+  }
+
+  // selection handles (projected node quads) + the grabbed You cursor
+  if (egg.grab) { youEl.style.transform = `translate(${egg.grab.x.toFixed(1)}px, ${egg.grab.y.toFixed(1)}px)`; youEl.style.opacity = 1; }
+  { let used = 0;
+    const quad = (n, pad) => { const s = n.cur; return [[-n.w / 2 - pad, -NH / 2 - pad], [n.w / 2 + pad, -NH / 2 - pad], [n.w / 2 + pad, NH / 2 + pad], [-n.w / 2 - pad, NH / 2 + pad]].map(([dx, dy]) => P({ layer: s.layer, lx: s.lx + s.dz + dx, ly: s.ly - s.dz + dy })); };
+    const showSel = (S2, pts) => { setStyle(S2.g, 'display', ''); setAttr(S2.box, 'points', polyPts(pts)); pts.forEach((q, i) => { setAttr(S2.hs[i], 'x', (q.x - 3).toFixed(1)); setAttr(S2.hs[i], 'y', (q.y - 3).toFixed(1)); }); };
+    if (egg.grab) { const x = egg.grab.x - 6, y = egg.grab.y - 6; showSel(SELS[used++], [{ x, y }, { x: x + 26, y }, { x: x + 26, y: y + 32 }, { x, y: y + 32 }]); }
+    for (const s of ep.sels) { if (t < s.t0 || t >= s.t1 || used >= SELS.length) continue; showSel(SELS[used++], quad(s.node, 5)); }
+    for (let i = used; i < SELS.length; i++) setStyle(SELS[i].g, 'display', 'none'); }
+  // marquee (plate-local) + smart guides (plate-local)
+  for (const l of LAYERS) { const D = PL[l];
+    if (ep.marquee && ep.marquee.layer === l) { const m = ep.marquee, on = t >= m.t0 && t < m.t2; if (on) { const k = EASE_DRAG(prog(t, m.t0, m.t1)); setAttr(D.marquee, 'x', m.x0); setAttr(D.marquee, 'y', m.y0); setAttr(D.marquee, 'width', ((m.x1 - m.x0) * k).toFixed(1)); setAttr(D.marquee, 'height', ((m.y1 - m.y0) * k).toFixed(1)); } setAttr(D.marquee, 'opacity', on ? 1 : 0); } else setAttr(D.marquee, 'opacity', 0);
+    if (ep.guides && ep.guides.layer === l) { const g = ep.guides, on = t >= g.t0 && t < g.t1; setAttr(D.guides.v, 'opacity', on ? 1 : 0); setAttr(D.guides.h, 'opacity', on ? 1 : 0); if (on) { setAttr(D.guides.v, 'x1', g.vx); setAttr(D.guides.v, 'x2', g.vx); setAttr(D.guides.v, 'y1', g.vy0); setAttr(D.guides.v, 'y2', g.vy1); setAttr(D.guides.h, 'y1', g.hy); setAttr(D.guides.h, 'y2', g.hy); setAttr(D.guides.h, 'x1', g.hx0); setAttr(D.guides.h, 'x2', g.hx1); } } else { setAttr(D.guides.v, 'opacity', 0); setAttr(D.guides.h, 'opacity', 0); } }
+  // comment pin (screen space, anchored in 3D)
+  if (ep.pin) { const p = ep.pin, on = t >= p.t0 && t < p.t1; if (on) { const q = P(p.pt); const d = t - p.t0, s = 0.5 + 0.5 * SPR_POP(d); setAttr(pinEl, 'transform', `translate(${q.x.toFixed(1)} ${q.y.toFixed(1)}) scale(${s.toFixed(3)})`); setAttr(pinEl, 'opacity', (clamp(0, 1, d / 0.12) * (t >= p.tRes ? clamp(0, 1, 1 - (t - p.tRes) / 0.9) : 1)).toFixed(2)); setCls(pinEl, 'done', t >= p.tRes); setText(pinEl.lastElementChild, t >= p.tRes ? '✓' : 'F'); } else setAttr(pinEl, 'opacity', 0); } else setAttr(pinEl, 'opacity', 0);
+
+  // chips (errors), anchored in 3D
+  ep.chips.forEach((c, i) => { const e2 = CHIPS[i]; if (!e2) return; const on = t >= c.t0 && t < c.t1; const d = on ? t - c.t0 : t - c.t1; let s = 0.7, o = 0;
+    if (on) { s = 0.7 + 0.3 * SPR_CHIP(d); o = clamp(0, 1, d / 0.12); } else if (t >= c.t1) { s = 0.9 * clamp(0, 1, 1 - d / 0.18) + 0.1; o = clamp(0, 1, 1 - d / 0.18); }
+    if (o > 0) { const q = P(c.pt); const x = clamp(8, STAGE_W - 150, q.x + c.dx), y = clamp(8, STAGE_H - 30, q.y + c.dy); setText(e2, L.chip[c.key]); setStyle(e2, 'transform', `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`); } setStyle(e2, 'opacity', o.toFixed(2)); });
+  for (let i = ep.chips.length; i < CHIPS.length; i++) setStyle(CHIPS[i], 'opacity', 0);
+  // toasts (mode C)
+  { let stack = 0, used = 0; for (const ts of ep.toasts) { const on = t >= ts.t0 && t < ts.t1; if (!on || used >= TOASTS.length) continue; const e2 = TOASTS[used++]; const d = t - ts.t0, dl = ts.t1 - t; const k = clamp(0, 1, Math.min(d / 0.22, dl / 0.25));
+      setText(e2, commitText(ts.c)); setStyle(e2, 'opacity', k.toFixed(2)); setStyle(e2, 'transform', `translate(0, ${(-stack * 52 + (1 - EASE_OUT(k)) * 8).toFixed(1)}px) scale(${(0.94 + 0.06 * EASE_OUT(k)).toFixed(3)})`); stack++; }
+    for (let i = used; i < TOASTS.length; i++) setStyle(TOASTS[i], 'opacity', 0); }
+  // terminal (mode B)
+  if (ep.term) { const T = ep.term, on = t >= T.t0 && t < T.t1; const d = on ? t - T.t0 : 0; const k = on ? clamp(0, 1, Math.min(d / 0.28, (T.t1 - t) / 0.3)) : 0;
+    setStyle(termEl, 'opacity', k.toFixed(2)); setStyle(termEl, 'transform', `translate(${((1 - EASE_OUT(k)) * 10).toFixed(1)}px, ${((1 - EASE_OUT(k)) * -6).toFixed(1)}px) scale(${(0.96 + 0.04 * EASE_OUT(k)).toFixed(3)})`);
+    if (on) { const vis = [];
+      for (const l of ep.termLines) { if (t < l.t) { setStyle(l.el, 'display', 'none'); continue; } vis.push(l); let txt = '', cls = 'ln';
+        if (l.key === 'commit') { txt = '✓ ' + commitText(l.c); cls += ' c'; } else if (l.key === 'tests' || l.key === 'rerun') { const run = l.key === 'rerun' ? ep.tests.rerun : ep.tests; const n = Math.min(24, Math.round(prog(t, run.t0, run.t1) * 24)); txt = '$ ' + (l.key === 'rerun' ? L.term.rerun : L.term.tests) + '   ' + fmt(L.term.wait, { n }); cls += ' c'; }
+        else if (l.key === 'fail') { txt = fmt(L.term.fail, { n: 23 }); cls += ' bad'; } else if (l.key === 'pass') { txt = fmt(L.term.pass, { n: 24 }); cls += ' ok'; } else if (l.key === 'deploy') { txt = L.term.deploy; cls += ' ok'; }
+        setText(l.el, txt); setAttr(l.el, 'class', cls); }
+      let budget = 9; const keep = new Set(); for (let i = vis.length - 1; i >= 0; i--) { const rows = Math.max(1, Math.ceil((cache.get(vis[i].el).text || '').length / 31)); if (budget - rows < 0) break; budget -= rows; keep.add(vis[i]); }
+      vis.forEach(l => setStyle(l.el, 'display', keep.has(l) ? '' : 'none')); } }
+  // deployed chip (+ progress in mode C)
+  { const tp = testProgress(t); const dep = t - ep.deployed; let txt = L.deployed, cls = '', bar = 0, show = false, s = 1;
+    if (ep.mode === 'C' && tp && tp.run && t < ep.deployed) { show = true; if (tp.fail) { cls = 'failing'; txt = '23/24 ✗'; bar = 23 / 24; } else if (!tp.done) { cls = 'running'; txt = fmt(L.term.wait, { n: tp.n }); bar = tp.n / 24; } else if (t < ep.deployStart) { cls = 'running'; txt = '24/24 ✓'; bar = 1; } else { cls = 'running'; txt = L.deploying + '…'; bar = prog(t, ep.deployStart, ep.deployed); } }
+    else if (dep >= 0) { show = true; s = 0.6 + 0.4 * SPR_CHIP(dep); }
+    let o = show ? 1 : 0; if (ep.mode === 'C' && show && dep < 0) o = clamp(0, 1, (t - ep.tests.t0) / 0.2);
+    if (ep.collapse && t >= ep.collapse.t0) o *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3));
+    setText(chipOkTxt, txt); setCls(chipOk, 'running', cls === 'running'); setCls(chipOk, 'failing', cls === 'failing');
+    setStyle(chipOkBar, 'transform', `scaleX(${bar.toFixed(3)})`); setStyle(chipOkBar, 'width', '100%');
+    setStyle(chipOk, 'transform', `scale(${s.toFixed(3)})`); setStyle(chipOk, 'opacity', o.toFixed(2));
+    const ring = chipOk.firstElementChild, rp = clamp(0, 1, dep / 1.1); setStyle(ring, 'transform', `scale(${(1 + rp * 0.9).toFixed(3)})`); setStyle(ring, 'opacity', dep >= 0 ? (0.6 * (1 - EASE_OUT(rp))).toFixed(2) : 0); }
+  { const showRb = t >= ep.MAIN && !(ep.collapse && t >= ep.collapse.t0); if (rebuildBtn.hidden === showRb) rebuildBtn.hidden = !showRb; }
+
+  // ---- actors (screen space, targets projected through P)
+  for (const key in ep.actors) {
+    const a = ep.actors[key], ui = UI[key];
+    let pos = posAt(a, t, humanK);
+    if (key === 'fb' && wd) pos = { x: wd.x, y: wd.y };
+    if (key === 'fb' && egg.fb) pos = { x: lerp(pos.x, egg.fb.x, egg.fb.w), y: lerp(pos.y, egg.fb.y, egg.fb.w) };
+    let sx = 1, sy = 1;
+    for (const c of a.clicks) { const d = t - c.t; if (d < -0.09 || d > 0.4) continue; const amp = 0.14 + 0.16 * hot;
+      if (d < 0) { const p = EASE_IO(1 + d / 0.09); sx = 1 + amp * 0.3 * p; sy = 1 - amp * p; } else { const k = SPR_DROP(d); sx = lerp(1 + amp * 0.3, 1, k); sy = lerp(1 - amp, 1, k); }
+      const cp = P(c.pt), rp = clamp(0, 1, d / 0.42), rr = 5 + (18 + 16 * hot) * EASE_OUT(rp);
+      setAttr(ui.ripple, 'cx', cp.x.toFixed(1)); setAttr(ui.ripple, 'cy', cp.y.toFixed(1)); setAttr(ui.ripple, 'r', rr.toFixed(1)); setAttr(ui.ripple, 'opacity', d < 0 ? 0 : (0.7 * (1 - rp)).toFixed(2)); a.rippleUntil = t; }
+    if (a.rippleUntil !== t) setAttr(ui.ripple, 'opacity', 0);
+    const first = a.moves[0]; let op = first ? clamp(0, 1, (t - first.t0) / 0.25) : 0;
+    if (a.fade) op *= 1 - EASE_IO(prog(t, a.fade.t0, a.fade.t1));
+    setStyle(ui.el, 'opacity', op.toFixed(2)); ui.pos = pos;
+    setStyle(ui.el, 'transform', `translate(${pos.x.toFixed(2)}px, ${pos.y.toFixed(2)}px)`);
+    setStyle(ui.svg, 'transform', `scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`);
+    let say = null; for (const s of a.says) if (t >= s.t0 && t < s.t1) say = s;
+    let sayNow = t; if (key === 'fb' && egg.say) { const pn = performance.now() / 1000; if (pn >= egg.say.t0 && pn < egg.say.t1) { say = egg.say; sayNow = pn; } else if (pn >= egg.say.t1) egg.say = null; }
+    let flip = pos.x > STAGE_W - 170;
+    if (say) { const txt = bubbleText(say.key, t), bw = txt.length * 6.6 + 18, bh = 22;
+      const rectFor = left => left ? { x0: pos.x - 4 - bw, x1: pos.x - 4, y0: pos.y + 37, y1: pos.y + 37 + bh } : { x0: pos.x + 13, x1: pos.x + 13 + bw, y0: pos.y + 37, y1: pos.y + 37 + bh };
+      const covers = r => ep.nodes.some(n => n.cx != null && r.x0 < n.cx + n.w * 0.45 && r.x1 > n.cx - n.w * 0.45 && r.y0 < n.cy + NH * 0.5 && r.y1 > n.cy - NH * 0.5);
+      const st = a.sayState && a.sayState.say === say ? a.sayState : (a.sayState = { say, since: null, flipped: null });
+      if (st.flipped != null) flip = st.flipped;
+      else if (covers(rectFor(flip))) { if (st.since == null) st.since = sayNow; if (sayNow - st.since > 1 && !covers(rectFor(!flip))) { st.flipped = !flip; flip = !flip; } }
+      else st.since = null; }
+    setCls(ui.el, 'flip', flip);
+    if (say) { const d = sayNow - say.t0, dl = say.t1 - sayNow, k = clamp(0, 1, Math.min(d / 0.16, dl / 0.14, 1));
+      setText(ui.bubble, bubbleText(say.key, t)); setStyle(ui.bubble, 'opacity', k.toFixed(2)); setStyle(ui.bubble, 'transform', `scale(${(0.9 + 0.1 * EASE_OUT(k)).toFixed(3)}) translateY(${((1 - k) * -3).toFixed(1)}px)`); }
+    else setStyle(ui.bubble, 'opacity', 0);
+    // speed FX
+    const dtF = 0.016 * sp, prev = (wd || egg.fb || egg.drag) ? pos : posAt(a, t - dtF, humanK), vx = pos.x - prev.x, vy = pos.y - prev.y, v = Math.hypot(vx, vy);
+    const vis = clamp(0, 1, (v - 2.5) / 14) * hot * op;
+    for (let i = 0; i < ui.ghosts.length; i++) { const g = ui.ghosts[i]; setStyle(g, 'opacity', (vis * 0.45 * (1 - i / ui.ghosts.length)).toFixed(2)); if (vis > 0) { const gp = posAt(a, t - dtF * (i + 1) * 1.15, humanK); setStyle(g, 'transform', `translate(${gp.x.toFixed(1)}px, ${gp.y.toFixed(1)}px)`); } }
+    setAttr(ui.smear, 'opacity', (vis * 0.5).toFixed(2));
+    if (vis > 0) { const sm = posAt(a, t - dtF * 2.2, humanK); setAttr(ui.smear, 'x1', sm.x.toFixed(1)); setAttr(ui.smear, 'y1', sm.y.toFixed(1)); setAttr(ui.smear, 'x2', pos.x.toFixed(1)); setAttr(ui.smear, 'y2', pos.y.toFixed(1)); }
+    const sl = clamp(0, 1, (v - 14) / 30) * hot * op;
+    for (let i = 0; i < 3; i++) { const ln = ui.speed[i]; setAttr(ln, 'opacity', (sl * 0.55 * (i === 1 ? 1 : 0.6)).toFixed(2));
+      if (sl > 0) { const nx = -vy / (v || 1), ny = vx / (v || 1), off = (i - 1) * 9, bx = pos.x + nx * off - vx * 1.2, by = pos.y + ny * off - vy * 1.2, len = 18 + v * 1.6 * (i === 1 ? 1 : 0.7);
+        setAttr(ln, 'x1', bx.toFixed(1)); setAttr(ln, 'y1', by.toFixed(1)); setAttr(ln, 'x2', (bx - vx / v * len).toFixed(1)); setAttr(ln, 'y2', (by - vy / v * len).toFixed(1)); } }
+  }
+}
+/* =====================================================================
+   Master timeline (Motion) + lifecycle
+   ===================================================================== */
+let master = null, speedAnim = null, lastT = 0, ticker = null, epCount = 0, inView = true, masterHold = null;
+// Motion 12.23 JSAnimation: pause()/play() with playbackSpeed ≠ 1 shifts the time by the speed factor → restore the time explicitly.
+function pauseMaster() { if (!master || master.state !== 'running') return; masterHold = master.time; master.pause(); }
+function playMaster() { if (!master || master.state !== 'paused') return; master.play(); if (masterHold != null) master.time = masterHold; masterHold = null; }
+// watchdog: whatever happens inside the easter egg, the clock must come back — a paused master with nothing busy is resumed, a final episode without its ticker gets it back
+setInterval(() => { if (!ep || isStatic() || egg.busy || egg.drag || egg.fixing || document.hidden || !inView) return;
+  if (master && master.state === 'paused') { stopTicker(); playMaster(); }
+  else if (!master && ep.isFinal && !ticker) startTicker(); }, 1000);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+const mobile = matchMedia('(max-width: 760px)');
+const isStatic = () => reduced.matches || mobile.matches;
+const nextSeed = s => (Math.imul(s, 1664525) + 1013904223) >>> 0;
+const phase = () => !ep ? 'none' : (lastT >= ep.MAIN && (!ep.collapse || lastT < ep.collapse.t0)) ? 'idle' : 'play';
+
+function startEpisode(seed, index) {
+  if (master) { master.stop(); master = null; }
+  stopTicker(); egg.drag = null; egg.back = null; egg.settle = null; egg.fb = null; egg.say = null; egg.hold = {}; egg.queue = []; egg.fixing = false; egg.busy = false; glowCache = -1;
+  if (egg.banTimer) { clearTimeout(egg.banTimer); liftBan(); }
+  ep = buildEpisode(seed, index, index >= 2, UI.fb.pos && index > 0 ? { sx: UI.fb.pos.x, sy: UI.fb.pos.y } : null);
+  buildDOM(ep);
+  try { history.replaceState(null, '', location.pathname + '?seed=' + ep.seed); } catch (e) {}
+  const seedIn = $('#seedIn'); if (seedIn && document.activeElement !== seedIn) seedIn.value = ep.seed;
+  lastT = 0;
+  if (isStatic()) { render(ep.MAIN + 2.2); lastT = ep.MAIN + 2.2; return; }
+  master = animate(0, ep.END, { duration: ep.END, ease: 'linear', onUpdate: t => { lastT = t; render(t); if (egg.busy && ep.idle && t >= ep.idle.t1 - 0.3) pauseMaster(); }, onComplete: onEpisodeEnd });
+  master.speed = S.speed;
+  if (!inView || document.hidden) pauseMaster();
+}
+function onEpisodeEnd() {
+  if (!ep) return;
+  if (!ep.isFinal) { epCount++; try { startEpisode(nextSeed(ep.seed), epCount); } catch (err) { console.error('episode build failed, trying another seed', err); startEpisode(nextSeed(nextSeed(ep.seed)), epCount); } }
+  else startTicker(); // final: minimal life forever (pure function of a running clock)
+}
+function startTicker() {
+  if (ticker) return; let last = performance.now();
+  const tick = now => { ticker = requestAnimationFrame(tick); if (!inView || document.hidden) { last = now; return; } const dt = Math.min(0.1, (now - last) / 1000); last = now; if (!(egg.busy && ep.idle && lastT >= ep.idle.t1 - 0.3 && !ep.isFinal)) lastT += dt * S.speed; render(lastT); };
+  ticker = requestAnimationFrame(tick);
+}
+function stopTicker() { if (ticker) cancelAnimationFrame(ticker); ticker = null; }
+function setSpeed(target) {
+  if (speedAnim) speedAnim.stop();
+  const from = S.speed;
+  speedAnim = animate(from, target, { duration: target > from ? 0.75 : 1.05, ease: target > from ? [0.3, 0, 0.1, 1] : [0.22, 1, 0.36, 1], onUpdate: v => { S.speed = v; S.visual = v; if (master) master.speed = v; } });
+}
+
+/* ---- interaction: hover 2×, Ship faster 4× ---- */
+let hover = false, boost = false;
+function effectiveSpeed() { return hover ? (boost ? 4 : 2) : 1; }
+function updateShipUI() {
+  const s = effectiveSpeed();
+  shipBtn.querySelectorAll('.seg span').forEach(sp => sp.classList.toggle('on', sp.textContent === s + '×'));
+  shipBtn.setAttribute('aria-pressed', String(boost)); shipBtn.setAttribute('aria-label', L.shipAria.replace('{s}', s)); shipBtn.dataset.speed = s;
+}
+function applySpeed() { updateShipUI(); setSpeed(effectiveSpeed()); }
+const toStage = e => { const r = stage.getBoundingClientRect(), s = r.width / STAGE_W; return { x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s }; };
+scene.addEventListener('pointerenter', () => { if (isStatic()) return; hover = true; scene.classList.add('is-live'); applySpeed(); });
+scene.addEventListener('pointerleave', () => { hover = false; boost = false; PX.on = false; scene.classList.remove('is-live'); youEl.style.opacity = 0; if (!isStatic()) applySpeed(); if (egg.drag) endDrag(null); });
+scene.addEventListener('pointermove', e => {
+  if (isStatic()) return;
+  const p = toStage(e);
+  PX.tx = clamp(-1, 1, (p.x / STAGE_W - 0.5) * 2); PX.ty = clamp(-1, 1, (p.y / STAGE_H - 0.5) * 2); PX.on = true;
+  egg.you = p; if (!egg.grab) { youEl.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`; youEl.style.opacity = egg.banned ? 0 : 1; }
+  if (egg.drag) { const layer = plateAt(p) || egg.drag.at.layer || egg.drag.n.cur.layer; const l = toLocal(layer, p.x, p.y); egg.drag.at = { layer, lx: l.lx - egg.drag.dx, ly: l.ly - egg.drag.dy }; return; }
+  egg.hover = phase() === 'idle' && !egg.busy ? hitNode(p) : null;
+});
+shipBtn.addEventListener('click', () => { if (isStatic()) return; boost = !boost; hover = true; applySpeed(); });
+shipBtn.addEventListener('focus', () => { if (isStatic()) return; hover = true; applySpeed(); });
+shipBtn.addEventListener('blur', () => { if (!scene.matches(':hover')) { hover = false; boost = false; applySpeed(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && boost) { boost = false; applySpeed(); } });
+rebuildBtn.addEventListener('click', () => { if (isStatic()) return; epCount = 0; startEpisode(nextSeed(ep.seed), 0); });
+
+/* ---- easter egg: drag nodes during the idle life. Felipebc2 fixes the mess one by one; more than 3 and he snaps ---- */
+function hitNode(p) { // top plate first
+  for (const layer of LAYERS.slice().reverse()) { const l = toLocal(layer, p.x, p.y);
+    for (let i = ep.nodes.length - 1; i >= 0; i--) { const n = ep.nodes[i]; if (n.extra || n.cx == null || n.cur.layer !== layer || n.g.style.display === 'none' || egg.hold[n.id] || (egg.back && egg.back.n === n)) continue;
+      if (Math.abs(l.lx - (n.cur.lx + n.cur.dz)) <= n.w / 2 && Math.abs(l.ly - (n.cur.ly - n.cur.dz)) <= NH / 2) return n; } }
+  return null; }
+function plateAt(p) { for (const layer of LAYERS.slice().reverse()) { const Pl = PLATES[layer], l = toLocal(layer, p.x, p.y); if (l.lx >= 0 && l.lx <= Pl.w && l.ly >= 0 && l.ly <= Pl.h) return layer; } return null; }
+const eggSay = (key, dur) => { const pn = performance.now() / 1000; egg.say = { key, t0: pn, t1: pn + dur }; };
+scene.addEventListener('pointerdown', e => {
+  if (isStatic() || phase() !== 'idle' || e.button !== 0 || egg.banned) return;
+  const p = toStage(e), n = hitNode(p); if (!n) return;
+  e.preventDefault();
+  const l = toLocal(n.cur.layer, p.x, p.y);
+  egg.drag = { n, dx: l.lx - n.cur.lx, dy: l.ly - n.cur.ly, at: { layer: n.cur.layer, lx: n.cur.lx, ly: n.cur.ly } }; egg.busy = true; egg.hover = null;
+  if (!master) startTicker();   // Felipebc2 keeps wandering while the visitor holds a node; the master only holds at the end of the idle life
+  try { scene.setPointerCapture(e.pointerId); } catch (err) {}
+});
+scene.addEventListener('pointerup', e => { if (egg.drag) endDrag(toStage(e)); });
+scene.addEventListener('pointercancel', () => { if (egg.drag) endDrag(null); });
+window.addEventListener('blur', () => { if (egg.drag) endDrag(null); });
+function settle() { if (egg.drag || egg.fixing) return; egg.busy = false; if (!ep.isFinal && master) { stopTicker(); playMaster(); } }
+// while the egg is busy the master may still be running; if it reached the hold point it is paused and resumed by settle()
+function rerouteFor(node) { // same-plate arrows only (risers follow the node on their own)
+  for (const a of ep.arrows) { if (a.riser || !(a.from === node || a.to === node) || a.remove || !a.draw) continue;
+    const layer = a.layer, Pl = PLATES[layer];
+    const obstacles = ep.nodes.filter(n => !n.extra && n.layer === layer && n !== a.from && n !== a.to && n.g.style.display !== 'none').map(n => ({ x: n.lx - n.w / 2, y: n.ly - NH / 2, w: n.w, h: NH })); obstacles.bounds = { x: 0, y: 0, w: Pl.w, h: Pl.h };
+    const router = makeRouter(obstacles); ep.nodes.forEach(n => { n.px = n.lx; n.py = n.ly; });
+    const r = router.route(a.from, a.to, sideCandidates({ x: a.from.lx, y: a.from.ly }, { x: a.to.lx, y: a.to.ly })); a.pts = r ? r.pts : zRoute(a.from, a.to); a.d = roundedPath(a.pts);
+    setAttr(a.path, 'd', a.d); a.len = a.path.getTotalLength(); setAttr(a.path, 'stroke-dasharray', a.len); setAttr(a.port0, 'cx', a.pts[0].x); setAttr(a.port0, 'cy', a.pts[0].y); setAttr(a.port1, 'cx', a.pts[a.pts.length - 1].x); setAttr(a.port1, 'cy', a.pts[a.pts.length - 1].y); }
+}
+function endDrag(p) {
+  const d = egg.drag; egg.drag = null;
+  if (!p) { settle(); return; } // pointer left the scene: back to its place, no comment
+  const drop = { ...d.at }, Pl = PLATES[drop.layer];
+  const inside = drop.lx - d.n.w / 2 >= 0 && drop.lx + d.n.w / 2 <= Pl.w && drop.ly - NH / 2 >= 0 && drop.ly + NH / 2 <= Pl.h;
+  const ok = drop.layer === d.n.layer && inside && !ep.nodes.some(o => o !== d.n && !o.extra && o.cx != null && o.cur.layer === drop.layer && Math.abs(o.cur.lx - drop.lx) < (o.w + d.n.w) / 2 + 10 && Math.abs(o.cur.ly - drop.ly) < NH + 10);
+  if (ok) { // keep it there: settle with a spring, commit the position, re-route same-plate arrows
+    d.n.lx = d.n.slx = drop.lx; d.n.ly = d.n.sly = drop.ly; d.n.sLayer = d.n.layer; d.n.moves = []; d.n.cur = { ...drop, dz: 24 };
+    egg.settle = { n: d.n, p: 0 }; animate(0, 1, { type: 'spring', stiffness: 600, damping: 16, onUpdate: v => { if (egg.settle) egg.settle.p = v; }, onComplete: () => { egg.settle = null; } });
+    rerouteFor(d.n); if (!egg.fixing) eggSay('nice', 1.3); settle(); return;
+  }
+  // wrong layer / outside / on top of another node: it waits where it was dropped, Felipebc2 will come for it
+  egg.hold[d.n.id] = drop; egg.queue.push(d.n); egg.messed++;
+  if (egg.messed > 3 && !egg.banned) egg.banned = true; // Felipebc2 will come for the visitor's cursor before fixing the rest
+  if (!egg.fixing) processQueue();
+}
+function throwOutCursor(done) {
+  // ">:(" → walk to the You cursor → grab it (selection handles) → drag it out of the scene with acceleration
+  egg.saidAngry = true; eggSay('angry', 1.6);
+  const from = egg.fb ? { x: egg.fb.x, y: egg.fb.y } : (UI.fb.pos ? { x: UI.fb.pos.x, y: UI.fb.pos.y } : { x: 660, y: 760 });
+  if (!egg.fb) egg.fb = { x: from.x, y: from.y, w: 0 };
+  const w0 = egg.fb.w, you = { x: clamp(0, STAGE_W, egg.you.x), y: clamp(0, STAGE_H, egg.you.y) }, hand = { x: you.x + 9, y: you.y + 12 };
+  animate(0, 1, { duration: 0.55, ease: [0.3, 0, 0.1, 1], onUpdate: v => { if (!egg.fb) return; egg.fb.w = lerp(w0, 1, v); egg.fb.x = lerp(from.x, hand.x, v); egg.fb.y = lerp(from.y, hand.y, v); }, onComplete: () => {
+    egg.grab = { x: you.x, y: you.y };
+    setTimeout(() => {
+      const exit = { x: you.x < STAGE_W / 2 ? -140 : STAGE_W + 140, y: you.y };
+      animate(0, 1, { duration: 0.9, ease: [0.7, 0, 1, 0.6], onUpdate: v => { if (!egg.grab || !egg.fb) return; egg.grab.x = lerp(you.x, exit.x, v); egg.grab.y = lerp(you.y, exit.y, v); egg.fb.x = egg.grab.x + 9; egg.fb.y = egg.grab.y + 12; }, onComplete: () => {
+        egg.grab = null; youEl.style.opacity = 0;
+        animate(0, 1, { duration: 0.5, ease: [0.3, 0, 0.1, 1], onUpdate: v => { if (!egg.fb) return; egg.fb.x = lerp(exit.x + 9, 660, v); egg.fb.y = lerp(exit.y + 12, Math.min(exit.y, 700), v); }, onComplete: () => { egg.banTimer = setTimeout(liftBan, 7000); done(); } });
+      } });
+    }, 420);
+  } });
+}
+function liftBan() { egg.banned = false; egg.saidAngry = false; egg.messed = 0; egg.banTimer = null; }
+function processQueue() {
+  if (egg.banned && !egg.saidAngry) { egg.fixing = true; throwOutCursor(processQueue); return; }
+  const n = egg.queue.shift();
+  if (!n) { egg.fixing = false; animate(1, 0, { duration: 0.6, ease: 'easeInOut', onUpdate: v => { if (egg.fb) egg.fb.w = v; }, onComplete: () => { egg.fb = null; settle(); } }); return; }
+  egg.fixing = true;
+  const drop = egg.hold[n.id];
+  const from = egg.fb ? { x: egg.fb.x, y: egg.fb.y } : (UI.fb.pos ? { x: UI.fb.pos.x, y: UI.fb.pos.y } : { x: 690, y: 690 });
+  if (!egg.fb) egg.fb = { x: from.x, y: from.y, w: 0 };
+  const w0 = egg.fb.w, tq = P({ layer: drop.layer, lx: drop.lx - n.w / 2 + 22, ly: drop.ly + 8 }), target = { x: tq.x, y: tq.y };
+  animate(0, 1, { duration: 0.45, ease: [0.3, 0, 0.1, 1], onUpdate: v => { if (!egg.fb) return; egg.fb.w = lerp(w0, 1, v); egg.fb.x = lerp(from.x, target.x, v); egg.fb.y = lerp(from.y, target.y, v); }, onComplete: () => {
+    eggSay(egg.banned ? 'enough' : 'nope', 1.4);
+    setTimeout(() => { // lift it off the wrong plate, carry it in an arc, drop it on the right one, settle
+      egg.back = { n, from: { ...drop }, to: { layer: n.layer, lx: n.lx, ly: n.ly }, p: 0, settle: null }; delete egg.hold[n.id];
+      animate(0, 1, { duration: 0.85, ease: [0.5, 0, 0.2, 1], onUpdate: v => { if (egg.back && egg.fb) { egg.back.p = v; const b = egg.back, A = P(b.from), B = P(b.to); egg.fb.x = lerp(A.x, B.x, v) + 12; egg.fb.y = lerp(A.y, B.y, v) - 60 * Math.sin(Math.PI * v) * K + 10; } },
+        onComplete: () => { animate(0, 1, { type: 'spring', stiffness: 600, damping: 16, onUpdate: v => { if (egg.back) egg.back.settle = v; }, onComplete: () => { egg.back = null; processQueue(); } }); } });
+    }, 300);
+  } });
+}
+
+/* ---- stage fit: whole stage inside the right panel, below the toolbar, with margin ---- */
+function fit() {
+  const w = scene.clientWidth, h = scene.clientHeight, top = 12, gap = 20, tbH = 40, bottom = 10;
+  const availW = w - 20, availH = h - top - gap - tbH - bottom;
+  const s = Math.max(0.2, Math.min(availW / STAGE_W, availH / STAGE_H));
+  const oy = top + (availH - STAGE_H * s) / 2;
+  stage.style.setProperty('--s', s.toFixed(4)); stage.style.setProperty('--ox', ((w - STAGE_W * s) / 2).toFixed(1) + 'px'); stage.style.setProperty('--oy', oy.toFixed(1) + 'px');
+  const plateBottom = CY + (PLATES.fw.w / 2 + PLATES.fw.h / 2) * 0.5 * K + TH;
+  $('#tb').style.top = (oy + plateBottom * s + gap).toFixed(1) + 'px';   // 20 px under the bottom plate, at any size
+}
+new ResizeObserver(fit).observe(scene); fit();
+new IntersectionObserver(([en]) => { inView = en.isIntersecting; if (!master) return; if (inView && !isStatic() && !egg.busy) playMaster(); else pauseMaster(); }, { threshold: 0.15 }).observe(scene);
+document.addEventListener('visibilitychange', () => { if (!master) return; document.hidden ? pauseMaster() : (inView && !egg.busy && playMaster()); });
+
+/* ---- mobile: 4 stacked blocks, static, filled once on entry ---- */
+function buildMobile(seed) {
+  const R = makeR(seed ^ 0x9e3779b9), D = DOMAINS[R.pick(Object.keys(DOMAINS))];
+  const ico = k => `<svg viewBox="0 0 24 24"><path d="${ICONS[k]}"/></svg>`;
+  const cur = (cls, name) => `<div class="mcur ${cls}"><svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><span class="name">${name}</span></div>`;
+  const blocks = [
+    { cls: 'l1', title: PLATES.fw.title, ns: [`${ico('postgres')}PostgreSQL`] },
+    { cls: 'l2', title: PLATES.ia.title, ns: [D.ctrl] },
+    { cls: 'l3', title: PLATES.uc.title, ns: [D.uc[0]], cur: `<div class="mcur fb"><svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><span class="name">${L.fb}</span></div><div class="mcur ia"><svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><span class="tag"><span class="name">${L.ia}</span><span class="bubble">👍</span></span></div>` },
+    { cls: 'l4', title: PLATES.en.title, ns: [D.ent[0]] },
+  ];
+  $('#mobile').innerHTML = blocks.map((b, i) => `<div class="mb ${b.cls}" style="animation-delay:${(i * 0.3).toFixed(1)}s">${b.cur || ''}<h3>${b.title}</h3><div class="ns">${b.ns.map(n => `<span class="n">${n}</span>`).join('')}</div></div>`).join('');
+  requestAnimationFrame(() => document.querySelectorAll('.mb').forEach(b => b.classList.add('ready')));
+}
+
+/* ---- language & theme ---- */
+function applyLang(code) {
+  L = I18N[code]; document.documentElement.lang = code;
+  scene.setAttribute('aria-label', L.aria); $('#mobile').setAttribute('aria-label', L.aria);
+  shipBtn.querySelector('.label').textContent = L.ship; rebuildBtn.textContent = L.rebuild;
+  youEl.querySelector('.name').textContent = L.you; UI.ia.name.textContent = L.ia; UI.fb.name.textContent = L.fb;
+  document.querySelectorAll('.mcur.fb .name').forEach(e => e.textContent = L.fb);
+  cache.clear(); updateShipUI(); if (ep) render(lastT);
+}
+$('#lang').addEventListener('change', e => applyLang(e.target.value));
+$('#theme').addEventListener('change', e => document.documentElement.dataset.theme = e.target.value);
+$('#seedIn').addEventListener('change', e => { const v = parseInt(e.target.value, 10); if (!isNaN(v)) { epCount = 0; startEpisode(v >>> 0, 0); } });
+
+/* ---- boot ---- */
+const urlSeed = parseInt(new URLSearchParams(location.search).get('seed'), 10);
+const seed0 = isNaN(urlSeed) ? ((Date.now() ^ (Math.random() * 1e9)) >>> 0) : (urlSeed >>> 0);
+function boot() {
+  applyLang(document.documentElement.lang === 'pt' ? 'pt' : 'en');
+  buildMobile(seed0);
+  epCount = 0; startEpisode(seed0, 0);
+}
+reduced.addEventListener('change', () => { epCount = 0; startEpisode(ep ? ep.seed : seed0, 0); });
+mobile.addEventListener('change', () => { fit(); epCount = 0; startEpisode(ep ? ep.seed : seed0, 0); });
+const fontsReady = document.fonts && document.fonts.ready ? Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]) : Promise.resolve();
+fontsReady.then(() => { measureCache.clear(); boot(); });
+
+// debug / verification hooks
+window.__hero = {
+  sample: s => { const P = drawParams(s >>> 0, true); return { domain: P.domainKey, errors: P.errors, micros: P.micros, mode: P.mode }; }, nextSeed, fmix32,
+  get ep() { return ep; }, get seed() { return ep && ep.seed; }, next: () => { epCount = 0; startEpisode(nextSeed(ep.seed), 0); }, play: s => { epCount = 0; startEpisode(s >>> 0, 0); },
+  render, P, VIEW, PX, get master() { return master; }, setSpeed, get speed() { return S.speed; }, get phase() { return phase(); },
+  seek: t => { if (master) { pauseMaster(); masterHold = Math.min(t, ep.END - 0.01); master.time = masterHold; } lastT = t; render(t); }, resume: () => playMaster(), egg
+};
+})();
+</script>
+</body>
+</html>

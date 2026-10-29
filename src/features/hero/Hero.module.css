@@ -100,45 +100,12 @@
 
 .media {
   position: relative;
-  overflow: hidden;
-  border-left: 1px dashed var(--color-line-2);
-  background: color-mix(in srgb, var(--color-block) 60%, transparent);
+  display: grid;
   opacity: calc(1 - 0.7 * var(--panel));
 }
 /* feather the panel's bottom edge so it never cuts across the greeting */
 .hero[data-leaving] .media {
   mask: linear-gradient(#000 calc(100% - var(--panel) * 70%), transparent);
-}
-.media::before,
-.media::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 160%;
-  height: 1px;
-  background: var(--color-line);
-}
-.media::before {
-  transform: translate(-50%, -50%) rotate(32deg);
-}
-.media::after {
-  transform: translate(-50%, -50%) rotate(-32deg);
-}
-.lbl {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  transform: translate(-50%, -50%);
-  padding: var(--s-2) var(--s-4);
-  border: 1px solid var(--color-line);
-  border-radius: var(--r-pill);
-  background: var(--color-bg);
-  font-family: var(--font-mono);
-  font-size: var(--t-body-s);
-  color: var(--color-dim);
-  white-space: nowrap;
 }
 
 .seal {
@@ -247,7 +214,9 @@
 @media (max-width: 760px) {
   .hero {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) 38vh;
+    /* the four-block diagram + room for the seal's lower half */
+    --media-h: 400px;
+    grid-template-rows: minmax(0, 1fr) var(--media-h);
     height: auto;
     min-height: 100svh;
   }
@@ -256,12 +225,12 @@
     padding-bottom: var(--s-8);
   }
   .media {
-    border-left: 0;
-    border-top: 1px dashed var(--color-line-2);
+    align-content: start;
+    padding-top: var(--s-8);
   }
   .seal {
     top: auto;
-    bottom: 38vh;
+    bottom: var(--media-h);
     --sy: 50%;
   }
   .icons {
@@ -270,6 +239,6 @@
   }
   .roles {
     font-size: var(--t-label);
-    top: calc((100% - 38vh) / 2 + 40px);
+    top: calc((100% - var(--media-h)) / 2 + 40px);
   }
 }
