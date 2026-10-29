@@ -133,6 +133,21 @@
         "hal": "chore(deps): remove left-pad-ai (não existe)",
         "orphan": "fix(adapters): liga {a} a {b}",
         "naming": "style({l}): {a} → {b}"
+      },
+      "log": {
+        "init": "init: monta a pilha",
+        "entities": "ia: adiciona entities",
+        "scaffold": "ia: monta camadas",
+        "deploy": "deploy → prod",
+        "dep": "fix: regra de dependência",
+        "wrongLayer": "fix: camada do {n}",
+        "typo": "fix: typo em {b}",
+        "failing": "fix: teste de {n}",
+        "circular": "fix: ciclo em {a}",
+        "dup": "chore: dedup de {n}",
+        "hal": "chore: rm left-pad-ai",
+        "orphan": "fix: liga {a}",
+        "naming": "style: nome {b}"
       }
     }
   },

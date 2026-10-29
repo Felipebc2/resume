@@ -1806,3 +1806,62 @@ export function buildEpisode(
   });
   return ep;
 }
+
+/* =====================================================================
+   git log --graph (desktop widget) — derived from an episode, nothing new is drawn from the RNG.
+   init when the stack lands; the IA's entities commit; a wip row on top while the IA works and its
+   mistakes are open; one commit per fix, when it happens; HEAD at deployed.
+   ===================================================================== */
+export interface LogRow {
+  id: string;
+  kind: "init" | "ia" | "wip" | "fix" | "head";
+  key: string;
+  vars?: Record<string, string>;
+  t0: number;
+  t1: number;
+}
+export function gitLog(ep: Episode): LogRow[] {
+  const hash = (i: number) =>
+    fmix32((ep.seed + i * 2654435761) >>> 0)
+      .toString(16)
+      .padStart(8, "0")
+      .slice(0, 4);
+  const tIA = ep.acts["2 IA monta"],
+    tErr = ep.acts["3 Erros"];
+  const ent = ep.nodes
+    .filter((n) => n.sLayer === "en" && n.spans.length && n.spans[0][0] < tErr)
+    .map((n) => n.types[0]?.t1 ?? n.spans[0][0] + 0.3);
+  const fixes = [...ep.commits].sort((a, b) => a.t - b.t);
+  return [
+    {
+      id: hash(0),
+      kind: "init",
+      key: "init",
+      t0: ep.plates[3].t1,
+      t1: Infinity,
+    },
+    {
+      id: "",
+      kind: "wip",
+      key: "scaffold",
+      t0: tIA,
+      t1: ep.acts["4 Correções"],
+    },
+    {
+      id: hash(1),
+      kind: "ia",
+      key: "entities",
+      t0: ent.length ? Math.max(...ent) : tIA + 1,
+      t1: Infinity,
+    },
+    ...fixes.map((c, i) => ({
+      id: hash(2 + i),
+      kind: "fix" as const,
+      key: c.key,
+      vars: c.vars,
+      t0: c.t,
+      t1: Infinity,
+    })),
+    { id: "", kind: "head", key: "deploy", t0: ep.deployed, t1: Infinity },
+  ];
+}

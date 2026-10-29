@@ -4,7 +4,11 @@
   min-height: 620px;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  --seam: 50%; /* where the columns meet: the seal sits on it */
   overflow: hidden;
+  background-image: radial-gradient(var(--color-line) 1px, transparent 1.2px);
+  background-size: 24px 24px;
+  background-position: center;
   /* --p: 0 → 1 as the hero scrolls away (HeroLeft). Each part leaves on its own
      slice of it: chrome first, the seal by half way, the title just after. */
   --p: 0;
@@ -111,7 +115,7 @@
 .seal {
   position: absolute;
   z-index: 5;
-  left: 50%;
+  left: var(--seam);
   top: 72%;
   display: block;
   width: clamp(100px, 8.6vw, 136px);
@@ -209,6 +213,14 @@
 .roll .c > span {
   display: inline-block;
   will-change: transform;
+}
+
+/* text 40 %, scene 60 % */
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: 2fr 3fr;
+    --seam: 40%;
+  }
 }
 
 @media (max-width: 760px) {

@@ -8,16 +8,30 @@ import {
   useRef,
   type ReactNode,
 } from "react";
+import xp from "@/features/experience/Experience.module.css";
 import { useStill } from "@/lib/motion";
-import type { HeroDict, mount } from "./scene/engine";
+import type { HeroDict, MeterCls, mount } from "./scene/engine";
 import s from "./Scene.module.css";
 
 type Engine = ReturnType<typeof mount>;
 const PHONE = "(max-width: 760px)";
-// stage 724×800; the bottom plate's lowest point = CY + (fw.w + fw.h)/2 · K/2 + TH (scene/core.ts)
+const WIDE = "(min-width: 1024px)";
+// stage units (scene/core.ts): the stack spans y 14…775.8 (its top corner to the bottom plate's
+// lowest point) and x 6…718 around CX. Wide layouts also hold the git log, which overflows the
+// stage on the right, so the box they fit is wider than the stage.
 const STAGE_W = 724,
-  STAGE_H = 800,
-  PLATE_BOTTOM = 775.8;
+  CX = 362,
+  TOP = 10,
+  PLATE_BOTTOM = 775.8,
+  WIDE_W = 816;
+// the scene's load bars are the Htop's meters
+const METER: MeterCls = {
+  meter: xp.meter,
+  l: xp.l,
+  b: xp.b,
+  f: xp.f,
+  v: xp.v,
+};
 
 /** The hero's right half. Desktop loads the animation engine once the scene is on screen and the
     browser is idle; reduced motion gets a pre-rendered still; phones get `mobile` (HTML + CSS). */
@@ -31,24 +45,30 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
   const shown = useRef<"none" | "still" | "engine">("none");
   const latest = useEffectEvent(() => ({ dict, still }));
 
-  // fit the whole stage inside the panel, below which sits the toolbar
+  // fit the stack (and, wide, its widgets) inside the column, the toolbar under it
   useLayoutEffect(() => {
     const sc = scene.current!,
       h = host.current!;
+    const wide = matchMedia(WIDE);
     const fit = () => {
       const w = sc.clientWidth,
         ht = sc.clientHeight,
-        top = 12,
-        gap = 20,
-        tbH = 40,
-        bottom = 10;
-      const availW = w - 20,
-        availH = ht - top - gap - tbH - bottom;
-      const k = Math.max(0.2, Math.min(availW / STAGE_W, availH / STAGE_H));
-      const oy = top + (availH - STAGE_H * k) / 2;
+        pad = 12,
+        gap = 14,
+        tbH = 38;
+      const boxW = wide.matches ? WIDE_W : STAGE_W,
+        stackH = PLATE_BOTTOM - TOP,
+        availH = ht - 2 * pad - gap - tbH;
+      const k = Math.max(
+        0.2,
+        Math.min((w - (wide.matches ? 0 : 20)) / boxW, availH / stackH),
+      );
+      const ox = (w - boxW * k) / 2,
+        oy = pad + (availH - stackH * k) / 2 - TOP * k;
       h.style.setProperty("--s", k.toFixed(4));
-      h.style.setProperty("--ox", ((w - STAGE_W * k) / 2).toFixed(1) + "px");
+      h.style.setProperty("--ox", ox.toFixed(1) + "px");
       h.style.setProperty("--oy", oy.toFixed(1) + "px");
+      h.style.setProperty("--tb-left", (ox + CX * k).toFixed(1) + "px");
       h.style.setProperty(
         "--tb-top",
         (oy + PLATE_BOTTOM * k + gap).toFixed(1) + "px",
@@ -81,7 +101,7 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
     const loadEngine = () =>
       import("./scene/engine").then(({ mount }) => {
         if (cancelled) return;
-        engine.current = mount(sc, h, latest().dict, latest().still);
+        engine.current = mount(sc, h, latest().dict, latest().still, METER);
         shown.current = "engine";
       });
     const go = () => {

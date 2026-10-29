@@ -4,6 +4,7 @@ import pt from "@/i18n/messages/pt.json";
 import {
   buildEpisode,
   fmix32,
+  gitLog,
   makeR,
   mulberry32,
   nextSeed,
@@ -181,6 +182,31 @@ describe("episode generator", () => {
           if (l.key !== "commit")
             expect(d.term[TERM[l.key]], l.key).toBeTruthy();
       }
+    }
+  });
+});
+
+describe("git log", () => {
+  it("one commit per fix, when it happens, HEAD at deployed, every message in both languages", () => {
+    let seed = 1;
+    for (let i = 0; i < 200; i++, seed = nextSeed(seed)) {
+      resetView();
+      const ep = buildEpisode(seed, 0, false, null, textW, "");
+      const rows = gitLog(ep);
+      const fixes = rows.filter((r) => r.kind === "fix");
+      expect(fixes.map((r) => r.t0)).toEqual(
+        [...ep.commits].map((c) => c.t).sort((a, b) => a - b),
+      );
+      expect(rows.find((r) => r.kind === "head")!.t0).toBe(ep.deployed);
+      const wip = rows.find((r) => r.kind === "wip")!;
+      expect(wip.t1).toBeLessThanOrEqual(Math.min(...fixes.map((r) => r.t0)));
+      // after the IA is done the log reads init, entities, the fixes and HEAD: 6 rows at most
+      expect(rows.filter((r) => r.kind !== "wip").length).toBeLessThanOrEqual(
+        6,
+      );
+      for (const d of Object.values(dicts))
+        for (const r of rows)
+          expect(d.log[r.key as keyof typeof d.log], r.key).toBeTruthy();
     }
   });
 });

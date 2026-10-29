@@ -7,6 +7,19 @@ export const LAYER_TITLES = {
   en: "Entities",
 } as const;
 
+/** the scene's terminal widgets (desktop): git and htop speak English in every locale */
+export const GIT = {
+  prompt: "git log --graph",
+  wip: "wip",
+  head: "HEAD",
+} as const;
+export const LAYER_SHORT = {
+  fw: "fw",
+  ia: "adapters",
+  uc: "use-cases",
+  en: "entities",
+} as const;
+
 export const DOMAINS = {
   orders: {
     ent: ["Order", "Customer"],

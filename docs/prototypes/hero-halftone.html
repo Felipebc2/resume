@@ -1,0 +1,337 @@
+<title>Hero Meio-tom</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist+Mono:wght@400;500&family=Geist:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+/* Layout: five directions; each shows the final desktop frame (1440×900), a mid-episode frame and the mobile frame (390×844), all scaled to the column */
+:root{
+  color-scheme:dark;
+  /* site "electric" dark palette */
+  --bg:#0b0d12; --panel:#161b26; --block:#1d222d; --line:#2b303a; --line-2:#41444d;
+  --fg:#c0c0c0; --hi:#e6e7ea; --dim:#8a8a8c; --faint:#5e5f62;
+  --l1:#1c294d; --l2:#2c4488; --l3:#3c60c4; --l4:#4d7cff;
+  --action:#4d7cff; --data:#5be7ff; --ia:#ff7a3d; --ok:#3ddc97; --danger:#ff4d5e;
+  --serif:'Instrument Serif', Georgia, serif;
+  --display:'Anton', Impact, 'Arial Narrow', sans-serif;
+  --sans:'Geist', system-ui, sans-serif;
+  --mono:'Geist Mono', ui-monospace, Menlo, monospace;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1280px;margin:0 auto;padding-block:56px 96px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:grid;gap:12px;margin-bottom:36px;max-width:72ch}
+.eyebrow{font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+h1.pg{margin:0;font:400 clamp(44px,5.4vw,76px)/1.02 var(--serif);color:var(--hi);text-wrap:balance}
+h1.pg b{font:400 1.05em/1 var(--display);letter-spacing:.01em;color:var(--fg)}
+.lead{margin:0;color:var(--dim)}
+.opt{display:grid;gap:18px;padding-block:40px;border-top:1px solid var(--line)}
+.opt-head{display:grid;gap:10px}
+.opt-head .t{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.opt-head .n{font:500 12px/1 var(--mono);color:var(--action);letter-spacing:.08em}
+.opt-head h2{margin:0;font:400 32px/1.05 var(--serif);color:var(--hi)}
+.opt-head p{margin:0;color:var(--dim);max-width:78ch}
+.specs{display:flex;flex-wrap:wrap;gap:6px}
+.specs span{font:500 11px/1 var(--mono);color:var(--fg);border:1px solid var(--line-2);border-radius:999px;padding:6px 9px}
+.specs span b{color:var(--dim);font-weight:500;margin-right:5px}
+.cap{font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:18px;align-items:start}
+@media (max-width:760px){.row2{grid-template-columns:minmax(0,1fr)}.row2 .mob{max-width:260px}}
+.fit{position:relative;width:100%;max-width:100%;overflow:hidden;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+.fit.d{aspect-ratio:1440/900}.fit.m{aspect-ratio:390/844}
+.fit > .mock{position:absolute;left:0;top:0;transform-origin:0 0;transform:scale(var(--k,.5))}
+
+/* ===== mocks ===== */
+.mock{position:relative;overflow:hidden;background:var(--bg);color:var(--fg);font-family:var(--sans)}
+.mock.d{width:1440px;height:900px}.mock.m{width:390px;height:844px}
+.mock .dots{position:absolute;inset:0;background-image:radial-gradient(#1f2430 1px,transparent 1.2px);background-size:24px 24px}
+.mock svg.art{position:absolute;left:0;top:0;overflow:visible}
+.mock svg text{font-family:var(--mono)}
+.left{position:absolute;left:64px;top:50%;transform:translateY(-50%);display:grid;gap:28px;z-index:3;width:470px}
+.left .ey{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.left h1{margin:0;font:italic 400 150px/.88 var(--serif);letter-spacing:-.01em;color:var(--hi)}
+.left h1 b{display:block;font:normal 400 176px/.9 var(--display);letter-spacing:.01em;color:var(--fg)}
+.left ul{margin:0;padding:0;list-style:none;display:grid;gap:6px;font:400 15px/1.5 var(--mono);color:var(--dim)}
+.left ul b{color:var(--fg);font-weight:500}
+.left .links{display:flex;gap:10px}
+.left .links span{font:500 13px/1 var(--mono);border:1px solid var(--line-2);border-radius:999px;padding:10px 14px;background:rgba(11,13,18,.6)}
+.mock.m .left{left:20px;right:20px;top:40px;transform:none;width:auto;gap:16px}
+.mock.m .left h1{font-size:64px}.mock.m .left h1 b{font-size:80px}
+.mock.m .left ul{font-size:12px}.mock.m .left .links span{font-size:11px;padding:8px 11px}
+.seal{position:absolute;width:116px;height:116px;z-index:6}
+/* scene panel, same chrome as the site's panels */
+.scene{position:absolute;border:1px solid var(--line);border-radius:24px;background:color-mix(in srgb,var(--panel) 55%,var(--bg));overflow:hidden;z-index:1}
+.scene .hd{position:absolute;left:0;right:0;top:0;height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 16px;border-bottom:1px solid var(--line);font:400 12px/1 var(--mono);color:var(--dim);white-space:nowrap;z-index:4;background:color-mix(in srgb,var(--panel) 70%,var(--bg))}
+.scene .hd b{color:var(--fg);font-weight:500}
+.scene canvas{position:absolute;left:0;top:0}
+.scene.bare{border:0;background:none;border-radius:0;overflow:visible}
+.scene.bare .hd{display:none}
+.fx-scan{position:absolute;inset:0;pointer-events:none;z-index:5;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.28) 0 1px,transparent 1px 3px);mix-blend-mode:multiply}
+.fx-vig{position:absolute;inset:0;pointer-events:none;z-index:5;background:radial-gradient(ellipse at 55% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+.fx-noise{position:absolute;inset:0;pointer-events:none;z-index:5;opacity:.13;mix-blend-mode:overlay}
+/* terminal widgets */
+.w{position:absolute;z-index:3;font:400 12px/1.55 var(--mono);color:var(--dim);white-space:pre}
+.w b{color:var(--fg);font-weight:500}.w .f{color:var(--fg)}.w .ok{color:var(--ok)}.w .bad{color:var(--danger)}.w .ac{color:var(--action)}.w .dt{color:var(--data)}.w .ia{color:var(--ia)}.w .fa{color:var(--faint)}
+.tbl{position:absolute;z-index:3;font:400 11.5px/1 var(--mono);color:var(--fg);border-top:1px solid var(--line)}
+.tbl .r{display:grid;grid-template-columns:52px 84px 54px 52px 1fr;gap:8px;padding:7px 14px;white-space:nowrap;overflow:hidden}
+.tbl .r.h{background:#c0c0c0;color:#0b0d12;font-weight:500}
+.tbl .r .bad{color:var(--danger)}.tbl .r .ok{color:var(--ok)}.tbl .r .ia{color:var(--ia)}.tbl .r .ac{color:var(--action)}
+.ci{position:absolute;z-index:3;display:flex;gap:6px;align-items:center;font:500 11.5px/1 var(--mono)}
+.ci span{border:1px solid var(--line-2);border-radius:8px;padding:7px 9px;color:var(--dim);background:var(--bg)}
+.ci span.ok{border-color:var(--ok);color:var(--ok)}.ci span.bad{border-color:var(--danger);color:var(--danger)}.ci span.run{border-color:var(--action);color:var(--action)}
+.ci i{font-style:normal;color:var(--faint)}
+.git{position:absolute;z-index:3;font:400 11.5px/1 var(--mono);color:var(--dim)}
+.git .c{display:flex;align-items:center;gap:9px;height:26px;white-space:nowrap}
+.git .c i{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--fg);flex:none;background:var(--bg)}
+.git .c.h i{border-color:var(--ok);background:var(--ok)}.git .c.bad i{border-color:var(--danger)}
+.git .c b{color:var(--fg);font-weight:500}.git .c .ok{color:var(--ok)}
+.git .rail{position:absolute;left:4px;top:13px;bottom:13px;width:1.5px;background:var(--line-2)}
+.chip{position:absolute;z-index:6;font:500 12px/1 var(--mono);border-radius:999px;padding:8px 12px;white-space:nowrap;background:var(--bg)}
+.chip.ok{border:1px solid var(--ok);color:var(--ok)}.chip.bad{border:1px solid var(--danger);color:var(--danger)}
+.ship{position:absolute;z-index:6;font:500 12px/1 var(--mono);border-radius:999px;padding:9px 13px;white-space:nowrap;background:var(--panel);border:1px solid var(--line-2);color:var(--fg)}
+.ship i{font-style:normal;color:var(--dim);margin-left:8px}.ship i b{color:var(--action);font-weight:500}
+/* cursors */
+.cur{position:absolute;z-index:7}
+.cur svg.a{width:16px;height:22px;display:block;overflow:visible}
+.cur .tag{position:absolute;left:14px;top:17px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;white-space:nowrap}
+.cur.flip svg.a{transform:scaleX(-1);transform-origin:0 0}
+.cur.flip .tag{left:auto;right:14px;align-items:flex-end}
+.cur .nm{font:500 12px/1 var(--mono);color:var(--bg);background:var(--c);border-radius:999px;padding:5px 9px}
+.cur .bb{font:500 12px/1.1 var(--mono);color:var(--hi);background:var(--panel);border:1px solid var(--line-2);border-radius:999px;padding:6px 10px}
+.cur .lg{font:400 12px/1.2 var(--mono);color:var(--fg);background:rgba(11,13,18,.88);border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+.cur .lg em{font-style:normal;color:var(--c)}
+.cur .xy{font:400 10.5px/1 var(--mono);color:var(--c);opacity:.85}
+.cur .hud{position:absolute;left:-15px;top:-15px;width:30px;height:30px;overflow:visible}
+.cur.fb{--c:var(--action)}.cur.ia{--c:var(--ia)}
+/* mobile blocks */
+.mb{position:absolute;left:44px;right:44px;height:64px;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;z-index:2}
+.mb .ln{font:500 10.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;position:relative;z-index:1}
+.mb .nd{align-self:flex-start;font:500 11.5px/1 var(--mono);padding:5px 8px;border-radius:7px;background:rgba(11,13,18,.7);border:1px solid rgba(230,234,242,.12);color:var(--hi);position:relative;z-index:1}
+.mb canvas{position:absolute;inset:0}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">Hero · direção 01 refinada</div>
+    <h1 class="pg">Meio-tom <b>40/60</b></h1>
+    <p class="lead">A pilha pontilhada com o layout do hero em 40/60 e o git log --graph integrado à cena. Abaixo, o fim do episódio, o meio com os erros da IA e o mobile, que continua com os 4 blocos.</p>
+  </header>
+  <main id="opts"></main>
+</div>
+
+<script>
+/* ================= constants ================= */
+const C = { bg:'#0b0d12', panel:'#161b26', line:'#2b303a', line2:'#41444d', fg:'#c0c0c0', hi:'#e6e7ea', dim:'#8a8a8c', faint:'#5e5f62', blue:'#4d7cff', data:'#5be7ff', ia:'#ff7a3d', ok:'#3ddc97', danger:'#ff4d5e', ink:'#0a1020' };
+const FILL = ['#151c30', '#1c294d', '#2c4488', '#4d7cff'];
+const STROKE = ['#4a5470', '#3f5fbf', '#5b86ff', '#a9c0ff'];
+const SIDE_L = ['#0d111c', '#121b36', '#1e2f63', '#3157c7'], SIDE_R = ['#111625', '#17223f', '#253a78', '#3d66dd'];
+const NAMES = ['FRAMEWORKS &amp; DRIVERS', 'INTERFACE ADAPTERS', 'USE CASES', 'ENTITIES'];
+const SHORT = ['fw', 'adapters', 'use-cases', 'entities'];
+const SIZES = [440, 380, 320, 260], GAP = 150, T = 18;
+const CUR = 'M0 0 L0 16.2 L4.3 12.6 L7.2 18.6 L9.9 17.4 L7 11.6 L12.5 11.6 Z';
+const NODES = {
+  final: [['Web UI', 'PostgreSQL', 'Redis'], ['OrderController', 'OrderRepository'], ['PlaceOrder', 'CancelOrder'], ['Order', 'Customer']],
+  mid:   [['Web UI', 'PostgreSQL', 'Redis'], ['OrderController'], ['PlaceOrder', 'CancleOrder'], ['Order', 'OrderRepository']],
+};
+const BAD = { CancleOrder: 'typo', OrderRepository: 'wrong' };   // mid-state only (Repository sits on Entities by mistake)
+
+/* ================= small helpers ================= */
+let UID = 0;
+const cwFor = (l, fs) => Math.round(l.length * fs * .6 + 26);
+function cursor(cls, name, x, y, o = {}) {
+  const fill = cls === 'ia' ? C.ia : C.blue;
+  const hud = o.hud ? `<svg class="hud" viewBox="-15 -15 30 30"><circle r="11" fill="none" stroke="${fill}" stroke-opacity=".7" stroke-width="1"/><path d="M-15 0h6M9 0h6M0 -15v6M0 9v6" stroke="${fill}" stroke-width="1"/></svg>` : '';
+  const msg = o.log ? `<span class="lg">[<em>${name.toLowerCase()}</em>] ${o.log}</span>` : o.say ? `<span class="bb">${o.say}</span>` : '';
+  const xy = o.hud ? `<span class="xy">x ${Math.round(x)} · y ${Math.round(y)}</span>` : '';
+  return `<div class="cur ${cls}${o.flip ? ' flip' : ''}" style="left:${x}px;top:${y}px">${hud}<svg class="a" viewBox="0 0 14 19"><path d="${CUR}" fill="${fill}" stroke="${C.bg}" stroke-width="1.2" stroke-linejoin="round"/></svg><div class="tag"><span class="nm">${name}</span>${msg}${xy}</div></div>`;
+}
+const seal = (x, y) => { const id = 'sp' + (UID++); return `<svg class="seal" style="left:${x - 58}px;top:${y - 58}px" viewBox="0 0 116 116"><defs><path id="${id}" d="M58,58 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0"/></defs><circle cx="58" cy="58" r="57" fill="${C.bg}" stroke="${C.line2}"/><text font-size="11.5" font-weight="500" letter-spacing="2.3" fill="${C.dim}"><textPath href="#${id}">• SEE MY CODE • SEE MY CODE </textPath></text><text x="58" y="71" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="36" fill="${C.fg}">↗</text></svg>`; };
+const left = () => `<div class="left"><div class="ey">Felipe Castro — Full-Stack Engineer</div><h1>Born to<b>BUILD.</b></h1><ul><li><b>Full-stack developer</b> — Brasília, BR</li><li>Head of IT @ Nexara · Clean Architecture, Next.js, FastAPI</li></ul><div class="links"><span>LinkedIn ↗</span><span>GitHub ↗</span><span>Contact</span></div></div>`;
+const ship = (x, y, sp = '1×') => `<div class="ship" style="left:${x}px;top:${y}px">⚡ Ship faster<i>${['1×', '2×', '4×'].map(s => s === sp ? `<b>${s}</b>` : s).join(' · ')}</i></div>`;
+
+/* ================= isometric stack (SVG) ================= */
+/* o: { cx, cy, k, plate:'dots'|'wire'|'hatch'|'solid'|'ascii', riser:'dash'|'packets'|'circuit'|'pipe', state, fs, glow, glitch, boot } */
+function stack(o) {
+  const id = 'st' + (UID++), k = o.k, mid = o.state === 'mid';
+  const P = (u, v, z) => [o.cx + (u - v) * .866 * k, o.cy + (u + v) * .5 * k - z * k];
+  const pts = a => a.map(p => p.map(n => n.toFixed(1)).join(',')).join(' ');
+  const plane = z => { const [ex, ey] = P(0, 0, z); return `matrix(${.866 * k} ${.5 * k} ${-.866 * k} ${.5 * k} ${ex} ${ey})`; };
+  const nodes = NODES[o.state];
+  const fs = o.fs || 14;
+  let defs = `<filter id="${id}g" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <radialGradient id="${id}rg"><stop offset="0" stop-color="#fff"/><stop offset=".75" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity=".12"/></radialGradient>`;
+  [0, 1, 2, 3].forEach(i => {
+    const r = [1.15, 1.6, 2.1, 2.7][i];
+    defs += `<pattern id="${id}d${i}" width="10" height="10" patternUnits="userSpaceOnUse"><circle cx="5" cy="5" r="${r}" fill="${STROKE[i]}"/></pattern>`;
+    defs += `<pattern id="${id}h${i}" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="${STROKE[i]}" stroke-width="${[1, 1.2, 1.4, 1.8][i]}" stroke-opacity=".7"/></pattern>`;
+    defs += `<mask id="${id}m${i}" maskContentUnits="userSpaceOnUse"><rect x="-${SIZES[i] / 2}" y="-${SIZES[i] / 2}" width="${SIZES[i]}" height="${SIZES[i]}" fill="url(#${id}rg)"/></mask>`;
+  });
+  const chipSvg = (x, y, label, i) => {
+    const w = cwFor(label, fs), h = fs * 2.2, bad = mid && BAD[label];
+    const ink = i === 3 && (o.plate === 'solid');
+    if (o.plate === 'ascii') return `<g><rect x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" fill="${C.bg}" fill-opacity=".86"/><text x="${x - w / 2 + 6}" y="${y + fs * .36}" font-size="${fs}" font-weight="500" fill="${bad ? C.danger : C.hi}">[${label}]</text></g>`;
+    const fill = ink ? 'rgba(255,255,255,.3)' : 'rgba(11,13,18,.82)';
+    const stroke = bad ? C.danger : o.plate === 'wire' ? STROKE[i] : ink ? 'rgba(10,16,32,.25)' : 'rgba(230,234,242,.14)';
+    let s = `<rect x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" rx="${o.plate === 'hatch' ? 2 : 7}" fill="${fill}" stroke="${stroke}" stroke-width="${bad ? 1.6 : 1}" ${bad ? 'stroke-dasharray="5 3"' : ''}/>`;
+    s += `<text x="${x - w / 2 + 13}" y="${y + fs * .36}" font-size="${fs}" font-weight="500" fill="${ink ? C.ink : C.hi}">${label}</text>`;
+    if (bad === 'typo') { let d = `M${x - w / 2 + 13} ${y + fs * .75}`; for (let t = 0; t < label.length * fs * .6; t += 6) d += ' q1.5 -2.4 3 0 t3 0'; s += `<path d="${d}" fill="none" stroke="${C.danger}" stroke-width="1.4"/>`; }
+    if (bad === 'wrong') s += `<circle cx="${x + w / 2 - 2}" cy="${y - h / 2 + 2}" r="4" fill="${C.danger}"/>`;
+    if (bad && o.glitch) s = `<g transform="translate(-4 0)" opacity=".75">${s.replace(/fill="(?!none)[^"]*"/g, `fill="${C.danger}"`).replace(/stroke="[^"]*"/g, `stroke="${C.danger}"`)}</g><g transform="translate(4 1)" opacity=".7">${s.replace(/fill="(?!none)[^"]*"/g, `fill="${C.data}"`).replace(/stroke="[^"]*"/g, `stroke="${C.data}"`)}</g>${s}<rect x="${x - w / 2 - 10}" y="${y - 3}" width="${w + 26}" height="3" fill="${C.danger}" opacity=".8"/>`;
+    return `<g>${s}</g>`;
+  };
+  // risers between plate i (below) and i+1 (above): anchored on the upper plate's front edges
+  const riserPts = i => { const hu = SIZES[i + 1] / 2; return [[-hu * .5, hu - 10], [hu * .2, hu - 10], [hu - 10, -hu * .25]]; };
+  const riserFor = (i, j, plateGroup) => {
+    const [u, v] = riserPts(i)[j], zb = i * GAP, zt = (i + 1) * GAP - T;
+    const missing = mid && (i === 2 || (i === 1 && j === 2));
+    if (missing) return { screen: '', plane: '' };
+    const bad = mid && i === 0 && j === 0;
+    const [x1, y1] = P(u, v, zb), [x2, y2] = P(u, v, zt);
+    const col = bad ? C.danger : o.riser === 'packets' ? C.data : o.riser === 'circuit' ? STROKE[i + 1] : C.fg;
+    const head = (x, y, up) => `<path d="M${x - 5} ${y + (up ? 7 : -7)} L${x} ${y} L${x + 5} ${y + (up ? 7 : -7)}" fill="none" stroke="${col}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`;
+    let s = '', p = '';
+    if (o.riser === 'dash') s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2 + 2}" stroke="${col}" stroke-opacity="${bad ? 1 : .55}" stroke-width="1.6" stroke-dasharray="4 5"/><circle cx="${x1}" cy="${y1}" r="3.5" fill="${col}" fill-opacity=".7"/>${bad ? head(x1, y1 - 2, false) : head(x2, y2 + 2, true)}`;
+    if (o.riser === 'packets') { s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-opacity=".28" stroke-width="1.4"/>`; [.18, .5, .8].forEach((f, n) => { const y = y1 + (y2 - y1) * (bad ? 1 - f : f); s += `<rect x="${x1 - 3}" y="${y - 3}" width="6" height="${n === 1 ? 10 : 6}" fill="${col}" filter="url(#${id}g)"/>`; }); s += bad ? head(x1, y1 - 2, false) : head(x2, y2 + 2, true); }
+    if (o.riser === 'circuit') { s = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2"/><circle cx="${x1}" cy="${y1}" r="4.5" fill="${C.bg}" stroke="${col}" stroke-width="2"/><circle cx="${x2}" cy="${y2}" r="4.5" fill="${C.bg}" stroke="${col}" stroke-width="2"/>`;
+      const hl = SIZES[i] / 2, cy0 = hl - 42; p = `<path d="M${u} ${cy0 - fs * 1.1} V${(v + cy0) / 2} H${u + (j === 2 ? 0 : 24)} V${v}" fill="none" stroke="${col}" stroke-width="2" stroke-opacity=".75"/><circle cx="${u}" cy="${cy0 - fs * 1.1}" r="3" fill="${col}"/>`; if (bad) s += head(x1, y1 - 7, false); }
+    if (o.riser === 'pipe') { const n = Math.max(3, Math.floor((y1 - y2) / 13)); for (let q = 0; q < n; q++) { const y = y2 + 13 + q * ((y1 - y2 - 13) / n); s += `<text x="${x1 - 4}" y="${y}" font-size="13" fill="${col}" fill-opacity="${bad ? 1 : .8}">│</text>`; } s += `<text x="${x1 - 5}" y="${bad ? y1 + 4 : y2 + 12}" font-size="13" fill="${col}">${bad ? '▼' : '▲'}</text>`; }
+    return { screen: s, plane: p };
+  };
+  let out = '';
+  for (let i = 0; i < 4; i++) {
+    const h = SIZES[i] / 2, z1 = i * GAP, z0 = z1 - T;
+    if (i > 0) for (let j = 0; j < 3; j++) out += riserFor(i - 1, j).screen;
+    const L = [P(-h, h, z0), P(h, h, z0), P(h, h, z1), P(-h, h, z1)], R = [P(h, -h, z0), P(h, h, z0), P(h, h, z1), P(h, -h, z1)];
+    const lit = o.boot ? 1 : 0;
+    if (o.plate === 'solid' || o.plate === 'dots') out += `<polygon points="${pts(L)}" fill="${SIDE_L[i]}"/><polygon points="${pts(R)}" fill="${SIDE_R[i]}"/>`;
+    if (o.plate === 'wire') out += `<g filter="url(#${id}g)"><polygon points="${pts(L)}" fill="${STROKE[i]}" fill-opacity=".05" stroke="${STROKE[i]}" stroke-width="1.3"/><polygon points="${pts(R)}" fill="${STROKE[i]}" fill-opacity=".09" stroke="${STROKE[i]}" stroke-width="1.3"/></g>`;
+    if (o.plate === 'hatch') out += `<polygon points="${pts(L)}" fill="${C.bg}" stroke="${STROKE[i]}" stroke-width="1.2"/><polygon points="${pts(R)}" fill="${SIDE_R[i]}" fill-opacity=".5" stroke="${STROKE[i]}" stroke-width="1.2"/>`;
+    // top face, drawn in the plate's own plane
+    let g = '';
+    if (o.plate === 'solid') g += `<rect x="${-h}" y="${-h}" width="${2 * h}" height="${2 * h}" fill="${FILL[i]}" ${i === 0 ? `stroke="${C.line2}"` : ''}/>`;
+    if (o.plate === 'dots') g += `<rect x="${-h}" y="${-h}" width="${2 * h}" height="${2 * h}" fill="#0e121c" stroke="${STROKE[i]}" stroke-opacity=".55"/><rect x="${-h}" y="${-h}" width="${2 * h}" height="${2 * h}" fill="url(#${id}d${i})" mask="url(#${id}m${i})"/>`;
+    if (o.plate === 'wire') { g += `<rect x="${-h}" y="${-h}" width="${2 * h}" height="${2 * h}" fill="${STROKE[i]}" fill-opacity=".04" stroke="${STROKE[i]}" stroke-width="1.6" filter="url(#${id}g)"/>`; for (let q = -h + 40; q < h; q += 40) g += `<path d="M${q} ${-h} V${h} M${-h} ${q} H${h}" stroke="${STROKE[i]}" stroke-opacity=".14" stroke-width="1"/>`; }
+    if (o.plate === 'hatch') { g += `<rect x="${-h}" y="${-h}" width="${2 * h}" height="${2 * h}" fill="#0c1018" stroke="${STROKE[i]}" stroke-width="1.4"/><rect x="${-h + 8}" y="${-h + 8}" width="${2 * h - 16}" height="${2 * h - 16}" fill="url(#${id}h${i})" opacity=".55"/>`; g += `<path d="M${-h} ${-h - 14} H${h} M${-h} ${-h - 19} v10 M${h} ${-h - 19} v10" stroke="${STROKE[i]}" stroke-opacity=".6" stroke-width="1"/><text x="${-12}" y="${-h - 20}" font-size="11" fill="${STROKE[i]}" fill-opacity=".9">${SIZES[i]}</text>`; }
+    if (i > 0 || o.riser === 'circuit') for (let j = 0; j < 3 && i < 3; j++) g += riserFor(i, j).plane;
+    if (i === 3) g += '';
+    // label + chips on the front strip
+    const lc = o.plate === 'solid' && i === 3 ? C.ink : i === 0 ? C.dim : '#c9d6fb';
+    const onlineTag = o.boot ? `  <tspan fill="${C.ok}">● online</tspan>` : '';
+    g += `<text x="${-h + 22}" y="${h - 42 - fs * 2.2}" font-size="${fs + 1}" font-weight="500" letter-spacing="2.4" fill="${o.plate === 'ascii' ? STROKE[i] : lc}">${o.plate === 'ascii' ? '┌ ' : ''}${NAMES[i]}${onlineTag}</text>`;
+    let x = -h + 22; nodes[i].forEach(lbl => { const w = cwFor(lbl, fs); g += chipSvg(x + w / 2, h - 42, lbl, i); x += w + 10; });
+    out += `<g transform="${plane(z1)}" ${o.boot ? `filter="url(#${id}g)"` : ''}>${g}</g>`;
+  }
+  return { svg: `<svg class="art" width="1440" height="900" viewBox="0 0 1440 900"><defs>${defs}</defs>${out}</svg>`, P, polys: () => {
+    // screen polygons in painter order, for the ASCII canvas
+    const list = []; for (let i = 0; i < 4; i++) { const h = SIZES[i] / 2, z1 = i * GAP, z0 = z1 - T;
+      list.push({ i, f: 'L', p: [P(-h, h, z0), P(h, h, z0), P(h, h, z1), P(-h, h, z1)] }, { i, f: 'R', p: [P(h, -h, z0), P(h, h, z0), P(h, h, z1), P(h, -h, z1)] }, { i, f: 'T', p: [P(-h, -h, z1), P(h, -h, z1), P(h, h, z1), P(-h, h, z1)] }); }
+    return list; } };
+}
+
+/* ================= ASCII canvas renderer (option 02) ================= */
+const ASCII_JOBS = [];
+function asciiCanvas(w, h, polysFn, opt = {}) { const id = 'cv' + (UID++); ASCII_JOBS.push({ id, w, h, polysFn, opt }); return `<canvas id="${id}" width="${w * 2}" height="${h * 2}" style="width:${w}px;height:${h}px"></canvas>`; }
+function inPoly(x, y, p) { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) c = !c; } return c; }
+function runAscii() {
+  for (const job of ASCII_JOBS) {
+    const cv = document.getElementById(job.id); if (!cv) continue;
+    const ctx = cv.getContext('2d'); ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.clearRect(0, 0, job.w, job.h);
+    const CW = 7.4, CH = 12; ctx.font = '500 12px "Geist Mono", ui-monospace, monospace'; ctx.textBaseline = 'middle';
+    const polys = job.polysFn(); const ramp = { T: ['·', ':', '+', '#'], L: ['░', '░', '▒', '▓'], R: ['░', '▒', '▒', '▓'] };
+    for (let y = CH / 2; y < job.h; y += CH) for (let x = CW / 2; x < job.w; x += CW) {
+      let hit = null; for (const p of polys) if (inPoly(x + (job.opt.ox || 0), y + (job.opt.oy || 0), p.p)) hit = p;
+      if (!hit) continue;
+      const col = Math.round(x / CW), row = Math.round(y / CH);
+      let ch = ramp[hit.f][hit.i];
+      if (hit.f === 'T' && (col + row) % (4 - hit.i > 1 ? 4 - hit.i : 1) !== 0 && hit.i < 3) ch = hit.i === 0 ? ' ' : '·';
+      ctx.fillStyle = hit.f === 'T' ? STROKE[hit.i] : SIDE_R[hit.i] === SIDE_R[3] ? '#3d66dd' : STROKE[hit.i];
+      ctx.globalAlpha = hit.f === 'T' ? .9 : .55;
+      ctx.fillText(ch, x - CW / 2, y);
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+/* ================= terminal widgets ================= */
+const bars2 = (x, y, w, mid) => {
+  const v = mid ? [71, 38, 64, 22] : [44, 31, 27, 12], lab = ['fw', 'adapters', 'use-cases', 'entities'];
+  const one = i => { const n = Math.round(v[i] / 7); return `${lab[i].padEnd(10)}<span class="fa">[</span><span class="${mid && i === 2 ? 'bad' : 'f'}">${'|'.repeat(n)}</span>${' '.repeat(14 - n)}<span class="fa">${String(v[i]).padStart(3)}%]</span>`; };
+  return `<div class="w" style="left:${x}px;top:${y}px">${one(0)}\n${one(1)}</div><div class="w" style="left:${x + w}px;top:${y}px">${one(2)}\n${one(3)}</div>`;
+};
+const bars = (x, y, mid) => {
+  const v = mid ? [71, 38, 64, 22] : [44, 31, 27, 12], lab = ['fw', 'adapters', 'use-cases', 'entities'];
+  return `<div class="w" style="left:${x}px;top:${y}px">${lab.map((l, i) => { const n = Math.round(v[i] / 5); return `${l.padEnd(10)}<span class="fa">[</span><span class="${mid && i === 2 ? 'bad' : 'f'}">${'|'.repeat(n)}</span>${' '.repeat(20 - n)}<span class="fa">${String(v[i]).padStart(3)}%]</span>`; }).join('\n')}\n<span class="fa">tasks:</span> <b>${mid ? 9 : 11}</b> total, <b>${mid ? 2 : 0}</b> running · <span class="fa">uptime</span> ${mid ? '00:11' : '00:26'}</div>`;
+};
+const table = (x, y, w, mid) => {
+  const rows = mid ? [['2041', 'ia', 'R', '38.2', 'scaffold --layer=use-cases CancleOrder', 'ia'], ['2042', 'ia', 'R', '21.0', 'place --layer=entities OrderRepository', 'bad'], ['1188', 'felipebc2', 'S', '4.1', 'review --watch', 'ac'], ['1190', 'felipebc2', 'R', '9.7', 'pytest -q   23/24', 'bad']]
+    : [['1188', 'felipebc2', 'S', '0.4', 'review --approve  LGTM', 'ac'], ['1190', 'felipebc2', 'S', '0.0', 'pytest -q   24/24 ✓', 'ok'], ['1201', 'felipebc2', 'R', '12.6', 'deploy --env=production ✓', 'ok'], ['2040', 'ia', 'Z', '0.0', 'scaffold (exited 0)', 'ia']];
+  return `<div class="tbl" style="left:${x}px;top:${y}px;width:${w}px"><div class="r h"><span>PID</span><span>USER</span><span>STATE</span><span>CPU%</span><span>COMMAND</span></div>${rows.map(r => `<div class="r"><span>${r[0]}</span><span class="${r[1] === 'ia' ? 'ia' : 'ac'}">${r[1]}</span><span>${r[2]}</span><span>${r[3]}</span><span class="${r[5] === 'bad' ? 'bad' : r[5] === 'ok' ? 'ok' : ''}">${r[4]}</span></div>`).join('')}</div>`;
+};
+const ci = (x, y, mid) => {
+  const st = mid ? [['lint', 'ok'], ['test 23/24', 'bad'], ['build', ''], ['deploy', '']] : [['lint ✓', 'ok'], ['test 24/24 ✓', 'ok'], ['build ✓', 'ok'], ['deploy ✓', 'ok']];
+  return `<div class="ci" style="left:${x}px;top:${y}px">${st.map(([t, c]) => `<span class="${c}">${t}</span>`).join('<i>→</i>')}</div>`;
+};
+const git = (x, y, mid) => {
+  const cs = mid ? [['bad', 'wip', 'ia: scaffold'], ['', 'a3f9', 'ia: add entities'], ['', '71c2', 'init stack']]
+    : [['h', 'HEAD', 'deploy → prod', 'ok'], ['', 'c81e', 'fix: repository layer'], ['', '9b04', 'fix: dependency rule'], ['', '4d1a', 'fix: CancelOrder typo'], ['', 'a3f9', 'ia: add entities'], ['', '71c2', 'init stack']];
+  return `<div class="git" style="left:${x}px;top:${y}px"><div class="w" style="position:static;margin-bottom:6px"><span class="fa">$</span> git log --graph</div><div style="position:relative"><span class="rail"></span>${cs.map(c => `<div class="c ${c[0]}"><i></i><b>${c[1]}</b><span class="${c[3] || ''}">${c[2]}</span></div>`).join('')}</div></div>`;
+};
+const logBox = (x, y, mid) => `<div class="w" style="left:${x}px;top:${y}px">${mid
+  ? `<span class="ia">[ia]</span> place OrderRepository → entities\n<span class="bad">[lint]</span> entities → PostgreSQL ✗`
+  : `<span class="ac">[felipebc2]</span> fixed 3 · LGTM :)\n<span class="ok">[deploy]</span> production · 1.8s <span class="ok">healthy</span>`}</div>`;
+
+/* ================= panel + mobile helpers ================= */
+const scenePanel = (x, y, w, h, left, right, inner = '', fx = '') => `<div class="scene" style="left:${x}px;top:${y}px;width:${w}px;height:${h}px"><div class="hd"><span>${left}</span><span>${right}</span></div>${inner}${fx}</div>`;
+const noise = () => `<svg class="fx-noise" width="100%" height="100%"><filter id="nz${UID++}"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0"/></filter><rect width="100%" height="100%" filter="url(#nz${UID - 1})"/></svg>`;
+function mobile(style, o = {}) {
+  const ys = [470, 544, 618, 692], ids = UID++;
+  const blocks = ys.map((y, i) => {
+    let bg = '', inner = '', st = `top:${y}px;`;
+    if (style === 'dots') { st += `background:#0e121c;box-shadow:inset 0 0 0 1px ${STROKE[i]}66;`; inner = `<svg style="position:absolute;inset:0" width="100%" height="100%"><defs><pattern id="mp${ids}${i}" width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="4.5" cy="4.5" r="${[1, 1.4, 1.8, 2.3][i]}" fill="${STROKE[i]}"/></pattern><linearGradient id="mg${ids}${i}" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff"/></linearGradient><mask id="mm${ids}${i}"><rect width="100%" height="100%" fill="url(#mg${ids}${i})"/></mask></defs><rect width="100%" height="100%" fill="url(#mp${ids}${i})" mask="url(#mm${ids}${i})"/></svg>`; }
+    if (style === 'ascii') { st += `background:${C.bg};box-shadow:inset 0 0 0 1px ${STROKE[i]}55;border-radius:4px;`; inner = `<div style="position:absolute;inset:0;font:500 12px/12px var(--mono);color:${STROKE[i]};opacity:.75;white-space:pre;overflow:hidden;padding:2px 3px">${Array.from({ length: 6 }, (_, r) => Array.from({ length: 44 }, (_, c) => ['·', ':', '+', '#'][i] && ((c + r) % (4 - i) === 0 || i === 3) ? ['·', ':', '+', '#'][i] : ' ').join('')).join('\n')}</div>`; }
+    if (style === 'wire') st += `background:${STROKE[i]}0d;box-shadow:inset 0 0 0 1.5px ${STROKE[i]},0 0 14px ${STROKE[i]}44;`;
+    if (style === 'hatch') { st += `background:#0c1018 repeating-linear-gradient(45deg,${STROKE[i]}55 0 1.4px,transparent 1.4px 9px);box-shadow:inset 0 0 0 1.4px ${STROKE[i]};border-radius:3px;`; }
+    if (style === 'solid') st += `background:${FILL[i]};${i === 0 ? `box-shadow:inset 0 0 0 1px ${C.line2};` : ''}`;
+    const lc = style === 'solid' && i === 3 ? C.ink : i === 0 ? C.dim : '#c9d6fb';
+    const label = (style === 'ascii' ? '┌ ' : '') + NAMES[i] + (o.boot ? ` <span style="color:${C.ok}">●</span>` : '');
+    const node = ['PostgreSQL', 'OrderController', 'PlaceOrder', 'Order'][i];
+    return `<div class="mb" style="${st}">${inner}<span class="ln" style="color:${lc}">${label}</span><span class="nd" ${style === 'solid' && i === 3 ? 'style="background:rgba(255,255,255,.3);color:#0a1020;border-color:rgba(10,16,32,.25)"' : ''}>${style === 'ascii' ? '[' + node + ']' : node}</span></div>`;
+  }).join('');
+  return `<div class="mock m"><div class="dots"></div>${left()}${blocks}${o.fx || ''}
+    ${cursor('fb', 'Felipebc2', 58, 404, Object.assign({}, o.cur || {}, { log: '' }))}${cursor('ia', 'IA', 334, 772, Object.assign({ flip: true, say: o.log ? '' : '👍', log: o.log ? 'exit 0 👍' : '' }, o.curIa || {}))}</div>`;
+}
+
+/* ================= the five directions ================= */
+const OPTIONS = [
+  { name: 'Meio-tom 40/60', note: 'A direção 01 com o hero em 40/60: o texto ocupa 40% e a cena 60%, então a pilha cresce cerca de 10%. O selo “See my code” acompanha a nova emenda. A cena fica solta no fundo pontilhado, sem caixa, como o resto do conteúdo do site. O git log --graph entra no canto livre à direita da pilha, com um commit por correção, e as barras do htop ficam no canto de baixo.',
+    specs: [['layout', '40 / 60'], ['placas', 'pontilhado'], ['risers', 'tracejado'], ['cursores', 'setas'], ['balões', 'normais'], ['deployed', 'chip'], ['htop', 'barras'], ['git', 'com'], ['efeito', 'nenhum'], ['parallax', 'atual'], ['peso', 'SVG leve']],
+    desk(state) { const mid = state === 'mid';
+      const PX = 604, PY = 44, PW = 812, PH = 790;   // scene panel: 60% column
+      const s = stack({ cx: 990, cy: 606, k: .88, plate: 'dots', riser: 'dash', state, fs: 14 });
+      const off = el => el.replace('class="art"', `class="art" style="left:-${PX}px;top:-${PY}px"`);
+      return `<div class="mock d"><div class="dots"></div>${left()}
+        ${scenePanel(PX, PY, PW, PH, '', '', off(s.svg) + bars(18, 698, mid).replace(/\n<span class="fa">tasks:.*?<\/div>/s, '</div>') + git(602, 54, mid)).replace('class="scene"', 'class="scene bare"')}
+        ${seal(576, 450)}
+        ${mid ? `<div class="chip bad" style="left:640px;top:660px">⚠ dependency rule</div>` + cursor('ia', 'IA', 1300, 300, { flip: true, say: 'scaffolding use cases…' }) + cursor('fb', 'Felipebc2', 872, 688, { say: "hmm… that's not right" })
+              : `<div class="chip ok" style="left:632px;top:102px">✓ deployed</div>` + cursor('fb', 'Felipebc2', 1330, 760, { flip: true }) + cursor('ia', 'IA', 1384, 440, { flip: true, say: ':D' })}
+        ${ship(PX + PW / 2 - 96, 848)}</div>`; },
+    mob() { return mobile('dots'); } },
+];
+
+/* ================= page ================= */
+const host = document.getElementById('opts');
+host.innerHTML = OPTIONS.map((o, i) => `
+  <section class="opt" id="d${i + 1}">
+    <div class="opt-head"><div class="t"><span class="n">${String(i + 1).padStart(2, '0')}</span><h2>${o.name}</h2></div><p>${o.note}</p>
+      <div class="specs">${o.specs.map(([a, b]) => `<span><b>${a}</b>${b}</span>`).join('')}</div></div>
+    <div><div class="cap">Fim do episódio · deployed</div><div class="fit d" role="img" aria-label="${o.name}, estado final">${o.desk('final')}</div></div>
+    <div class="row2">
+      <div><div class="cap">Meio do episódio · erros da IA</div><div class="fit d" role="img" aria-label="${o.name}, meio do episódio">${o.desk('mid')}</div></div>
+      <div class="mob"><div class="cap">Mobile · 390 px</div><div class="fit m" role="img" aria-label="${o.name}, mobile">${o.mob()}</div></div>
+    </div>
+  </section>`).join('');
+function fit() { document.querySelectorAll('.fit').forEach(f => f.firstElementChild.style.setProperty('--k', f.clientWidth / (f.classList.contains('m') ? 390 : 1440))); }
+new ResizeObserver(fit).observe(document.body); fit();
+runAscii();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(runAscii);
+</script>

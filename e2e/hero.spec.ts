@@ -83,6 +83,32 @@ test.describe("hero scene, desktop", () => {
       .toBeGreaterThan(3.9);
   });
 
+  test("git log: a commit per fix, HEAD once deployed; htop bars per layer", async ({
+    page,
+  }) => {
+    await withHooks(page);
+    await page.goto("/");
+    await page.waitForFunction(() => window.__hero?.ep);
+    const rows = page.locator("[data-engine] .glog .c:visible");
+    const at = (expr: string) =>
+      page.evaluate((e) => {
+        const h = window.__hero!,
+          ep = h.ep as unknown as Record<string, number> & {
+            acts: Record<string, number>;
+          };
+        h.seek(new Function("ep", `return ${e}`)(ep));
+      }, expr);
+    await at("ep.acts['3 Erros']");
+    const log = page.locator("[data-engine] .glog");
+    await expect(log.locator(".c.wip")).toBeVisible();
+    await expect(log.locator(".c.wip")).toContainText("wip");
+    await at("ep.MAIN + 0.6");
+    await expect(rows).toHaveCount(6);
+    await expect(log.locator(".c.wip")).toBeHidden();
+    await expect(log.locator(".c.head")).toContainText("HEAD");
+    await expect(page.locator("[data-engine] .bars > div")).toHaveCount(4);
+  });
+
   test("theme and language switch while it runs, without a restart", async ({
     page,
   }) => {

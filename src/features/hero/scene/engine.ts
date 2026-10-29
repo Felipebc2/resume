@@ -1,11 +1,13 @@
 /* Hero scene: the DOM half. Builds the stage, renders frame t, runs the episode lifecycle and the
    speed/parallax interaction. Ported from docs/prototypes/hero-motion-v4.4.html; the easter eggs
    live in ./eggs (own chunk, loaded on the first pointer over the scene). */
-import { animate, clamp, mix } from "motion";
-import { CURSOR_PATH, ICONS } from "@/content/hero";
+import { animate, clamp, cubicBezier, mix } from "motion";
+import { CURSOR_PATH, GIT, ICONS, LAYER_SHORT } from "@/content/hero";
 import type en from "@/i18n/messages/en.json";
+import { ease as easeToken, ms } from "@/lib/motion";
 import {
   buildEpisode,
+  gitLog,
   EASE_DRAG,
   EASE_IO,
   EASE_OUT,
@@ -44,12 +46,21 @@ import {
   type Commit,
   type Episode,
   type Layer,
+  type LogRow,
   type Pt3,
   type SNode,
   type XY,
 } from "./core";
 
 export type HeroDict = typeof en.Hero.scene;
+/** the Htop meter classes (features/experience), reused by the scene's bars */
+export interface MeterCls {
+  meter: string;
+  l: string;
+  b: string;
+  f: string;
+  v: string;
+}
 type Controls = ReturnType<typeof animate>;
 export interface EggState {
   drag: { n: SNode; dx: number; dy: number; at: Pt3 } | null;
@@ -103,6 +114,21 @@ export interface EggApi {
 export const ENGINE_ID = "fbc2-hero-engine";
 const LS_KEY = "fbc2-hero-last";
 const svgNS = "http://www.w3.org/2000/svg";
+const DOT_R = [1.15, 1.6, 2.1, 2.7]; // halftone dot radius per plate, outermost first
+// widget boxes in stage units (wide layouts): the git log in the free corner above the right of the
+// stack (it overflows the stage), the bars under its lower left, the deployed chip above its left
+const ZONES = {
+  glog: { x: 610, y: 30, w: 206, h: 180 },
+  bars: { x: 0, y: 716, w: 220, h: 72 },
+  chip: { x: 16, y: 66, w: 136, h: 30 },
+  term: { x: 430, y: 722, w: 210, h: 58 }, // mode B's log, left of where Felipebc2 runs the tests
+};
+type Zone = (typeof ZONES)["glog"];
+const LOG_ROW = 26,
+  LOG_MAX = 6,
+  BAR = 12;
+const BAR_WORK = [0.3, 0.22, 0.18, 0.1], // per layer, fw first: resting load while the episode plays
+  BAR_IDLE = [0.44, 0.31, 0.27, 0.12]; // and after deployed
 
 const TEMPLATE = `<div class="tb"><button class="pill" data-el="ship" type="button" aria-pressed="false"><span class="label"></span><span class="seg"><span class="on">1×</span><span>·</span><span>2×</span><span>·</span><span>4×</span></span></button><button class="pill ghostly" data-el="rebuild" type="button" hidden></button></div>
 <div class="stage" aria-hidden="true"><svg class="canvas" viewBox="0 0 724 800"><defs>
@@ -110,13 +136,14 @@ const TEMPLATE = `<div class="tb"><button class="pill" data-el="ship" type="butt
 <marker id="mk-head-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 <marker id="mk-head-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 </defs><g data-el="stack"></g><g data-el="sels"></g><g class="pin" data-el="pin" opacity="0"><circle r="8"/><text y="3" text-anchor="middle">F</text></g><g data-el="fx" class="fx"></g><text data-el="measure" style="font:500 18px var(--font-mono);opacity:0;pointer-events:none"></text></svg>
-<div class="overlay" data-el="overlay"><div class="term" data-el="term"><div class="hd"><i></i><i></i><i></i>&nbsp;terminal</div><div class="ls"></div></div><div class="chip ok" data-el="chipOk"><span class="ring"></span><span class="txt"></span><span class="bar"><i></i></span></div></div></div>`;
+<div class="overlay" data-el="overlay"><div class="glog" data-el="glog"><div class="gp"><span>$</span> </div><div class="rows" data-el="rows"><i class="rail"></i></div></div><div class="bars" data-el="bars"></div><div class="term" data-el="term"><div class="hd"><i></i><i></i><i></i>&nbsp;terminal</div><div class="ls"></div></div><div class="chip ok" data-el="chipOk"><span class="ring"></span><span class="txt"></span><span class="bar"><i></i></span></div></div></div>`;
 
 export function mount(
   scene: HTMLElement,
   host: HTMLElement,
   dict: HeroDict,
   still: boolean,
+  meter: MeterCls,
 ) {
   let L = dict;
   let staticMode = still;
@@ -165,10 +192,46 @@ export function mount(
     shipBtn = $<HTMLButtonElement>("ship"),
     rebuildBtn = $<HTMLButtonElement>("rebuild"),
     tb = host.querySelector(".tb") as HTMLElement;
+  const glogEl = $("glog"),
+    rowsEl = $("rows"),
+    railEl = rowsEl.querySelector(".rail") as HTMLElement,
+    barsEl = $("bars");
+  (glogEl.firstElementChild as HTMLElement).append(GIT.prompt);
+  const place = (e: HTMLElement, z: Zone, h = true) => {
+    e.style.left = z.x + "px";
+    e.style.top = z.y + "px";
+    e.style.width = z.w + "px";
+    if (h) e.style.height = z.h + "px";
+  };
+  place(glogEl, ZONES.glog);
+  place(barsEl, ZONES.bars);
+  const wide = matchMedia("(min-width: 1024px)");
+  // motion tokens, in episode seconds: the new commit pops in, the rest slide down a row
+  const bez = (v: string, d: [number, number, number, number]) => {
+    const n = (v.match(/-?[\d.]+/g) || []).map(Number);
+    return cubicBezier(...((n.length === 4 ? n : d) as typeof d));
+  };
+  const POP = bez(easeToken("--ease-pop"), [0.2, 0.9, 0.3, 1.4]),
+    SLIDE = bez(easeToken("--ease-out"), [0.2, 0.8, 0.2, 1]);
+  const dIn = ms("--d-3") / 1000 || 0.4,
+    dOut = ms("--d-2") / 1000 || 0.25;
+  const BARS = LAYERS.map((l) => {
+    const r = document.createElement("div");
+    r.className = meter.meter;
+    r.innerHTML = `<span class="${meter.l}">${LAYER_SHORT[l].padEnd(9)}</span><span class="${meter.b}">[</span><span class="${meter.f}"><span></span><span class="${meter.v}"></span></span><span class="${meter.b}">]</span>`;
+    barsEl.appendChild(r);
+    const f = r.children[2];
+    return {
+      r,
+      bar: f.firstElementChild as HTMLElement,
+      val: f.lastElementChild as HTMLElement,
+    };
+  });
   const termEl = $("term"),
     termLs = termEl.querySelector(".ls") as HTMLElement,
     pinEl = $<SVGGElement>("pin"),
     measureEl = $<SVGTextElement>("measure");
+  place(termEl, ZONES.term, false);
 
   /* =====================================================================
      DOM helpers & pools
@@ -330,11 +393,15 @@ export function mount(
       localStorage.setItem(LS_KEY, v);
     } catch {}
   };
+  let LOG: { r: LogRow; el: HTMLElement; msg: HTMLElement }[] = [];
+  let WORK: { l: Layer; t0: number; t1: number }[] = [];
   interface PlateDom {
     g: SVGGElement;
     sideL: SVGPolygonElement;
     sideR: SVGPolygonElement;
     face: SVGPolygonElement;
+    solid: SVGPolygonElement;
+    dots: SVGRectElement;
     content: SVGGElement;
     title: SVGTextElement;
     guides: { v: SVGLineElement; h: SVGLineElement };
@@ -351,6 +418,31 @@ export function mount(
     for (let i = 0; i < w; i += 6) d += " q1.5 -2.4 3 0 t3 0";
     return d;
   }
+  // halftone top faces: one dot pattern and one radial mask per plate, in plate-local units (the
+  // content group's matrix lays them out isometric). Built once per mount, never per frame.
+  const defs = canvas.querySelector("defs")!;
+  const fade = el("radialGradient", { id: "hf" }, defs);
+  for (const [o, a] of [
+    [0, 1],
+    [0.75, 0.55],
+    [1, 0.12],
+  ])
+    el("stop", { offset: o, "stop-color": "#fff", "stop-opacity": a }, fade);
+  LAYERS.forEach((layer, i) => {
+    const Pl = PLATES[layer];
+    const pat = el(
+      "pattern",
+      { id: "hd" + i, width: 10, height: 10, patternUnits: "userSpaceOnUse" },
+      defs,
+    );
+    el("circle", { class: "dot", cx: 5, cy: 5, r: DOT_R[i] }, pat);
+    const mask = el(
+      "mask",
+      { id: "hm" + i, maskContentUnits: "userSpaceOnUse" },
+      defs,
+    );
+    el("rect", { width: Pl.w, height: Pl.h, fill: "url(#hf)" }, mask);
+  });
   LAYERS.forEach((layer, i) => {
     const Pl = PLATES[layer];
     const g = el(
@@ -360,8 +452,20 @@ export function mount(
     );
     const sideL = el("polygon", { class: "side sideL" }, g),
       sideR = el("polygon", { class: "side sideR" }, g),
-      face = el("polygon", { class: "face" }, g);
+      face = el("polygon", { class: "face" }, g),
+      solid = el("polygon", { class: "solid" }, g); // the v4.4 fill, shown as the stack closes
     const content = el("g", { class: "content" }, g);
+    const dots = el(
+      "rect",
+      {
+        class: "dots",
+        width: Pl.w,
+        height: Pl.h,
+        fill: `url(#hd${i})`,
+        mask: `url(#hm${i})`,
+      },
+      content,
+    );
     const title = el("text", { class: "ptitle", x: 22, y: Pl.h - 18 }, content);
     title.textContent = Pl.title;
     const guides = {
@@ -378,6 +482,8 @@ export function mount(
       sideL,
       sideR,
       face,
+      solid,
+      dots,
       content,
       title,
       guides,
@@ -398,6 +504,31 @@ export function mount(
     });
     GAPG.forEach((g) => g.replaceChildren());
     termLs.replaceChildren();
+    rowsEl.querySelectorAll(".c").forEach((c) => c.remove());
+    // oldest first, the wip row last: a row is pushed down by every row after it
+    LOG = gitLog(e)
+      .map((r, i) => ({ r, i }))
+      .sort((a, b) =>
+        a.r.kind === "wip" || b.r.kind === "wip"
+          ? +(a.r.kind === "wip") - +(b.r.kind === "wip")
+          : a.r.t0 - b.r.t0 || a.i - b.i,
+      )
+      .map(({ r }) => {
+        const d = document.createElement("div");
+        d.className = "c " + r.kind;
+        d.innerHTML = "<i></i><b></b><span></span>";
+        d.dataset.k = r.key;
+        if (r.vars)
+          d.dataset.v = [r.vars.a, r.vars.b, r.vars.l, r.vars.n].join("|");
+        rowsEl.appendChild(d);
+        return { r, el: d, msg: d.lastElementChild as HTMLElement };
+      });
+    WORK = (["ia", "fb"] as const).flatMap((k) =>
+      e.actors[k].moves.flatMap((m) => {
+        const l = "layer" in m.to ? m.to.layer : m.follow?.layer;
+        return l ? [{ l, t0: m.t0, t1: m.t1 }] : [];
+      }),
+    );
     for (const a of e.arrows) {
       if (a.riser) {
         a.segs = GAPG.map((g) => el("line", { class: "riser", opacity: 0 }, g));
@@ -729,7 +860,17 @@ export function mount(
     ];
   }
 
-  let warned = false;
+  let warned = false,
+    chipShown = false,
+    termShown = false;
+  type Box = { x0: number; x1: number; y0: number; y1: number };
+  const hit = (z: Zone, r: Box) =>
+    r.x0 < z.x + z.w && r.x1 > z.x && r.y0 < z.y + z.h && r.y1 > z.y;
+  // bubbles never sit on the widgets: they take the free side straight away
+  const onWidget = (r: Box) =>
+    (wide.matches && (hit(ZONES.glog, r) || hit(ZONES.bars, r))) ||
+    (chipShown && hit(ZONES.chip, r)) ||
+    (termShown && hit(ZONES.term, r));
   function render(t: number) {
     try {
       renderFrame(t);
@@ -766,6 +907,7 @@ export function mount(
     // ---- stack geometry: gap factor (reopen / breathing / collapse) + per-plate entrance drop
     let gk = 1;
     if (ep.index > 0) gk = clamp(0, 1.08, SPR_DROP(t - 0.25));
+    // halftone only while the stack is open: closed (or still landing) the plates are solid
     {
       const tb0 = ep.deployed + 0.65,
         d = t - tb0;
@@ -795,8 +937,15 @@ export function mount(
       VIEW.dy[layer] = dy;
       const D = PL[layer];
       setStyle(D.g, "opacity", op.toFixed(2));
+      let open = clamp(0, 1, gk);
+      if (ep.index === 0) open *= EASE_IO(prog(t, pe.t0 + 0.2, pe.t1)); // lands solid, then dots in
+      setStyle(D.dots, "opacity", open.toFixed(2));
+      setStyle(D.dots, "display", open > 0.005 ? "" : "none");
+      setStyle(D.solid, "opacity", (1 - open).toFixed(2));
+      setAttr(D.face, "stroke-opacity", open.toFixed(2));
       const c = plateCorners(layer);
       setAttr(D.face, "points", polyPts(c));
+      setAttr(D.solid, "points", polyPts(c));
       setAttr(
         D.sideL,
         "points",
@@ -1028,8 +1177,19 @@ export function mount(
         const Tp = projUV(uv.u, uv.v, zTop, topL),
           Bp = projUV(uv.u, uv.v, zBot, botL);
         const x = Tp.x,
-          yTop = Tp.y,
-          yBot = Bp.y;
+          yTop = Tp.y;
+        let yBot = Bp.y;
+        if (a.up) {
+          // start where the line leaves the source node (its back edge, screen-up), not over its label
+          const ex = Math.min(src.w / 2, NH - 6) + 2,
+            E = P({
+              layer: src.cur.layer,
+              lx: src.cur.lx + ex,
+              ly: src.cur.ly + NH / 2 - 6 - ex,
+              dz: src.cur.dz,
+            });
+          yBot = Math.max(yTop, Math.min(yBot, E.y));
+        }
         let p = !e || t < e.t0 ? 0 : EASE_IO(prog(t, e.t0, e.t1));
         if (a.remove && t >= a.remove.t0)
           p *= 1 - EASE_IO(prog(t, a.remove.t0, a.remove.t1));
@@ -1408,12 +1568,14 @@ export function mount(
         setStyle(TOASTS[i], "opacity", 0);
     }
     // terminal (mode B)
+    termShown = false;
     if (ep.term) {
       const T = ep.term,
         onT = t >= T.t0 && t < T.t1;
       const d = onT ? t - T.t0 : 0;
       const k = onT ? clamp(0, 1, Math.min(d / 0.28, (T.t1 - t) / 0.3)) : 0;
       setStyle(termEl, "opacity", k.toFixed(2));
+      termShown = k > 0;
       setStyle(
         termEl,
         "transform",
@@ -1454,7 +1616,7 @@ export function mount(
           setText(l.el, txt);
           setAttr(l.el, "class", cls);
         }
-        let budget = 9;
+        let budget = 4;
         const keep = new Set();
         for (let i = vis.length - 1; i >= 0; i--) {
           const rows = Math.max(
@@ -1514,6 +1676,7 @@ export function mount(
       setStyle(chipOkBar, "width", "100%");
       setStyle(chipOk, "transform", `scale(${s.toFixed(3)})`);
       setStyle(chipOk, "opacity", o.toFixed(2));
+      chipShown = o > 0;
       const ring = chipOk.firstElementChild!,
         rp = clamp(0, 1, dep / 1.1);
       setStyle(ring, "transform", `scale(${(1 + rp * 0.9).toFixed(3)})`);
@@ -1522,6 +1685,87 @@ export function mount(
         "opacity",
         dep >= 0 ? (0.6 * (1 - EASE_OUT(rp))).toFixed(2) : 0,
       );
+    }
+    // git log --graph: each row slides down as newer ones arrive above it, fades past the 6th
+    {
+      const out =
+        ep.collapse && t >= ep.collapse.t0
+          ? EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3))
+          : 0;
+      const pres = (r: LogRow) =>
+        SLIDE(prog(t, r.t0, r.t0 + dIn)) *
+        (r.t1 === Infinity ? 1 : 1 - SLIDE(prog(t, r.t1, r.t1 + dIn)));
+      let below = 0,
+        maxY = -1;
+      for (let i = LOG.length - 1; i >= 0; i--) {
+        const { r, el: row, msg } = LOG[i],
+          y = below;
+        below += LOG_ROW * pres(r);
+        const shown = t >= r.t0 && (r.t1 === Infinity || t < r.t1 + dOut);
+        if (!shown) {
+          setStyle(row, "display", "none");
+          continue;
+        }
+        const pIn = prog(t, r.t0, r.t0 + dIn),
+          pop = POP(pIn);
+        const op =
+          clamp(0, 1, pIn / 0.5) *
+          (r.t1 === Infinity ? 1 : 1 - prog(t, r.t1, r.t1 + dOut)) *
+          clamp(0, 1, LOG_MAX - y / LOG_ROW);
+        setStyle(row, "display", "");
+        setStyle(row, "opacity", op.toFixed(2));
+        setStyle(
+          row,
+          "transform",
+          `translate(0, ${(y - (1 - pop) * 8).toFixed(1)}px) scale(${(0.9 + 0.1 * pop).toFixed(3)})`,
+        );
+        setText(
+          row.children[1],
+          r.kind === "wip" ? GIT.wip : r.kind === "head" ? GIT.head : r.id,
+        );
+        setText(msg, fmt(L.log[r.key as keyof HeroDict["log"]], r.vars || {}));
+        if (op > 0.05)
+          maxY = Math.max(maxY, Math.min(y, (LOG_MAX - 1) * LOG_ROW));
+      }
+      setStyle(railEl, "height", Math.max(0, maxY).toFixed(1) + "px");
+      setStyle(glogEl, "opacity", (maxY < 0 ? 0 : 1 - out).toFixed(2));
+      // htop-style bars: load rises on the layer someone is working on, red while it has an open
+      // mistake, and settles once deployed (decorative)
+      const settle = EASE_IO(prog(t, ep.deployed, ep.deployed + 1.2));
+      LAYERS.forEach((l, i) => {
+        let heat = 0;
+        for (const w of WORK)
+          if (w.l === l)
+            heat = Math.max(
+              heat,
+              prog(t, w.t0 - 0.2, w.t0 + 0.3) *
+                (1 - prog(t, w.t1 + 0.8, w.t1 + 2.4)),
+            );
+        const v = clamp(
+          0.02,
+          0.98,
+          lerp(
+            BAR_WORK[i] + 0.45 * heat + 0.04 * Math.sin(t * 1.7 + i * 2),
+            BAR_IDLE[i] + 0.03 * Math.sin(t * 0.9 + i),
+            settle,
+          ),
+        );
+        const bad =
+          t < ep.deployed &&
+          (ep.chips.some((c) => c.pt.layer === l && t >= c.t0 && t < c.t1) ||
+            ep.nodes.some(
+              (n) =>
+                n.cx != null &&
+                n.cur.layer === l &&
+                n.flags.some((f) => t >= f.t0 && t < f.t1),
+            ));
+        const B = BARS[i],
+          n = Math.round(v * BAR);
+        setText(B.bar, "|".repeat(n) + " ".repeat(BAR - n));
+        setText(B.val, String(Math.round(v * 100)).padStart(3) + "%");
+        setCls(B.bar, "bad", bad);
+      });
+      setStyle(barsEl, "opacity", (1 - out).toFixed(2));
     }
     {
       const showRb =
@@ -1628,9 +1872,16 @@ export function mount(
             ? a.sayState
             : (a.sayState = { say, since: null, flipped: null });
         if (st.flipped != null) flip = st.flipped;
-        else if (covers(rectFor(flip))) {
+        else if (onWidget(rectFor(flip)) && !onWidget(rectFor(!flip))) {
+          st.flipped = !flip;
+          flip = !flip;
+        } else if (covers(rectFor(flip))) {
           if (st.since == null) st.since = sayNow;
-          if (sayNow - st.since > 1 && !covers(rectFor(!flip))) {
+          if (
+            sayNow - st.since > 1 &&
+            !covers(rectFor(!flip)) &&
+            !onWidget(rectFor(!flip))
+          ) {
             st.flipped = !flip;
             flip = !flip;
           }

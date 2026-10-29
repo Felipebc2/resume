@@ -261,40 +261,55 @@ html[data-theme="midnight"][data-mode="light"] {
   --faint-p: 50%;
 }
 
-/* ---------- hero scene (features/hero): the stack and its cursors. The plates climb from the surface
-   to the primary; light mode keeps the same climb on a light surface, sides only a touch darker.
-   ok/danger/guide/data are status colours per mode; the IA cursor takes a hue per palette. ---------- */
+/* ---------- hero scene (features/hero): the stack in halftone. Each plate is a dark base with a dot
+   grid whose dots grow and brighten from the outer layer (d1) in to Entities (d4); the solid sides
+   take the plate's tone (l1…l4, the surface up to the primary). Light mode inverts it: a light base,
+   dots darkening inwards to the primary. ok/danger/guide/data are status colours per mode; the IA
+   cursor takes a hue per palette. ---------- */
 html {
   --hero-action: var(--color-primary-text);
-  --hero-l1: color-mix(in srgb, var(--hero-action) 8%, var(--color-panel));
-  --hero-l2: color-mix(in srgb, var(--hero-action) 22%, var(--color-panel));
-  --hero-l3: color-mix(in srgb, var(--hero-action) 50%, var(--color-panel));
-  --hero-l4: var(--hero-action);
-  --hero-n4: color-mix(
+  --hero-edge: #fff; /* the far end of the scale: white on dark, black on light */
+  --hero-base: color-mix(in srgb, var(--color-l1) 15%, var(--color-bg));
+  --hero-d1: color-mix(in srgb, var(--color-fg) 28%, var(--color-l1));
+  --hero-d2: var(--color-l3);
+  --hero-d3: color-mix(in srgb, var(--color-l4) 92%, var(--hero-edge));
+  --hero-d4: color-mix(in srgb, var(--color-l4) 50%, var(--hero-edge));
+  --hero-l1: color-mix(in srgb, var(--color-l1) 50%, var(--color-bg));
+  --hero-l2: var(--color-l1);
+  --hero-l3: var(--color-l2);
+  --hero-l4: var(--color-l4);
+  --hero-side-l: 66%; /* plate sides: share of the plate tone, the rest black */
+  --hero-side-r: 84%;
+  --hero-hi: color-mix(
     in srgb,
-    #fff 60%,
-    var(--hero-l4)
-  ); /* node boxes on the top plate */
-  --hero-l4-ink: var(--color-bg); /* type on the top plate */
-  --hero-n4-ink: var(--color-bg); /* type on its nodes */
-  --hero-edge: #fff;
-  --hero-side-l: 70%; /* plate sides and node depth: share of the plate colour, the rest black */
-  --hero-side-r: 82%;
-  --hero-depth: 42%;
-  --hero-depth-4: 62%;
+    var(--color-fg) 55%,
+    var(--hero-edge)
+  ); /* node type */
+  --hero-label: color-mix(
+    in srgb,
+    var(--color-l4) 28%,
+    var(--hero-edge)
+  ); /* layer titles */
+  --hero-chip: color-mix(
+    in srgb,
+    var(--color-bg) 82%,
+    transparent
+  ); /* node boxes */
   --hero-ok: #3ddc97;
   --hero-danger: #ff4d5e;
   --hero-guide: #ff2bd6;
   --hero-data: #5be7ff;
 }
 html[data-mode="light"] {
-  --hero-l4-ink: #fff;
-  --hero-n4-ink: var(--color-fg);
   --hero-edge: #000;
+  --hero-base: color-mix(in srgb, var(--color-l1) 18%, var(--color-bg));
+  --hero-d1: color-mix(in srgb, var(--color-fg) 22%, var(--color-l1));
+  --hero-d2: color-mix(in srgb, var(--color-l2) 60%, var(--color-l3));
+  --hero-d3: color-mix(in srgb, var(--color-l3) 50%, var(--color-l4));
+  --hero-d4: var(--color-l4);
   --hero-side-l: 86%;
   --hero-side-r: 93%;
-  --hero-depth: 80%;
-  --hero-depth-4: 72%;
+  --hero-label: color-mix(in srgb, var(--color-l4) 70%, var(--color-fg));
   --hero-ok: #085e3c;
   --hero-danger: #b00d28;
   --hero-guide: #b0108f;

@@ -133,6 +133,21 @@
         "hal": "chore(deps): drop left-pad-ai (does not exist)",
         "orphan": "fix(adapters): wire {a} to {b}",
         "naming": "style({l}): {a} → {b}"
+      },
+      "log": {
+        "init": "init stack",
+        "entities": "ia: add entities",
+        "scaffold": "ia: scaffold",
+        "deploy": "deploy → prod",
+        "dep": "fix: dependency rule",
+        "wrongLayer": "fix: {n} layer",
+        "typo": "fix: {b} typo",
+        "failing": "fix: {n} test",
+        "circular": "fix: {a} cycle",
+        "dup": "chore: dedupe {n}",
+        "hal": "chore: rm left-pad-ai",
+        "orphan": "fix: wire {a}",
+        "naming": "style: {b} naming"
       }
     }
   },

@@ -18,8 +18,11 @@ const html = await p.evaluate(() => {
     e.style.opacity === "0" ||
     e.style.display === "none";
   for (const e of [...stage.querySelectorAll("*")])
-    if (e.isConnected && hidden(e)) e.remove();
+    if (stage.contains(e) && hidden(e)) e.remove();
   stage.querySelector("[data-el=measure]")?.remove();
+  // git log messages are translated: keep the key and the episode's names, fill them per locale
+  for (const c of stage.querySelectorAll(".glog .c[data-k]"))
+    c.lastElementChild.textContent = `{L:${c.dataset.k}:${c.dataset.v ?? ""}}`;
   for (const e of stage.querySelectorAll("*"))
     for (const a of [...e.attributes])
       if (a.name.startsWith("data-")) e.removeAttribute(a.name);
@@ -36,7 +39,15 @@ import type { HeroDict } from "./engine";
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => \`&#\${c.charCodeAt(0)};\`);
 const STILL = ${JSON.stringify(html)};
 
-export const stillHTML = (d: HeroDict) => STILL.replace("{deployed}", esc(d.deployed)).replace("{fb}", esc(d.fb));
+const log = (d: HeroDict, k: string, v: string) => {
+  const [a = "", b = "", l = "", n = ""] = v.split("|"), o: Record<string, string> = { a, b, l, n };
+  return d.log[k as keyof HeroDict["log"]].replace(/\\{(\\w+)\\}/g, (_, x) => o[x] ?? "");
+};
+
+export const stillHTML = (d: HeroDict) =>
+  STILL.replace("{deployed}", esc(d.deployed))
+    .replace("{fb}", esc(d.fb))
+    .replace(/\\{L:(\\w+):([^}]*)\\}/g, (_, k, v) => esc(log(d, k, v)));
 `,
 );
 console.log("still.ts", html.length, "chars");

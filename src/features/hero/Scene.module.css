@@ -9,9 +9,6 @@
   min-height: 520px;
   user-select: none;
   -webkit-user-select: none;
-  background-image: radial-gradient(var(--color-line) 1px, transparent 1.2px);
-  background-size: 24px 24px;
-  background-position: center;
 }
 .scene:global(.is-live),
 .scene:global(.is-live) :global(.tb button) {
@@ -46,7 +43,7 @@
 /* toolbar under the diagram */
 .scene :global(.tb) {
   position: absolute;
-  left: 50%;
+  left: var(--tb-left, 50%);
   top: var(--tb-top, 0);
   transform: translateX(-50%);
   z-index: 3;
@@ -104,77 +101,86 @@
 .scene :global(.canvas) {
   --mixed: color-mix(
     in srgb,
-    var(--color-line-2),
+    color-mix(in srgb, var(--hero-hi) 14%, transparent),
     var(--hero-action) calc(var(--glow, 0) * 100%)
   );
 }
 .scene :global(.plate.l1) {
   --lp: var(--hero-l1);
+  --dot: var(--hero-d1);
 }
 .scene :global(.plate.l2) {
   --lp: var(--hero-l2);
+  --dot: var(--hero-d2);
 }
 .scene :global(.plate.l3) {
   --lp: var(--hero-l3);
+  --dot: var(--hero-d3);
 }
 .scene :global(.plate.l4) {
   --lp: var(--hero-l4);
+  --dot: var(--hero-d4);
+}
+/* the dot of each plate's pattern (scene/engine.ts: #hd0…3, outermost first) */
+.scene :global(#hd0 .dot) {
+  fill: var(--hero-d1);
+}
+.scene :global(#hd1 .dot) {
+  fill: var(--hero-d2);
+}
+.scene :global(#hd2 .dot) {
+  fill: var(--hero-d3);
+}
+.scene :global(#hd3 .dot) {
+  fill: var(--hero-d4);
 }
 .scene :global(.plate .face) {
+  fill: var(--hero-base);
+  stroke: color-mix(in srgb, var(--dot) 55%, transparent);
+  stroke-width: 1;
+}
+.scene :global(.plate .solid) {
   fill: var(--lp);
   stroke: color-mix(in srgb, var(--hero-edge) 12%, var(--lp));
   stroke-width: 1;
 }
 .scene :global(.plate .sideL) {
-  fill: color-mix(in oklab, var(--lp) var(--hero-side-l), black);
+  fill: color-mix(in srgb, var(--lp) var(--hero-side-l), black);
 }
 .scene :global(.plate .sideR) {
-  fill: color-mix(in oklab, var(--lp) var(--hero-side-r), black);
+  fill: color-mix(in srgb, var(--lp) var(--hero-side-r), black);
 }
 .scene :global(.plate .ptitle) {
-  font: 500 13px var(--font-mono);
+  font: 500 14px var(--font-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  fill: var(--color-fg);
-  fill-opacity: 0.8;
+  fill: var(--hero-label);
 }
-.scene :global(.plate.l4 .ptitle) {
-  fill: var(--hero-l4-ink);
+.scene :global(.plate.l1 .ptitle) {
+  fill: var(--color-dim);
 }
 .scene :global(.shadow) {
   fill: #000;
 }
 .scene :global(.node rect.box) {
-  fill: var(--color-panel);
+  fill: var(--hero-chip);
   stroke: var(--mixed);
   stroke-width: 1.2;
   transition: stroke var(--d-1);
 }
 .scene :global(.node rect.depth) {
-  fill: color-mix(in oklab, var(--lp) var(--hero-depth), black);
-}
-.scene :global(.plate.l4 .node rect.box) {
-  fill: var(--hero-n4);
-  stroke: color-mix(in srgb, #fff 30%, var(--hero-l4));
-}
-.scene :global(.plate.l4 .node rect.depth) {
-  fill: color-mix(in oklab, var(--hero-l4) var(--hero-depth-4), black);
+  display: none;
 }
 .scene :global(.node text) {
   font: 500 18px var(--font-mono);
-  fill: var(--color-fg);
+  fill: var(--hero-hi);
 }
 .scene :global(.node .ico) {
-  fill: var(--color-fg);
+  fill: var(--hero-hi);
   fill-opacity: 0.9;
 }
 .scene :global(.node .caret) {
   fill: var(--hero-action);
-}
-.scene :global(.plate.l4 .node text),
-.scene :global(.plate.l4 .node .ico),
-.scene :global(.plate.l4 .node .caret) {
-  fill: var(--hero-n4-ink);
 }
 .scene :global(.node .squig) {
   stroke: var(--hero-danger);
@@ -418,8 +424,8 @@
 .scene :global(.chip.ok) {
   color: var(--hero-ok);
   border-color: var(--hero-ok);
-  left: 16px;
-  top: 12px;
+  left: 16px; /* engine.ts ZONES.chip */
+  top: 66px;
   font-size: 12px;
   padding: 8px 12px;
   display: flex;
@@ -480,36 +486,17 @@
   overflow-wrap: anywhere;
   transform-origin: 100% 100%;
 }
+/* mode B's log: plain lines on the background, under the front of the stack */
 .scene :global(.term) {
-  position: absolute;
-  left: 520px;
-  top: 26px;
-  width: 190px;
-  height: 168px;
-  background: var(--color-bg);
-  border: 1px solid var(--color-line-2);
-  border-radius: 10px;
-  font: 500 10px/1.4 var(--font-mono);
+  position: absolute; /* box: engine.ts ZONES.term */
+  font: 500 10.5px/1.4 var(--font-mono);
   color: var(--color-fg);
-  padding: 8px 10px;
   opacity: 0;
   transform-origin: 100% 0;
   overflow: hidden;
-  box-shadow: 0 12px 30px -16px rgb(0 0 0 / var(--shadow-k));
 }
 .scene :global(.term .hd) {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  color: var(--color-dim);
-  margin-bottom: 5px;
-}
-.scene :global(.term .hd i) {
-  width: 7px;
-  height: 7px;
-  border-radius: var(--r-pill);
-  background: var(--color-line-2);
-  display: inline-block;
+  display: none;
 }
 .scene :global(.term .ln) {
   color: var(--color-dim);
@@ -522,6 +509,92 @@
   color: var(--hero-ok);
 }
 .scene :global(.term .ln.bad) {
+  color: var(--hero-danger);
+}
+
+/* git log --graph and the load bars (wide layouts; boxes placed by engine.ts ZONES). Same marks as
+   the Experience git log: hollow commits on a line-2 rail, HEAD filled */
+.scene :global(.glog),
+.scene :global(.bars) {
+  position: absolute;
+  display: none;
+  font: 400 11px/1 var(--font-mono);
+  color: var(--color-dim);
+  white-space: pre;
+}
+@media (min-width: 1024px) {
+  .scene :global(.glog),
+  .scene :global(.bars) {
+    display: block;
+  }
+}
+.scene :global(.glog .gp) {
+  height: 22px;
+}
+.scene :global(.glog .gp span) {
+  color: var(--color-faint);
+}
+.scene :global(.glog .rows) {
+  position: relative;
+}
+.scene :global(.glog .rail) {
+  position: absolute;
+  left: 4px;
+  top: 13px;
+  width: 2px;
+  background: var(--color-line-2);
+}
+.scene :global(.glog .c) {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  transform-origin: 0 50%;
+}
+.scene :global(.glog .c i) {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: var(--r-pill);
+  border: 2px solid var(--color-fg);
+  background: color-mix(in srgb, var(--color-panel) 75%, var(--color-bg));
+}
+.scene :global(.glog .c b) {
+  flex: none;
+  color: var(--color-fg);
+  font-weight: 500;
+}
+.scene :global(.glog .c span) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.scene :global(.glog .c.wip i) {
+  border-color: var(--hero-danger);
+}
+.scene :global(.glog .c.head i) {
+  border-color: var(--hero-ok);
+  background: var(--hero-ok);
+}
+.scene :global(.glog .c.head span) {
+  color: var(--hero-ok);
+}
+.scene :global(.bars) {
+  display: none;
+  line-height: 1.55;
+}
+@media (min-width: 1024px) {
+  .scene :global(.bars) {
+    display: grid;
+  }
+}
+.scene :global(.bars > div) {
+  white-space: pre; /* the Htop meter collapses its padding; here the bar keeps its width */
+}
+.scene :global(.bars .bad) {
   color: var(--hero-danger);
 }
 
@@ -544,19 +617,36 @@
     padding: 10px 14px 11px;
     margin: 0 0 10px;
     min-height: 64px;
-    background: var(--l);
-    border: 1px solid transparent;
+    background: var(--hero-base);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--dot) 40%, transparent);
     opacity: 0;
     transform: translateY(8px);
     animation: mbin var(--d-2) var(--ease-out) forwards;
+  }
+  /* halftone: a 9 px dot grid, fading in from the left */
+  .mb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+        circle at 4.5px 4.5px,
+        var(--dot) var(--r),
+        transparent calc(var(--r) + 0.5px)
+      )
+      0 0 / 9px 9px;
+    mask-image: linear-gradient(to right, rgb(0 0 0 / 0.15), #000);
+    pointer-events: none;
+  }
+  .mb > * {
+    position: relative;
   }
   .mb h3 {
     margin: 0 0 6px;
     font: 500 10px/1 var(--font-mono);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--color-fg);
-    opacity: 0.85;
+    color: var(--hero-label);
     white-space: nowrap;
   }
   .ns {
@@ -566,8 +656,10 @@
   }
   .n {
     font: 500 12px/1 var(--font-mono);
-    color: var(--color-fg);
-    background: var(--color-panel);
+    color: var(--hero-hi);
+    background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+    box-shadow: inset 0 0 0 1px
+      color-mix(in srgb, var(--hero-hi) 12%, transparent);
     border-radius: var(--r-xs);
     padding: 7px 10px;
     display: inline-flex;
@@ -580,25 +672,23 @@
     fill: currentColor;
   }
   .l1 {
-    --l: var(--hero-l1);
-    border-color: var(--color-line-2);
+    --dot: var(--hero-d1);
+    --r: 1px;
+  }
+  .l1 h3 {
+    color: var(--color-dim);
   }
   .l2 {
-    --l: var(--hero-l2);
+    --dot: var(--hero-d2);
+    --r: 1.4px;
   }
   .l3 {
-    --l: var(--hero-l3);
+    --dot: var(--hero-d3);
+    --r: 1.8px;
   }
   .l4 {
-    --l: var(--hero-l4);
-  }
-  .l4 h3 {
-    color: var(--hero-l4-ink);
-    opacity: 0.8;
-  }
-  .l4 .n {
-    background: color-mix(in srgb, #fff 58%, var(--hero-l4));
-    color: var(--hero-n4-ink);
+    --dot: var(--hero-d4);
+    --r: 2.3px;
   }
   .mcur {
     position: absolute;
