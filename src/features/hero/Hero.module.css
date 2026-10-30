@@ -16,6 +16,11 @@
   --hinge: clamp(0, calc(var(--p) / 0.5), 1);
   --copy: clamp(0, calc(var(--p) / 0.55), 1);
 }
+/* the engine's You cursor stands in for the visitor's own anywhere on the hero */
+.hero[data-you],
+.hero[data-you] * {
+  cursor: none;
+}
 .left {
   position: relative;
   display: flex;

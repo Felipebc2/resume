@@ -10,10 +10,6 @@
   user-select: none;
   -webkit-user-select: none;
 }
-.scene:global(.is-live),
-.scene:global(.is-live) .key {
-  cursor: none;
-}
 .host {
   position: absolute;
   inset: 0;
@@ -268,8 +264,17 @@
   pointer-events: none;
 }
 
+/* the visitor's You cursor: a layer over the whole hero section (the engine appends it there),
+   above the seal; the engine scales the cursor to the stage */
+.roam {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+}
+
 /* cursors (HTML overlay, stage coordinates). Tip = (0,0) */
-.scene :global(.cursor) {
+:is(.scene, .roam) :global(.cursor) {
   position: absolute;
   left: 0;
   top: 0;
@@ -277,14 +282,14 @@
   transform-origin: 0 0;
   opacity: 0;
 }
-.scene :global(.cursor svg) {
+:is(.scene, .roam) :global(.cursor svg) {
   display: block;
   width: 14px;
   height: 19px;
   overflow: visible;
   transform-origin: 0 0;
 }
-.scene :global(.cursor .arrowhead) {
+:is(.scene, .roam) :global(.cursor .arrowhead) {
   fill: var(--c);
   stroke: var(--color-bg);
   stroke-width: 1.2;
@@ -292,27 +297,27 @@
 }
 /* name and bubble hang off the tip; flipped, they hang to the left. Done with translate, not
    left/right, so a flip moves nothing in layout (no CLS) */
-.scene :global(.cursor .tag) {
+:is(.scene, .roam) :global(.cursor .tag) {
   position: absolute;
   left: 13px;
   top: 14px;
   white-space: nowrap;
 }
-.scene :global(.cursor .tag > *) {
+:is(.scene, .roam) :global(.cursor .tag > *) {
   position: absolute;
   left: 0;
   top: 0;
 }
-.scene :global(.cursor .tag > .bubble) {
+:is(.scene, .roam) :global(.cursor .tag > .bubble) {
   top: 23px; /* under the name: 11px type + 8px padding, then a 4px gap */
 }
-.scene :global(.cursor.flip .tag > *) {
+:is(.scene, .roam) :global(.cursor.flip .tag > *) {
   translate: calc(-100% - 3px) 0;
 }
-.scene :global(.cursor.flip .bubble) {
+:is(.scene, .roam) :global(.cursor.flip .bubble) {
   transform-origin: 100% 0;
 }
-.scene :global(.cursor .name) {
+:is(.scene, .roam) :global(.cursor .name) {
   font: 500 11px/1 var(--font-mono);
   color: var(--color-bg);
   background: var(--c);
@@ -320,7 +325,7 @@
   padding: 4px 7px;
   letter-spacing: 0.02em;
 }
-.scene :global(.cursor .bubble) {
+:is(.scene, .roam) :global(.cursor .bubble) {
   font: 500 11px/1.2 var(--font-mono);
   color: var(--color-fg);
   background: var(--color-panel);
@@ -330,13 +335,13 @@
   transform-origin: 0 0;
   opacity: 0;
 }
-.scene :global(.cursor.ia) {
+:is(.scene, .roam) :global(.cursor.ia) {
   --c: var(--hero-ia);
 }
-.scene :global(.cursor.fb) {
+:is(.scene, .roam) :global(.cursor.fb) {
   --c: var(--hero-action);
 }
-.scene :global(.cursor.you) {
+:is(.scene, .roam) :global(.cursor.you) {
   --c: var(--hero-data);
 }
 .scene :global(.ghost) {

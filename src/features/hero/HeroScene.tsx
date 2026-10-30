@@ -133,6 +133,7 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
           latest().dict,
           latest().still,
           METER,
+          s.roam,
           setEnded,
         );
         shown.current = "engine";

@@ -144,6 +144,7 @@ export function mount(
   dict: HeroDict,
   still: boolean,
   meter: MeterCls,
+  roamCls: string, // the hero-wide layer of the visitor's cursor (Scene.module.css .roam)
   onEnded: (ended: boolean) => void, // the episode ended (the turbo key turns into Replay) or restarted
 ) {
   let L = dict;
@@ -379,10 +380,21 @@ export function mount(
     };
   }
   const UI = { ia: makeCursor("ia", L.ia), fb: makeCursor("fb", L.fb) };
-  const youEl = document.createElement("div");
+  // the visitor's cursor roams the whole hero, so it lives on the section, above the seal
+  const zone = scene.closest("section") ?? scene,
+    youLayer = zone.appendChild(document.createElement("div")),
+    youEl = youLayer.appendChild(document.createElement("div"));
+  youLayer.className = roamCls;
+  youLayer.setAttribute("aria-hidden", "true");
   youEl.className = "cursor you";
   youEl.innerHTML = `<svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><div class="tag"><span class="name"></span></div>`;
-  cursorsEl.appendChild(youEl);
+  // stage units → the layer's pixels, at the stage's scale
+  const placeYou = (p: XY) => {
+    const r = stage.getBoundingClientRect(),
+      z = youLayer.getBoundingClientRect(),
+      s = r.width / STAGE_W;
+    youEl.style.transform = `translate(${(r.left - z.left + p.x * s).toFixed(1)}px, ${(r.top - z.top + p.y * s).toFixed(1)}px) scale(${s.toFixed(4)})`;
+  };
 
   /* =====================================================================
      DOM per episode — 4 plates (painter's order, bottom → top), risers in the gaps
@@ -1420,7 +1432,7 @@ export function mount(
 
     // selection handles (projected node quads) + the grabbed You cursor
     if (egg.grab) {
-      youEl.style.transform = `translate(${egg.grab.x.toFixed(1)}px, ${egg.grab.y.toFixed(1)}px)`;
+      placeYou(egg.grab);
       youEl.style.opacity = "1";
     }
     {
@@ -2115,7 +2127,7 @@ export function mount(
     boost = false,
     ended = false;
   const applySpeed = () => setSpeed(boost ? 4 : hover ? 2 : 1);
-  const toStage = (e: PointerEvent) => {
+  const toStage = (e: { clientX: number; clientY: number }) => {
     const r = stage.getBoundingClientRect(),
       s = r.width / STAGE_W;
     return { x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s };
@@ -2131,6 +2143,7 @@ export function mount(
     egg.saidAngry = false;
     egg.messed = 0;
     egg.banTimer = null;
+    trackYou();
   }
   // while the egg is busy the master may still be running; if it reached the hold point it is paused and resumed by settle()
   function settle() {
@@ -2170,14 +2183,11 @@ export function mount(
     if (isStatic()) return;
     loadEggs();
     hover = true;
-    scene.classList.add("is-live");
     applySpeed();
   });
   on(scene, "pointerleave", () => {
     hover = false;
     PX.on = false;
-    scene.classList.remove("is-live");
-    youEl.style.opacity = "0";
     if (!isStatic()) applySpeed();
     eggs?.leave();
   });
@@ -2188,13 +2198,36 @@ export function mount(
     PX.tx = clamp(-1, 1, (p.x / STAGE_W - 0.5) * 2);
     PX.ty = clamp(-1, 1, (p.y / STAGE_H - 0.5) * 2);
     PX.on = true;
-    egg.you = p;
-    if (!egg.grab) {
-      youEl.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
-      youEl.style.opacity = egg.banned ? "0" : "1";
-    }
     eggs?.move(p);
   });
+  // the You cursor follows the pointer anywhere on the hero, while scrolling too (no pointermove
+  // then). It hides the visitor's own cursor (data-you, Hero.module.css) except once the drag egg
+  // has banned it: then the real one comes back instead of leaving no cursor at all.
+  let ptr: PointerEvent | null = null;
+  function trackYou() {
+    const r = zone.getBoundingClientRect(),
+      show =
+        !!ptr &&
+        !isStatic() &&
+        !egg.banned &&
+        ptr.clientX >= r.left &&
+        ptr.clientX < r.right &&
+        ptr.clientY >= r.top &&
+        ptr.clientY < r.bottom;
+    zone.toggleAttribute("data-you", show);
+    if (egg.grab) return;
+    youEl.style.opacity = show ? "1" : "0";
+    if (show) placeYou((egg.you = toStage(ptr!)));
+  }
+  on(zone, "pointermove", (e: PointerEvent) => {
+    ptr = e;
+    trackYou();
+  });
+  on(zone, "pointerleave", () => {
+    ptr = null;
+    trackYou();
+  });
+  on(window, "scroll", trackYou);
   const io = new IntersectionObserver(
     ([en]) => {
       inView = en.isIntersecting;
@@ -2325,6 +2358,8 @@ export function mount(
       stopTicker();
       if (w.__hero) delete w.__hero;
       host.replaceChildren();
+      youLayer.remove();
+      zone.removeAttribute("data-you");
       delete host.dataset.engine;
     },
   };
