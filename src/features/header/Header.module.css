@@ -10,6 +10,16 @@
   align-items: center;
   gap: var(--s-4);
   pointer-events: none;
+  /* the nav and the settings panel drop the palette tint: same lightness, no chroma */
+  --n-panel: oklch(from var(--color-panel) l 0 h);
+  --n-line: oklch(from var(--color-line) l 0 h);
+  --n-line-2: oklch(from var(--color-line-2) l 0 h);
+}
+.nav,
+.pop {
+  --color-panel: var(--n-panel);
+  --color-line: var(--n-line);
+  --color-line-2: var(--n-line-2);
 }
 .hdr > * {
   pointer-events: auto;
