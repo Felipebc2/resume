@@ -13,6 +13,10 @@ const html = await p.evaluate(() => {
   const h = window.__hero;
   h.seek(h.ep.MAIN + 2.2); // the frame the prototype shows when it can't animate
   const stage = document.querySelector("[data-engine] .stage").cloneNode(true);
+  // the cursors live in their own layer (above the turbo key); the still has no key, so fold them in
+  const overlay = stage.querySelector(".overlay");
+  for (const c of document.querySelectorAll("[data-engine] .stage.cursors > *"))
+    overlay.appendChild(c.cloneNode(true));
   const hidden = (e) =>
     e.getAttribute("opacity") === "0" ||
     e.style.opacity === "0" ||
