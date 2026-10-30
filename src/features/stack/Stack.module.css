@@ -51,6 +51,10 @@
 .w {
   display: inline-block;
 }
+/* the name, last word of the greeting */
+.greet h2 > :last-child .w {
+  color: var(--color-primary-text);
+}
 .w,
 .greet p {
   opacity: 0;
