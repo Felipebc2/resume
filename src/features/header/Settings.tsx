@@ -11,7 +11,7 @@ import {
 } from "react";
 import { DEFAULT_THEME, themes, type Mode, type Theme } from "@/content/themes";
 import { useSetLang } from "@/lib/lang";
-import { ease, ms, useStill } from "@/lib/motion";
+import { useStill } from "@/lib/motion";
 import { getMode, getTheme, onTheme, setLook } from "@/lib/theme";
 import s from "./Header.module.css";
 
@@ -95,14 +95,6 @@ export function Settings() {
   useEffect(() => {
     if (!open) return;
     cur.current?.focus({ preventScroll: true });
-    if (!document.documentElement.hasAttribute("data-still"))
-      pop.current?.animate(
-        [
-          { opacity: 0, transform: "translateY(-6px) scale(.97)" },
-          { opacity: 1, transform: "none" },
-        ],
-        { duration: ms("--d-2"), easing: ease("--ease-out") },
-      );
     const h = (e: Event) => onDoc(e);
     document.addEventListener("pointerdown", h);
     document.addEventListener("keydown", h);
