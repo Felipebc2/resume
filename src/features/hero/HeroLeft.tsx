@@ -19,9 +19,19 @@ export function HeroLeft({ children }: { children: ReactNode }) {
       hero.style.setProperty("--p", p.toFixed(4));
       hero.toggleAttribute("data-leaving", p > 0);
     };
+    /* written on the next frame: --p restyles the whole hero, and doing it inside the
+       scroll event would force that restyle on every later handler that reads layout */
+    let f = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(f);
+      f = requestAnimationFrame(read);
+    };
     read();
-    addEventListener("scroll", read, { passive: true });
-    return () => removeEventListener("scroll", read);
+    addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(f);
+      removeEventListener("scroll", onScroll);
+    };
   }, [still]);
 
   return (

@@ -3,7 +3,8 @@ import { inGap, nextStep, push } from "./steps";
 
 const P0 = 900;
 const P1 = 1800;
-const go = (from: number, to: number) => nextStep(from, to, P0, P1);
+const go = (from: number, to: number) => nextStep(from, to, [P0, P1]);
+const all = (from: number, to: number) => nextStep(from, to, [0, P0, P1], 160);
 
 test("scrolls freely away from the steps", () => {
   expect(go(0, 300)).toBeNull();
@@ -40,8 +41,21 @@ test("someone still scrolling after landing passes; a momentum tail doesn't", ()
 });
 
 test("stopping in the gap settles on the nearest step", () => {
-  expect(inGap(1100, P0, P1)).toBe(P0);
-  expect(inGap(1600, P0, P1)).toBe(P1);
-  expect(inGap(P0, P0, P1)).toBeNull();
-  expect(inGap(P1 + 100, P0, P1)).toBeNull();
+  expect(inGap(1100, [P0, P1])).toBe(P0);
+  expect(inGap(1600, [P0, P1])).toBe(P1);
+  expect(inGap(P0, [P0, P1])).toBeNull();
+  expect(inGap(P1 + 100, [P0, P1])).toBeNull();
+});
+
+test("off the hero top the page scrolls freely for `pull`, then pulls onto the greeting", () => {
+  expect(all(0, 100)).toBeNull(); // first wheel notch
+  expect(all(100, 200)).toBe(P0); // second one
+  expect(all(0, 3000)).toBe(P0); // a fling still stops on it
+  expect(all(300, 320)).toBe(P0);
+  expect(all(P0, P0 - 40)).toBe(0);
+  expect(all(P0, P0 + 40)).toBe(P1);
+  expect(all(0, -40)).toBeNull();
+  expect(inGap(100, [0, P0, P1], 160)).toBeNull(); // resting inside the pull stays
+  expect(inGap(300, [0, P0, P1], 160)).toBe(0);
+  expect(inGap(600, [0, P0, P1], 160)).toBe(P0);
 });

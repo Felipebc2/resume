@@ -27,6 +27,9 @@ type Step = -1 | 0 | 1;
     that keeps coming past PASS_PX is a person still scrolling: they pass freely. */
 const STEP_S = 0.9;
 const SETTLE_MS = 250;
+/** off the hero the page scrolls normally for PULL_PX (about two wheel notches),
+    then pulls onto the greeting */
+const PULL_PX = 160;
 const KEYS: Record<string, 1 | -1> = {
   ArrowDown: 1,
   PageDown: 1,
@@ -46,6 +49,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
 
   const section = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
+  const greetEl = useRef<HTMLDivElement>(null);
   const flow = useRef<HTMLDivElement>(null);
   const cardBody = useRef<HTMLDivElement>(null);
   const grid = useRef<HTMLDivElement>(null);
@@ -93,13 +97,14 @@ export function StackStory({ stats }: { stats: Stat[] }) {
     return () => ro.disconnect();
   }, []);
 
-  /* steps: Lenis owns wheel/touch so the greeting → stack hop is one locked glide.
+  /* steps: Lenis owns wheel/touch so hero → greeting → stack are locked glides.
      A gesture that would cross a step (or start inside the gap between them) is
      redirected onto the next step, input is swallowed until it lands and settles,
      so a fling can't sail past. Someone who keeps scrolling after the landing
      passes through freely until they stop; stopping inside the gap settles on the
      nearest step. Keys get the same treatment; anchors bypass it. */
   const still_ = useRef(still);
+  const arriving = useRef(false);
   const lenis = useRef<Lenis | null>(null);
   useEffect(() => {
     const sec = section.current;
@@ -134,8 +139,10 @@ export function StackStory({ stats }: { stats: Stat[] }) {
     });
     lenis.current = l;
 
-    const steps = () => [sec.offsetTop, sec.offsetTop + s1.offsetTop] as const;
-    const next = (from: number, to: number) => nextStep(from, to, ...steps());
+    /* hero top, greeting, stack: the hero only ever rests whole or gone */
+    const steps = () => [0, sec.offsetTop, sec.offsetTop + s1.offsetTop];
+    const next = (from: number, to: number) =>
+      nextStep(from, to, steps(), PULL_PX);
     /* calls `done` once input has been quiet for SETTLE_MS, unless another run started */
     const whenQuiet = (id: number, done: () => void) => {
       const idle = Date.now() - lastInput;
@@ -148,12 +155,18 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const id = ++run;
       busy = true;
       landed = passing = false;
+      /* pulled off the hero: the greeting waits for the landing to say hello */
+      arriving.current = p === sec.offsetTop && l.animatedScroll < p;
       l.scrollTo(p, {
         lock: true,
         force: true,
         duration: STEP_S,
         immediate: still_.current,
         onComplete: () => {
+          if (arriving.current) {
+            arriving.current = false;
+            setStep(0);
+          }
           landed = true;
           acc = { dir: 0, px: 0 };
           whenQuiet(id, () => {
@@ -171,7 +184,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       whenQuiet(id, () => {
         passing = false;
         last = l.animatedScroll;
-        const p = inGap(last, ...steps());
+        const p = inGap(last, steps(), PULL_PX);
         if (p !== null) go(p);
       });
     };
@@ -211,6 +224,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       if (!el) return;
       e.preventDefault();
       anchoring = true;
+      arriving.current = false;
       l.scrollTo(el, {
         force: true,
         immediate: still_.current,
@@ -244,8 +258,9 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const r = section.current?.getBoundingClientRect();
       if (!r) return;
       const vh = innerHeight;
-      setStep(r.top > vh * 0.5 ? -1 : -r.top < vh * 0.5 ? 0 : 1);
-      stage.current?.style.setProperty("--lift", `${clamp(r.top, 0, vh)}px`);
+      const at = r.top > vh * 0.5 ? -1 : -r.top < vh * 0.5 ? 0 : 1;
+      setStep(at === 0 && arriving.current ? -1 : at);
+      greetEl.current?.style.setProperty("--lift", `${clamp(r.top, 0, vh)}px`);
       document.documentElement.toggleAttribute(
         "data-scrolled",
         -r.top > vh + 4,
@@ -361,7 +376,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
         aria-hidden="true"
       />
       <div ref={stage} className={`${s.stage} ${stepClass}`}>
-        <div className={s.greet}>
+        <div ref={greetEl} className={s.greet}>
           <h2>
             {greet.map((w, i) => (
               <span key={i}>

@@ -2,19 +2,33 @@
 const TOL = 2;
 
 /**
- * Where a scroll heading from `from` to `to` must stop instead, given the two step
- * positions p0 (greeting) < p1 (stack). Crossing a step from outside stops on it;
- * leaving the gap between them goes to the step in that direction. null = scroll freely.
+ * Where a scroll heading from `from` to `to` must stop instead, given the step positions
+ * (ascending). Crossing a step from outside stops on it; leaving the gap between two steps
+ * goes to the step in that direction, except that the first gap only pulls once the
+ * scroll has gone `pull` px past the first step. null = scroll freely.
  */
-export function nextStep(from: number, to: number, p0: number, p1: number) {
+export function nextStep(
+  from: number,
+  to: number,
+  steps: readonly number[],
+  pull = 0,
+) {
   if (to > from) {
-    if (from < p0 - TOL && to > p0 + TOL) return p0;
-    if (from >= p0 - TOL && from < p1 - TOL && to > Math.max(from, p0) + TOL)
-      return p1;
-  } else if (to < from) {
-    if (from > p1 + TOL && to < p1 - TOL) return p1;
-    if (from <= p1 + TOL && from > p0 + TOL && to < Math.min(from, p1) - TOL)
-      return p0;
+    const ahead = steps.find((p) => p > from + TOL);
+    if (ahead === undefined) return null;
+    const behind = steps.findLast((p) => p <= from + TOL);
+    const lead = behind === steps[0] ? steps[0] + pull : behind;
+    return to > (lead === undefined ? ahead : Math.max(from, lead)) + TOL
+      ? ahead
+      : null;
+  }
+  if (to < from) {
+    const ahead = steps.findLast((p) => p < from - TOL);
+    if (ahead === undefined) return null;
+    const behind = steps.find((p) => p >= from - TOL);
+    return to < (behind === undefined ? ahead : Math.min(from, behind)) - TOL
+      ? ahead
+      : null;
   }
   return null;
 }
@@ -32,8 +46,12 @@ export function push(prev: Push, deltaY: number) {
   return { dir, px, pass: px > PASS_PX };
 }
 
-/** Stopping inside the gap between the steps leaves the story half-way: the nearest step, else null. */
-export function inGap(at: number, p0: number, p1: number) {
-  if (at <= p0 + TOL || at >= p1 - TOL) return null;
-  return at - p0 < p1 - at ? p0 : p1;
+/** Stopping inside a gap between steps (past the first one's `pull`) leaves the story half-way: the nearest step, else null. */
+export function inGap(at: number, steps: readonly number[], pull = 0) {
+  const i = steps.findIndex((p) => p > at);
+  if (i < 1 || at < steps[0] + pull) return null;
+  const a = steps[i - 1],
+    b = steps[i];
+  if (at <= a + TOL || at >= b - TOL) return null;
+  return at - a < b - at ? a : b;
 }
