@@ -11,7 +11,7 @@
   -webkit-user-select: none;
 }
 .scene:global(.is-live),
-.scene:global(.is-live) :global(.tb button) {
+.scene:global(.is-live) .key {
   cursor: none;
 }
 .host {
@@ -34,71 +34,22 @@
   height: 100%;
   overflow: visible;
 }
-.scene :global(.overlay) {
+.scene :global(.overlay),
+.scene :global(.stage.cursors) {
   position: absolute;
   inset: 0;
   pointer-events: none;
 }
+.scene :global(.stage.cursors) {
+  z-index: 4;
+}
 
-/* toolbar under the diagram */
-.scene :global(.tb) {
+/* the turbo key (TurboKey.tsx), right of the htop bars; HeroScene's fit sets --key-x/--key-y */
+.key {
   position: absolute;
-  left: var(--tb-left, 50%);
-  top: var(--tb-top, 0);
-  transform: translateX(-50%);
+  left: var(--key-x, 12px);
+  top: var(--key-y, auto);
   z-index: 3;
-  display: flex;
-  gap: var(--s-1);
-  align-items: center;
-  padding: var(--s-1);
-  border-radius: var(--r-s);
-  background: var(--color-panel);
-  border: 1px solid var(--color-line-2);
-  box-shadow: 0 10px 30px -18px rgb(0 0 0 / var(--shadow-k));
-}
-.host:not([data-fit]) :global(.tb),
-.scene :global(.tb[hidden]) {
-  visibility: hidden;
-}
-.scene :global(.pill) {
-  font: 500 var(--t-mono) / 1 var(--font-mono);
-  color: var(--color-fg);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--r-xs);
-  padding: var(--s-2) var(--s-3);
-  display: inline-flex;
-  gap: var(--s-2);
-  align-items: center;
-  cursor: pointer;
-  transition:
-    border-color var(--d-1) var(--ease-out),
-    background var(--d-1) var(--ease-out);
-  white-space: nowrap;
-}
-.scene :global(.pill:hover) {
-  background: var(--color-line);
-}
-.scene :global(.pill[aria-pressed="true"]) {
-  border-color: var(--hero-action);
-}
-.scene :global(.pill.ghostly) {
-  color: var(--color-dim);
-  max-width: 3em;
-  overflow: hidden;
-  transition:
-    max-width var(--d-3) var(--ease-out),
-    padding var(--d-3) var(--ease-out),
-    margin var(--d-3) var(--ease-out),
-    opacity var(--d-3) var(--ease-out),
-    background var(--d-1) var(--ease-out);
-}
-/* off until the episode ends: it folds into the toolbar instead of popping in */
-.scene :global(.pill.ghostly[inert]) {
-  max-width: 0;
-  padding-inline: 0;
-  margin-left: calc(-1 * var(--s-1) - 2px);
-  opacity: 0;
 }
 
 /* ---------- canvas ---------- */

@@ -59,11 +59,14 @@
       "you": "Você",
       "ia": "IA",
       "fb": "Felipebc2",
-      "ship": "⚡ Turbo",
-      "rebuild": "Reconstruir",
       "deployed": "✓ no ar",
       "deploying": "publicando",
-      "shipAria": "Turbo: velocidade {s}x",
+      "turbo": {
+        "hold": "Segure para acelerar",
+        "replay": "Recomeçar",
+        "legend": "segure",
+        "again": "de novo"
+      },
       "aria": "Canvas animado. Dois cursores multiplayer, \"IA\" e \"Felipebc2\", constroem um diagrama de Clean Architecture em quatro camadas: Entities, Use Cases, Interface Adapters e Frameworks & Drivers. A IA monta rápido e comete alguns erros; Felipebc2 revisa, corrige, conecta o que falta, roda os testes e aprova. A cena termina no ar. Passar o mouse acelera; depois do fim dá para arrastar um nó.",
       "chip": {
         "dep": "⚠ regra de dependência",

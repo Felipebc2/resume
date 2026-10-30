@@ -59,11 +59,14 @@
       "you": "You",
       "ia": "IA",
       "fb": "Felipebc2",
-      "ship": "⚡ Turbo",
-      "rebuild": "Rebuild",
       "deployed": "✓ deployed",
       "deploying": "deploying",
-      "shipAria": "Turbo: speed {s}x",
+      "turbo": {
+        "hold": "Hold to ship faster",
+        "replay": "Replay",
+        "legend": "hold",
+        "again": "again"
+      },
       "aria": "Animated canvas. Two multiplayer cursors, \"IA\" and \"Felipebc2\", build a Clean Architecture diagram with four layers: Entities, Use Cases, Interface Adapters and Frameworks & Drivers. IA scaffolds fast and makes a few mistakes; Felipebc2 reviews, fixes them, connects what is missing, runs the tests and approves. The scene ends deployed. Hovering speeds it up; after the end you can drag a node.",
       "chip": {
         "dep": "⚠ dependency rule",

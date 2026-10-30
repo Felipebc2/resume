@@ -1,0 +1,176 @@
+/* The hero's turbo key (TurboKey.tsx), ported from docs/prototypes/turbo-key.html. A physical key:
+   two solid shadows are its depth; pressed, the cap sinks 4px onto them. Colours derive from the
+   theme tokens, so it works in every palette and in light mode. The legend, the 52px cap and the
+   key's own timings (110ms travel, 450ms heat, 600ms swap) are the prototype's. */
+.key {
+  --tk-cap-top: color-mix(in srgb, var(--color-block) 80%, var(--color-fg) 6%);
+  --tk-cap-bot: color-mix(in srgb, var(--color-panel) 92%, var(--color-bg));
+  --tk-edge: var(--color-line-2);
+  --tk-depth: color-mix(in srgb, var(--color-bg) 70%, #000);
+  --tk-depth-rim: var(--color-line);
+  --tk-ink: var(--color-fg);
+  --tk-legend: var(--color-faint);
+  --tk-heat: #ffd27a; /* the bolt warming up while held */
+  --tk-lit-top: var(--color-fg);
+  --tk-lit-bot: color-mix(in srgb, var(--color-fg) 86%, var(--color-bg));
+  --tk-lit-ink: var(--color-bg);
+  --tk-up:
+    inset 0 0 0 1px var(--tk-edge), 0 5px 0 var(--tk-depth),
+    0 6px 0 var(--tk-depth-rim);
+  --tk-down:
+    inset 0 0 0 1px var(--tk-edge), 0 1px 0 var(--tk-depth),
+    0 2px 0 var(--tk-depth-rim);
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  color: var(--tk-ink);
+  background: linear-gradient(var(--tk-cap-top), var(--tk-cap-bot));
+  box-shadow: var(--tk-up);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 110ms var(--ease-out),
+    box-shadow 110ms var(--ease-out),
+    background var(--d-2) var(--ease-out),
+    color var(--d-2) var(--ease-out);
+}
+.key:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+}
+.legend {
+  position: absolute;
+  left: 6px;
+  bottom: 4px;
+  font: 500 8.5px / 1 var(--font-mono);
+  letter-spacing: 0.06em;
+  color: var(--tk-legend);
+  pointer-events: none;
+  transition: color var(--d-2);
+}
+.ic {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  display: block;
+  pointer-events: none;
+  transition:
+    color 450ms linear,
+    filter 450ms linear;
+}
+.ic svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transition:
+    transform 600ms var(--ease-out),
+    opacity 300ms var(--ease-out);
+}
+.bolt {
+  fill: currentColor;
+}
+.rep {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transform: rotate(-180deg) scale(0.6);
+}
+
+/* pressed: the cap sinks 4px and the bolt heats up */
+.key[data-state="heating"],
+.key[data-state="turbo"],
+.key[data-state="replay"]:active {
+  transform: translateY(4px);
+  box-shadow: var(--tk-down);
+}
+.key[data-state="heating"] .ic {
+  color: var(--tk-heat);
+  filter: drop-shadow(
+    0 0 5px color-mix(in srgb, var(--tk-heat) 60%, transparent)
+  );
+  animation: jitter 90ms linear infinite;
+}
+/* turbo: the cap lights up, the bolt goes dark and keeps a light tremor */
+.key[data-state="turbo"] {
+  background: linear-gradient(var(--tk-lit-top), var(--tk-lit-bot));
+  color: var(--tk-lit-ink);
+}
+.key[data-state="turbo"] .legend {
+  color: color-mix(in srgb, var(--tk-lit-ink) 70%, var(--tk-lit-top));
+}
+.key[data-state="turbo"] .ic {
+  transition:
+    color 160ms,
+    filter 160ms;
+  animation: jitter-soft 120ms linear infinite;
+}
+/* end of episode: the bolt turns into the replay arrow, which then loops */
+.key[data-state="turning"] .bolt,
+.key[data-state="replay"] .bolt {
+  transform: rotate(180deg) scale(0.6);
+  opacity: 0;
+}
+.key[data-state="turning"] .rep,
+.key[data-state="replay"] .rep {
+  opacity: 1;
+  transform: none;
+}
+.key[data-state="replay"] .rep {
+  animation: spin 2.4s linear infinite;
+}
+
+@keyframes jitter {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(0.8px, -0.6px);
+  }
+  50% {
+    transform: translate(-0.7px, 0.7px);
+  }
+  75% {
+    transform: translate(0.6px, 0.5px);
+  }
+}
+@keyframes jitter-soft {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(0.4px, -0.3px);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* still: no tremor, no loop, an instant swap; the cap still sinks, without travel */
+@media (prefers-reduced-motion: reduce) {
+  .key,
+  .ic,
+  .ic svg {
+    transition: none;
+  }
+  .ic,
+  .key[data-state="replay"] .rep {
+    animation: none !important;
+  }
+}

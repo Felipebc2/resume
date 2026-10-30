@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Turbo Key</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* Site tokens (electric dark). In the site these come from the theme; the fallbacks are only for this file. */
+:root{
+  color-scheme:dark;
+  --color-bg:#0b0d12; --color-panel:#161b26; --color-block:#1d222d; --color-line:#2b303a; --color-line-2:#41444d;
+  --color-fg:#c0c0c0; --color-faint:#5e5f62;
+  --font-mono:'Geist Mono', ui-monospace, Menlo, monospace;
+  --ease-out:cubic-bezier(.2,.8,.2,1); --ease-pop:cubic-bezier(.2,.9,.3,1.4);
+}
+html,body{margin:0;height:100%}
+body{display:grid;place-items:center;background:var(--color-bg);background-image:radial-gradient(#1f2430 1px,transparent 1.2px);background-size:24px 24px}
+
+/* ================= Turbo key ================= */
+.turbo-key{
+  /* tokens the key uses (all derived from the site palette) */
+  --tk-cap-top:color-mix(in srgb,var(--color-block) 80%,var(--color-fg) 6%);
+  --tk-cap-bot:color-mix(in srgb,var(--color-panel) 92%,var(--color-bg));
+  --tk-edge:var(--color-line-2);
+  --tk-depth:color-mix(in srgb,var(--color-bg) 70%,#000);
+  --tk-depth-rim:var(--color-line);
+  --tk-ink:var(--color-fg);
+  --tk-legend:var(--color-faint);
+  --tk-heat:#ffd27a;                                   /* the bolt warming up while held */
+  --tk-lit-top:var(--color-fg); --tk-lit-bot:color-mix(in srgb,var(--color-fg) 86%,var(--color-bg));
+  --tk-lit-ink:var(--color-bg);
+
+  position:relative;display:grid;place-items:center;
+  width:52px;height:52px;padding:0;border:0;border-radius:9px;
+  color:var(--tk-ink);background:linear-gradient(var(--tk-cap-top),var(--tk-cap-bot));
+  box-shadow:inset 0 0 0 1px var(--tk-edge),0 5px 0 var(--tk-depth),0 6px 0 var(--tk-depth-rim);
+  cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent;
+  transition:transform 110ms var(--ease-out),box-shadow 110ms var(--ease-out),background 260ms var(--ease-out),color 260ms var(--ease-out);
+}
+.turbo-key:focus-visible{outline:2px solid #5be7ff;outline-offset:4px}
+.turbo-key .legend{position:absolute;left:6px;bottom:4px;font:500 8.5px/1 var(--font-mono);letter-spacing:.06em;color:var(--tk-legend);pointer-events:none;transition:color 260ms}
+.turbo-key .ic{position:relative;width:22px;height:22px;display:block;pointer-events:none;transition:color 450ms linear,filter 450ms linear}
+.turbo-key .ic svg{position:absolute;inset:0;width:100%;height:100%;transition:transform 600ms var(--ease-out),opacity 300ms var(--ease-out)}
+.turbo-key .bolt{fill:currentColor}
+.turbo-key .rep{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:rotate(-180deg) scale(.6)}
+
+/* pressed: the cap sinks 4px and the bolt heats up */
+.turbo-key[data-state="heating"],.turbo-key[data-state="turbo"]{transform:translateY(4px);box-shadow:inset 0 0 0 1px var(--tk-edge),0 1px 0 var(--tk-depth),0 2px 0 var(--tk-depth-rim)}
+.turbo-key[data-state="heating"] .ic{color:var(--tk-heat);filter:drop-shadow(0 0 5px color-mix(in srgb,var(--tk-heat) 60%,transparent));animation:tk-jitter 90ms linear infinite}
+/* turbo: the cap lights up, the bolt goes dark and keeps a light tremor */
+.turbo-key[data-state="turbo"]{background:linear-gradient(var(--tk-lit-top),var(--tk-lit-bot));color:var(--tk-lit-ink)}
+.turbo-key[data-state="turbo"] .legend{color:color-mix(in srgb,var(--tk-lit-ink) 70%,var(--tk-lit-top))}
+.turbo-key[data-state="turbo"] .ic{transition:color 160ms,filter 160ms;animation:tk-jitter-soft 120ms linear infinite}
+/* end of episode: the bolt turns into the replay arrow, which then loops */
+.turbo-key[data-state="turning"] .bolt,.turbo-key[data-state="replay"] .bolt{transform:rotate(180deg) scale(.6);opacity:0}
+.turbo-key[data-state="turning"] .rep,.turbo-key[data-state="replay"] .rep{opacity:1;transform:none}
+.turbo-key[data-state="replay"] .rep{animation:tk-spin 2.4s linear infinite}
+.turbo-key[data-state="replay"]:active{transform:translateY(4px);box-shadow:inset 0 0 0 1px var(--tk-edge),0 1px 0 var(--tk-depth),0 2px 0 var(--tk-depth-rim)}
+
+@keyframes tk-jitter{0%{transform:translate(0,0)}25%{transform:translate(.8px,-.6px)}50%{transform:translate(-.7px,.7px)}75%{transform:translate(.6px,.5px)}100%{transform:translate(0,0)}}
+@keyframes tk-jitter-soft{0%,100%{transform:translate(0,0)}50%{transform:translate(.4px,-.3px)}}
+@keyframes tk-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){
+  .turbo-key,.turbo-key .ic,.turbo-key .ic svg{transition:none}
+  .turbo-key .ic{animation:none!important}
+  .turbo-key[data-state="replay"] .rep{animation:none}
+}
+</style>
+</head>
+<body>
+
+<button type="button" class="turbo-key" id="turbo" data-state="idle" aria-label="Hold to ship faster" aria-pressed="false">
+  <span class="ic" aria-hidden="true">
+    <svg class="bolt" viewBox="0 0 24 24"><path d="M13.2 2 4.5 13.4h6.2L9.6 22l9-12.1h-6.3L13.2 2z"/></svg>
+    <svg class="rep" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-8-8c2.24 0 4.38.89 5.99 2.44L20 8.4"/><path d="M20 3.6v4.8h-4.8"/></svg>
+  </span>
+  <span class="legend" aria-hidden="true">hold</span>
+</button>
+
+<script>
+/* TurboKey — states: idle → heating (held, 450 ms) → turbo (while held) → idle on release.
+   end() turns it into replay; pressing replay fires 'turbo:replay' and returns to idle.
+   Events on the element: 'turbo:change' {detail:{on}}, 'turbo:replay'. */
+(() => {
+  const key = document.getElementById('turbo');
+  const HEAT_MS = 450, TURN_MS = 600;
+  const labels = { hold: 'Hold to ship faster', replay: 'Replay', legendHold: 'hold', legendReplay: 'again' };   // PT: 'Segure para acelerar', 'Recomeçar', 'segure', 'de novo'
+  const legend = key.querySelector('.legend');
+  let state = 'idle', heatTimer = 0, turnTimer = 0, on = false;
+
+  const set = s => { state = s; key.dataset.state = s; };
+  const emitTurbo = v => { if (v === on) return; on = v; key.setAttribute('aria-pressed', String(v)); key.dispatchEvent(new CustomEvent('turbo:change', { detail: { on: v } })); };
+
+  function press() {
+    if (state !== 'idle') return;
+    set('heating');
+    heatTimer = setTimeout(() => { set('turbo'); emitTurbo(true); }, HEAT_MS);
+  }
+  function release() {
+    clearTimeout(heatTimer);
+    if (state === 'heating' || state === 'turbo') { set('idle'); emitTurbo(false); }
+  }
+  function end() {                       // call when the episode finishes
+    release(); clearTimeout(turnTimer);
+    set('turning'); key.setAttribute('aria-label', labels.replay); legend.textContent = labels.legendReplay;
+    turnTimer = setTimeout(() => { if (state === 'turning') set('replay'); }, TURN_MS);
+  }
+  function replay() {
+    clearTimeout(turnTimer); set('idle'); key.setAttribute('aria-label', labels.hold); legend.textContent = labels.legendHold;
+    key.dispatchEvent(new CustomEvent('turbo:replay'));
+  }
+
+  key.addEventListener('pointerdown', e => {
+    if (e.button !== 0) return;
+    if (state === 'replay' || state === 'turning') return;   // replay acts on click
+    e.preventDefault(); try { key.setPointerCapture(e.pointerId); } catch (_) {}
+    press();
+  });
+  key.addEventListener('pointerup', release);
+  key.addEventListener('pointercancel', release);
+  key.addEventListener('lostpointercapture', release);
+  key.addEventListener('contextmenu', e => e.preventDefault());          // no long-press menu on touch
+  key.addEventListener('keydown', e => {
+    if (e.key !== ' ' && e.key !== 'Enter') return;
+    e.preventDefault(); if (e.repeat) return;
+    if (state === 'replay' || state === 'turning') replay(); else press();
+  });
+  key.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); release(); } });
+  key.addEventListener('click', () => { if (state === 'replay' || state === 'turning') replay(); });
+  key.addEventListener('blur', release);
+  window.addEventListener('blur', release);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) release(); });
+
+  // for trying it out from the console: turboKey.end()
+  window.turboKey = { end, replay, get state() { return state; }, get on() { return on; } };
+})();
+</script>
+</body>
+</html>

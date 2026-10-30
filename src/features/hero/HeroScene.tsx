@@ -6,24 +6,33 @@ import {
   useEffectEvent,
   useLayoutEffect,
   useRef,
+  useState,
   type ReactNode,
 } from "react";
 import xp from "@/features/experience/Experience.module.css";
 import { useStill } from "@/lib/motion";
 import type { HeroDict, MeterCls, mount } from "./scene/engine";
 import s from "./Scene.module.css";
+import { TurboKey } from "./TurboKey";
 
 type Engine = ReturnType<typeof mount>;
 const PHONE = "(max-width: 760px)";
 const WIDE = "(min-width: 1024px)";
 // stage units (scene/core.ts): the stack spans y 14…775.8 (its top corner to the bottom plate's
-// lowest point) and x 6…718 around CX. Wide layouts also hold the git log, which overflows the
+// lowest point) and x 6…718. Wide layouts also hold the git log, which overflows the
 // stage on the right, so the box they fit is wider than the stage.
 const STAGE_W = 724,
-  CX = 362,
   TOP = 10,
   PLATE_BOTTOM = 775.8,
-  WIDE_W = 816;
+  WIDE_W = 816,
+  // the htop bars (ZONES.bars in scene/engine.ts); the turbo key sits right of them, on their
+  // centre line: its size (TurboKey.module.css) and the gap
+  BARS = { x: 0, y: 716, w: 220, h: 72 },
+  KEY = 52,
+  KEY_GAP = 16,
+  KEY_CLEAR = 16,
+  // the bottom plate's lower-left edge (fw, z 0, in core.ts' projection), which the key must clear
+  EDGE = { x: 5.55, y: 554.5, slope: 0.5774 };
 // the scene's load bars are the Htop's meters
 const METER: MeterCls = {
   meter: xp.meter,
@@ -44,8 +53,10 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
   const engine = useRef<Engine | null>(null);
   const shown = useRef<"none" | "still" | "engine">("none");
   const latest = useEffectEvent(() => ({ dict, still }));
+  const [live, setLive] = useState(false);
+  const [ended, setEnded] = useState(false);
 
-  // fit the stack (and, wide, its widgets) inside the column, the toolbar under it
+  // fit the stack (and, wide, its widgets) inside the column, with room left under it
   useLayoutEffect(() => {
     const sc = scene.current!,
       h = host.current!;
@@ -54,11 +65,10 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
       const w = sc.clientWidth,
         ht = sc.clientHeight,
         pad = 12,
-        gap = 14,
-        tbH = 38;
+        foot = 52;
       const boxW = wide.matches ? WIDE_W : STAGE_W,
         stackH = PLATE_BOTTOM - TOP,
-        availH = ht - 2 * pad - gap - tbH;
+        availH = ht - 2 * pad - foot;
       const k = Math.max(
         0.2,
         Math.min((w - (wide.matches ? 0 : 20)) / boxW, availH / stackH),
@@ -68,10 +78,26 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
       h.style.setProperty("--s", k.toFixed(4));
       h.style.setProperty("--ox", ox.toFixed(1) + "px");
       h.style.setProperty("--oy", oy.toFixed(1) + "px");
-      h.style.setProperty("--tb-left", (ox + CX * k).toFixed(1) + "px");
-      h.style.setProperty(
-        "--tb-top",
-        (oy + PLATE_BOTTOM * k + gap).toFixed(1) + "px",
+      // the key keeps KEY_CLEAR off the plate's edge: on small stages it and the bars drop a little
+      // (never closer than 24px to the scene's bottom)
+      const keyR = BARS.x + BARS.w + (KEY_GAP + KEY) / k,
+        keyTop = BARS.y + BARS.h / 2 - KEY / 2 / k,
+        edge = EDGE.y + (keyR - EDGE.x) * EDGE.slope,
+        dy = Math.max(
+          0,
+          Math.min(
+            edge + KEY_CLEAR / k - keyTop,
+            (ht - 24 - oy) / k - BARS.y - BARS.h,
+          ),
+        );
+      sc.style.setProperty("--bars-dy", dy.toFixed(1) + "px");
+      sc.style.setProperty(
+        "--key-x",
+        (ox + (BARS.x + BARS.w) * k + KEY_GAP).toFixed(1) + "px",
+      );
+      sc.style.setProperty(
+        "--key-y",
+        (oy + (keyTop + dy) * k).toFixed(1) + "px",
       );
       h.dataset.fit = "";
     };
@@ -101,8 +127,16 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
     const loadEngine = () =>
       import("./scene/engine").then(({ mount }) => {
         if (cancelled) return;
-        engine.current = mount(sc, h, latest().dict, latest().still, METER);
+        engine.current = mount(
+          sc,
+          h,
+          latest().dict,
+          latest().still,
+          METER,
+          setEnded,
+        );
         shown.current = "engine";
+        setLive(true);
       });
     const go = () => {
       if (phone.matches || io) return;
@@ -154,6 +188,14 @@ export function HeroScene({ mobile }: { mobile: ReactNode }) {
     <>
       <div ref={scene} className={s.scene} role="group" aria-label={dict.aria}>
         <div ref={host} className={s.host} />
+        {live && !still && (
+          <TurboKey
+            className={s.key}
+            ended={ended}
+            onTurboChange={(on) => engine.current?.setTurbo(on)}
+            onReplay={() => engine.current?.replay()}
+          />
+        )}
       </div>
       <div className={s.mobile} role="img" aria-label={dict.aria}>
         {mobile}

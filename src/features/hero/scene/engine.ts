@@ -130,13 +130,13 @@ const LOG_ROW = 26,
 const BAR_WORK = [0.3, 0.22, 0.18, 0.1], // per layer, fw first: resting load while the episode plays
   BAR_IDLE = [0.44, 0.31, 0.27, 0.12]; // and after deployed
 
-const TEMPLATE = `<div class="tb"><button class="pill" data-el="ship" type="button" aria-pressed="false"><span class="label"></span></button><button class="pill ghostly" data-el="rebuild" type="button" inert>↻</button></div>
-<div class="stage" aria-hidden="true"><svg class="canvas" viewBox="0 0 724 800"><defs>
+const TEMPLATE = `<div class="stage" aria-hidden="true"><svg class="canvas" viewBox="0 0 724 800"><defs>
 <marker id="mk-head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 <marker id="mk-head-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 <marker id="mk-head-hot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M1 1 L9 5 L1 9 Z"/></marker>
 </defs><g data-el="stack"></g><g data-el="sels"></g><g class="pin" data-el="pin" opacity="0"><circle r="8"/><text y="3" text-anchor="middle">F</text></g><g data-el="fx" class="fx"></g><text data-el="measure" style="font:500 18px var(--font-mono);opacity:0;pointer-events:none"></text></svg>
-<div class="overlay" data-el="overlay"><div class="glog" data-el="glog"><div class="gp"><span>$</span> </div><div class="rows" data-el="rows"><i class="rail"></i></div></div><div class="bars" data-el="bars"></div><div class="term" data-el="term"><div class="hd"><i></i><i></i><i></i>&nbsp;terminal</div><div class="ls"></div></div><div class="chip ok" data-el="chipOk"><span class="ring"></span><span class="txt"></span><span class="bar"><i></i></span></div></div></div>`;
+<div class="overlay" data-el="overlay"><div class="glog" data-el="glog"><div class="gp"><span>$</span> </div><div class="rows" data-el="rows"><i class="rail"></i></div></div><div class="bars" data-el="bars"></div><div class="term" data-el="term"><div class="hd"><i></i><i></i><i></i>&nbsp;terminal</div><div class="ls"></div></div><div class="chip ok" data-el="chipOk"><span class="ring"></span><span class="txt"></span><span class="bar"><i></i></span></div></div></div>
+<div class="stage cursors" data-el="cursors" aria-hidden="true"></div>`;
 
 export function mount(
   scene: HTMLElement,
@@ -144,6 +144,7 @@ export function mount(
   dict: HeroDict,
   still: boolean,
   meter: MeterCls,
+  onEnded: (ended: boolean) => void, // the episode ended (the turbo key turns into Replay) or restarted
 ) {
   let L = dict;
   let staticMode = still;
@@ -182,16 +183,15 @@ export function mount(
     host.querySelector(`[data-el="${k}"]`) as E;
   const stage = host.querySelector(".stage") as HTMLElement,
     overlay = $("overlay"),
+    // the cursors get their own copy of the stage transform, above the turbo key (Scene.module.css)
+    cursorsEl = $("cursors"),
     canvas = host.querySelector("svg.canvas") as SVGSVGElement;
   const gStack = $<SVGGElement>("stack"),
     gFx = $<SVGGElement>("fx"),
     gSels = $<SVGGElement>("sels");
   const chipOk = $("chipOk"),
     chipOkTxt = chipOk.querySelector(".txt") as HTMLElement,
-    chipOkBar = chipOk.querySelector(".bar i") as HTMLElement,
-    shipBtn = $<HTMLButtonElement>("ship"),
-    rebuildBtn = $<HTMLButtonElement>("rebuild"),
-    tb = host.querySelector(".tb") as HTMLElement;
+    chipOkBar = chipOk.querySelector(".bar i") as HTMLElement;
   const glogEl = $("glog"),
     rowsEl = $("rows"),
     railEl = rowsEl.querySelector(".rail") as HTMLElement,
@@ -205,6 +205,13 @@ export function mount(
   };
   place(glogEl, ZONES.glog);
   place(barsEl, ZONES.bars);
+  // HeroScene drops the bars a little on small stages (--bars-dy, stage units) so the turbo key
+  // beside them clears the plate; the bubbles read where they really are
+  barsEl.style.top = `calc(${ZONES.bars.y}px + var(--bars-dy, 0px))`;
+  const barsZone: Zone = { ...ZONES.bars };
+  const ro = new ResizeObserver(() => (barsZone.y = barsEl.offsetTop));
+  ro.observe(scene);
+  signal.addEventListener("abort", () => ro.disconnect());
   const wide = matchMedia("(min-width: 1024px)");
   // motion tokens, in episode seconds: the new commit pops in, the rest slide down a row
   const bez = (v: string, d: [number, number, number, number]) => {
@@ -322,7 +329,7 @@ export function mount(
     const d = document.createElement("div");
     d.className = "cursor " + cls;
     d.innerHTML = `<svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><div class="tag"><span class="name"></span><span class="bubble"></span></div>`;
-    overlay.appendChild(d);
+    cursorsEl.appendChild(d);
     const col = `var(--hero-${cls === "ia" ? "ia" : "action"})`;
     const ghosts: HTMLDivElement[] = [];
     for (let i = 0; i < 6; i++) {
@@ -330,7 +337,7 @@ export function mount(
       g.className = "ghost";
       g.style.setProperty("--c", col);
       g.innerHTML = `<svg viewBox="0 0 14 19"><path d="${CURSOR_PATH}"/></svg>`;
-      overlay.insertBefore(g, d);
+      cursorsEl.insertBefore(g, d);
       ghosts.push(g);
     }
     const nameEl = d.querySelector(".name") as HTMLElement;
@@ -375,7 +382,7 @@ export function mount(
   const youEl = document.createElement("div");
   youEl.className = "cursor you";
   youEl.innerHTML = `<svg viewBox="0 0 14 19"><path class="arrowhead" d="${CURSOR_PATH}"/></svg><div class="tag"><span class="name"></span></div>`;
-  overlay.appendChild(youEl);
+  cursorsEl.appendChild(youEl);
 
   /* =====================================================================
      DOM per episode — 4 plates (painter's order, bottom → top), risers in the gaps
@@ -873,7 +880,7 @@ export function mount(
     r.x0 < z.x + z.w && r.x1 > z.x && r.y0 < z.y + z.h && r.y1 > z.y;
   // bubbles never sit on the widgets: they take the free side straight away
   const onWidget = (r: Box) =>
-    (wide.matches && (hit(ZONES.glog, r) || hit(ZONES.bars, r))) ||
+    (wide.matches && (hit(ZONES.glog, r) || hit(barsZone, r))) ||
     (chipShown && hit(ZONES.chip, r)) ||
     (termShown && hit(ZONES.term, r));
   function render(t: number) {
@@ -1775,7 +1782,10 @@ export function mount(
     {
       const showRb =
         t >= ep.MAIN && !(ep.collapse && t >= ep.collapse.t0) && !isStatic();
-      if (rebuildBtn.inert === showRb) rebuildBtn.inert = !showRb;
+      if (ended !== showRb) {
+        ended = showRb;
+        onEnded(showRb);
+      }
     }
 
     // ---- actors (screen space, targets projected through P)
@@ -2035,7 +2045,6 @@ export function mount(
     lsSet(ep.errors.join());
     buildDOM(ep);
     lastT = 0;
-    tb.hidden = isStatic();
     if (isStatic()) {
       render(ep.MAIN + 2.2);
       lastT = ep.MAIN + 2.2;
@@ -2101,20 +2110,11 @@ export function mount(
     });
   }
 
-  /* ---- interaction: hover 2×, Turbo 4× ---- */
+  /* ---- interaction: hover 2×, the turbo key (HeroScene) 4× while held ---- */
   let hover = false,
-    boost = false;
-  const effectiveSpeed = () => (hover ? (boost ? 4 : 2) : 1);
-  function updateShipUI() {
-    const s = effectiveSpeed();
-    shipBtn.setAttribute("aria-pressed", String(boost));
-    shipBtn.setAttribute("aria-label", L.shipAria.replace("{s}", String(s)));
-    shipBtn.dataset.speed = String(s);
-  }
-  function applySpeed() {
-    updateShipUI();
-    setSpeed(effectiveSpeed());
-  }
+    boost = false,
+    ended = false;
+  const applySpeed = () => setSpeed(boost ? 4 : hover ? 2 : 1);
   const toStage = (e: PointerEvent) => {
     const r = stage.getBoundingClientRect(),
       s = r.width / STAGE_W;
@@ -2175,7 +2175,6 @@ export function mount(
   });
   on(scene, "pointerleave", () => {
     hover = false;
-    boost = false;
     PX.on = false;
     scene.classList.remove("is-live");
     youEl.style.opacity = "0";
@@ -2196,36 +2195,6 @@ export function mount(
     }
     eggs?.move(p);
   });
-  on(shipBtn, "click", () => {
-    if (isStatic()) return;
-    boost = !boost;
-    hover = true;
-    applySpeed();
-  });
-  on(shipBtn, "focus", () => {
-    if (isStatic()) return;
-    hover = true;
-    applySpeed();
-  });
-  on(shipBtn, "blur", () => {
-    if (!scene.matches(":hover")) {
-      hover = false;
-      boost = false;
-      applySpeed();
-    }
-  });
-  on(document, "keydown", (e: KeyboardEvent) => {
-    if (e.key === "Escape" && boost) {
-      boost = false;
-      applySpeed();
-    }
-  });
-  on(rebuildBtn, "click", () => {
-    if (isStatic()) return;
-    epCount = 0;
-    startEpisode(nextSeed(ep.seed), 0);
-  });
-
   const io = new IntersectionObserver(
     ([en]) => {
       inView = en.isIntersecting;
@@ -2245,14 +2214,10 @@ export function mount(
   /* ---- language ---- */
   function applyLang(d: HeroDict) {
     L = d;
-    (shipBtn.querySelector(".label") as HTMLElement).textContent = L.ship;
-    rebuildBtn.setAttribute("aria-label", L.rebuild);
-    rebuildBtn.title = L.rebuild;
     (youEl.querySelector(".name") as HTMLElement).textContent = L.you;
     UI.ia.name.textContent = L.ia;
     UI.fb.name.textContent = L.fb;
     cache.clear();
-    updateShipUI();
     if (ep) render(lastT);
   }
 
@@ -2335,6 +2300,16 @@ export function mount(
 
   return {
     setLocale: applyLang,
+    setTurbo(on: boolean) {
+      boost = on;
+      hover = scene.matches(":hover");
+      if (!isStatic()) applySpeed();
+    },
+    replay() {
+      if (isStatic() || !ep) return;
+      epCount = 0;
+      startEpisode(nextSeed(ep.seed), 0);
+    },
     setStill(s: boolean) {
       if (s === staticMode) return;
       staticMode = s;

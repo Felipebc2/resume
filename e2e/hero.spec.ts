@@ -65,20 +65,26 @@ test.describe("hero scene, desktop", () => {
     expect(errors).toEqual([]);
   });
 
-  test("hover doubles the speed, Turbo takes it to 4×", async ({ page }) => {
+  test("hover doubles the speed, holding the turbo key takes it to 4×", async ({
+    page,
+  }) => {
     await withHooks(page);
     await page.goto("/");
-    const ship = page.locator("[data-engine] [data-el=ship]");
-    await expect(ship).toBeAttached();
+    const key = page.getByRole("button", { name: "Hold to ship faster" });
+    await expect(key).toBeVisible();
+    const speed = () => page.evaluate(() => window.__hero!.speed);
     const box = (await page.getByRole("group", { name: SCENE }).boundingBox())!;
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 3);
-    await expect(ship).toHaveAttribute("data-speed", "2");
-    await ship.click();
-    await expect(ship).toHaveAttribute("data-speed", "4");
-    await expect(ship).toHaveAttribute("aria-pressed", "true");
-    await expect
-      .poll(() => page.evaluate(() => window.__hero!.speed))
-      .toBeGreaterThan(3.9);
+    await expect.poll(speed).toBeGreaterThan(1.9);
+    await key.hover();
+    await page.mouse.down();
+    await expect(key).toHaveAttribute("data-state", "turbo");
+    await expect(key).toHaveAttribute("aria-pressed", "true");
+    await expect.poll(speed).toBeGreaterThan(3.9);
+    await page.mouse.up();
+    await expect(key).toHaveAttribute("aria-pressed", "false");
+    await expect.poll(speed).toBeLessThan(2.1);
+    expect(await speed()).toBeGreaterThan(1.9); // still over the scene
   });
 
   test("git log: a commit per fix, HEAD once deployed; htop bars per layer", async ({
@@ -105,6 +111,17 @@ test.describe("hero scene, desktop", () => {
     await expect(log.locator(".c.wip")).toBeHidden();
     await expect(log.locator(".c.head")).toContainText("HEAD");
     await expect(page.locator("[data-engine] .bars > div")).toHaveCount(4);
+    // deployed: the turbo key turns into Replay, which starts the next seed
+    const seed = await page.evaluate(() => window.__hero!.seed);
+    const replay = page
+      .getByRole("group", { name: SCENE })
+      .getByRole("button", { name: "Replay" });
+    await expect(replay).toHaveAttribute("data-state", "replay");
+    await replay.click();
+    await expect(
+      page.getByRole("button", { name: "Hold to ship faster" }),
+    ).toHaveAttribute("data-state", "idle");
+    expect(await page.evaluate(() => window.__hero!.seed)).not.toBe(seed);
   });
 
   test("theme and language switch while it runs, without a restart", async ({
@@ -125,10 +142,9 @@ test.describe("hero scene, desktop", () => {
     await expect.poll(fill).not.toBe(before);
     await menu.getByRole("switch", { name: /^Mode/ }).click();
     await menu.getByRole("switch", { name: /^Language/ }).click();
-    await expect(page.locator("[data-engine] [data-el=ship]")).toHaveAttribute(
-      "aria-label",
-      /velocidade/,
-    );
+    await expect(
+      page.getByRole("button", { name: "Segure para acelerar" }),
+    ).toBeVisible();
     await expect(
       page.getByRole("group", { name: /^Canvas animado/ }),
     ).toHaveCount(1);
@@ -268,6 +284,8 @@ test.describe("hero scene, desktop", () => {
     await page.waitForTimeout(2500);
     await expect(page.locator("[data-engine]")).toHaveCount(0);
     expect(fetched(ENGINE)).toBe(false);
+    // nothing to speed up, so no key (and none of its loops)
+    await expect(page.locator("button[data-state]")).toHaveCount(0);
   });
 });
 
@@ -284,5 +302,6 @@ test.describe("hero scene, phone", () => {
     await expect(page.getByRole("group", { name: SCENE })).toBeHidden();
     await page.waitForTimeout(2500);
     expect(fetched(ENGINE)).toBe(false);
+    await expect(page.locator("button[data-state]")).toHaveCount(0);
   });
 });
