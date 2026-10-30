@@ -245,7 +245,7 @@
   }
   /* BUILD. spills past the seam into the scene's empty left corner */
   .title {
-    font-size: min(50cqi, 34svh);
+    font-size: min(48cqi, 34svh);
   }
 }
 
