@@ -94,12 +94,14 @@
   place-items: center;
   border: 1px solid var(--color-line);
   border-radius: var(--r-pill);
-  font-family: var(--font-mono);
-  font-size: var(--t-label);
   color: var(--color-faint);
   transition:
     color var(--d-2) var(--ease-out),
     border-color var(--d-2) var(--ease-out);
+}
+.icons svg {
+  width: 18px;
+  height: 18px;
 }
 .icons a:hover {
   color: var(--color-fg);
