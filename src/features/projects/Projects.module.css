@@ -2,10 +2,6 @@
 .pj {
   padding: var(--section-y) var(--gut-r) var(--section-y) var(--gut-l);
 }
-.inner {
-  max-width: var(--container);
-  margin: 0 auto;
-}
 .head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

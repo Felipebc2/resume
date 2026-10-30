@@ -64,10 +64,7 @@ export function Board() {
       if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "k") return;
       e.preventDefault();
       const go = () => {
-        bar.current?.scrollIntoView({
-          block: "center",
-          behavior: still ? "auto" : "smooth",
-        });
+        center(bar.current, still);
         input.current?.focus({ preventScroll: true });
       };
       if (caseRef.current) caseRef.current.close(go);
@@ -80,10 +77,7 @@ export function Board() {
   const searchStack = (st: string) =>
     caseRef.current?.close(() => {
       setQuery(st);
-      bar.current?.scrollIntoView({
-        block: "center",
-        behavior: still ? "auto" : "smooth",
-      });
+      center(bar.current, still);
     });
 
   return (
@@ -169,6 +163,9 @@ export function Board() {
     </div>
   );
 }
+
+const center = (el: HTMLElement | null, still: boolean) =>
+  el?.scrollIntoView({ block: "center", behavior: still ? "auto" : "smooth" });
 
 const Tags = ({ list }: { list: string[] }) => (
   <span className={s.tags}>

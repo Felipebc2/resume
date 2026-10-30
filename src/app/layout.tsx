@@ -34,21 +34,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { default: t("title"), template: `%s · ${name}` },
     description: t("description"),
     alternates: { canonical: "/" },
-    robots: { index: true, follow: true },
+    // og/twitter inherit title and description from the fields above
     openGraph: {
       type: "website",
       siteName: name,
-      title: t("title"),
-      description: t("description"),
       url: "/",
       locale: "en_US",
       alternateLocale: ["pt_BR"],
     },
-    twitter: {
-      card: "summary_large_image",
-      title: t("title"),
-      description: t("description"),
-    },
+    twitter: { card: "summary_large_image" },
   };
 }
 

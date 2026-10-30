@@ -23,7 +23,6 @@ const html = await p.evaluate(() => {
     e.style.display === "none";
   for (const e of [...stage.querySelectorAll("*")])
     if (stage.contains(e) && hidden(e)) e.remove();
-  stage.querySelector("[data-el=measure]")?.remove();
   // git log messages are translated: keep the key and the episode's names, fill them per locale
   for (const c of stage.querySelectorAll(".glog .c[data-k]"))
     c.lastElementChild.textContent = `{L:${c.dataset.k}:${c.dataset.v ?? ""}}`;

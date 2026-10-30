@@ -35,8 +35,7 @@ export type Project = {
   /** [columns, rows] spanned in the 2-column phone grid */
   mob: [number, number];
   stack: string[];
-  /** without one, the case draws Client → stack[0..2] */
-  bp?: Blueprint;
+  bp: Blueprint;
 };
 
 /** bento order; desktop placement lives in grid-template-areas (Projects.module.css) */

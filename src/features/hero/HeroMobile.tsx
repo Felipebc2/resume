@@ -1,5 +1,4 @@
 import { getTranslations } from "next-intl/server";
-import type { CSSProperties } from "react";
 import { CURSOR_PATH, DOMAINS, ICONS, LAYER_TITLES } from "@/content/hero";
 import s from "./Scene.module.css";
 
@@ -55,7 +54,7 @@ export async function HeroMobile() {
     <div
       key={b.title}
       className={`${s.mb} ${b.cls}`}
-      style={{ animationDelay: `${i * 0.3}s` } as CSSProperties}
+      style={{ animationDelay: `${i * 0.3}s` }}
     >
       {b.cursors}
       <h3>{b.title}</h3>

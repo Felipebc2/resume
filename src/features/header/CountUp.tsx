@@ -4,18 +4,14 @@ import { useLocale } from "next-intl";
 import { useEffect, useRef } from "react";
 import { clamp, easeOut } from "@/lib/math";
 import { useStill } from "@/lib/motion";
+import { formatStat } from "@/features/stack/format";
 
-const fmt = (v: number, locale: string) => Math.round(v).toLocaleString(locale);
+const fmt = (v: number, locale: string) => formatStat(v, "int", locale);
+/** seconds before the count starts */
+const DELAY = 0.4;
 
 /** Counts from 0 to `to` on mount (count mode of React Bits' CountUp). Readers get the final value. */
-export function CountUp({
-  to,
-  delay = 0,
-}: {
-  to: number;
-  /** seconds */
-  delay?: number;
-}) {
+export function CountUp({ to }: { to: number }) {
   const ref = useRef<HTMLSpanElement>(null);
   const still = useStill();
   const locale = useLocale();
@@ -25,7 +21,7 @@ export function CountUp({
     if (!el) return;
     const show = (v: number) => (el.textContent = fmt(v, locale));
     if (still) return void show(to);
-    const t0 = performance.now() + delay * 1000;
+    const t0 = performance.now() + DELAY * 1000;
     let raf = 0;
     const tick = (now: number) => {
       const p = clamp((now - t0) / 2000, 0, 1);
@@ -34,7 +30,7 @@ export function CountUp({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [to, delay, still, locale]);
+  }, [to, still, locale]);
 
   return (
     <span className="tabular-nums">

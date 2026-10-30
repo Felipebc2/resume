@@ -12,7 +12,6 @@ import {
   EASE_IO,
   EASE_OUT,
   faceMatrix,
-  fmix32,
   GAP,
   K,
   LAYER_ORDER,
@@ -30,7 +29,6 @@ import {
   qbez,
   resetView,
   roundedPath,
-  sample,
   SPR_BACK,
   SPR_CHIP,
   SPR_DROP,
@@ -115,6 +113,9 @@ export const ENGINE_ID = "fbc2-hero-engine";
 const LS_KEY = "fbc2-hero-last";
 const svgNS = "http://www.w3.org/2000/svg";
 const DOT_R = [1.15, 1.6, 2.1, 2.7]; // halftone dot radius per plate, outermost first
+/** the arrowhead marker for an arrow's state */
+const mark = (bad: boolean, hot: boolean) =>
+  `url(#mk-head${bad ? "-bad" : hot ? "-hot" : ""})`;
 // widget boxes in stage units (wide layouts): the git log in the free corner above the right of the
 // stack (it overflows the stage), the bars under its lower left, the deployed chip above its left
 const ZONES = {
@@ -381,7 +382,7 @@ export function mount(
   }
   const UI = { ia: makeCursor("ia", L.ia), fb: makeCursor("fb", L.fb) };
   // the visitor's cursor roams the whole hero, so it lives on the section, above the seal
-  const zone = scene.closest("section") ?? scene,
+  const zone = scene.closest("section")!,
     youLayer = zone.appendChild(document.createElement("div")),
     youEl = youLayer.appendChild(document.createElement("div"));
   youLayer.className = roamCls;
@@ -697,7 +698,7 @@ export function mount(
   /* =====================================================================
      Render — pure function of master time t (+ live speed for FX, + egg overrides, + parallax state)
      ===================================================================== */
-  const S = { speed: 1, visual: 1 };
+  const S = { speed: 1 };
   const egg: EggState = {
     drag: null,
     hold: {},
@@ -775,10 +776,9 @@ export function mount(
       B = P(m.to);
     if (t >= m.t1) return B;
     let e = m.ease!(p);
-    if (m.human && humanK > 0)
+    if (humanK > 0)
       e = mix(e, overshootEase(humanK)(p), clamp(0, 1, humanK * 3));
-    const c = m.c ? P(m.c) : { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
-    return qbez(A, c, B, e);
+    return qbez(A, P(m.c!), B, e);
   }
   // node state at t: {layer, lx, ly, dz}
   function nodeStateAt(n: SNode, t: number) {
@@ -836,7 +836,7 @@ export function mount(
     return { n: 0, done: false, fail: false, run: false };
   }
   function bubbleText(key: string, t: number) {
-    const short = S.visual >= 1.8 ? 1 : 0;
+    const short = S.speed >= 1.8 ? 1 : 0;
     let txt = L.say[key as keyof HeroDict["say"]][short];
     if (key === "tests") {
       const tp = testProgress(t);
@@ -907,26 +907,19 @@ export function mount(
   }
   function renderFrame(t: number) {
     parallaxTick();
-    const sp = S.visual,
+    const sp = S.speed,
       hot = clamp(0, 1, (sp - 1.15) / 2.2),
       humanK = hot * 0.22;
     const idle = ep.idle && t >= ep.idle.t0,
       tau = idle ? t - ep.idle!.t0 : 0;
     const wd = idle ? wanderAt(tau) : null;
-    const colK = ep.collapse
-      ? (layer: Layer) =>
-          EASE_IO(
-            clamp(
-              0,
-              1,
-              (t - (ep.collapse!.t0 + LAYER_ORDER.indexOf(layer) * 0.12)) /
-                0.36,
-            ),
-          )
-      : () => 0;
-    const colA = ep.collapse
-      ? EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.36))
-      : 0;
+    // collapse progress over d seconds, starting o after the collapse (0 without one)
+    const col = (d: number, o = 0) =>
+      ep.collapse
+        ? EASE_IO(prog(t, ep.collapse.t0 + o, ep.collapse.t0 + o + d))
+        : 0;
+    const colK = (layer: Layer) => col(0.36, LAYER_ORDER.indexOf(layer) * 0.12),
+      colA = col(0.36);
 
     // ---- stack geometry: gap factor (reopen / breathing / collapse) + per-plate entrance drop
     let gk = 1;
@@ -941,8 +934,7 @@ export function mount(
             ? 1 - 0.15 * EASE_OUT(d / 0.16)
             : 1 - 0.15 * (1 - SPR_BACK(d - 0.16));
     }
-    if (ep.collapse && t >= ep.collapse.t0)
-      gk *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.9));
+    gk *= 1 - col(0.9);
     for (const layer of LAYERS) {
       VIEW.z[layer] = layerZ(layer, gk);
       const pe = ep.plates[LI[layer]];
@@ -1000,8 +992,7 @@ export function mount(
         ep.index === 0
           ? clamp(0, 1, (t - pe.t1) / 0.3)
           : clamp(0, 1, (t - 0.5) / 0.3);
-      if (ep.collapse && t >= ep.collapse.t0)
-        tl *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3)); // layer titles fade with the collapse
+      tl *= 1 - col(0.3); // layer titles fade with the collapse
       setStyle(D.title, "opacity", tl.toFixed(2));
     }
     // glow (one pulse after deploy)
@@ -1232,9 +1223,12 @@ export function mount(
           hotA =
             !!e && !bad && t < e.t1 + 0.25 && !(a.remove && t >= a.remove.t0);
         // drawn from the port end: up → from the bottom; down (bad) → from the top. The dep fix (morph) walks the head to the other end.
-        let headAt: "top" | "bottom" | number = a.up ? "top" : "bottom";
-        if (a.morph && t >= a.morph.t0)
-          headAt = EASE_IO(prog(t, a.morph.t0, a.morph.t1));
+        const headAt =
+          a.morph && t >= a.morph.t0
+            ? EASE_IO(prog(t, a.morph.t0, a.morph.t1))
+            : a.up
+              ? "top"
+              : "bottom";
         const len = yBot - yTop,
           visLen = len * pv;
         const y0 = a.up ? yBot - visLen : yTop,
@@ -1268,26 +1262,16 @@ export function mount(
         setAttr(a.port, "cy", portY.toFixed(1));
         setAttr(a.port, "opacity", hide ? 0 : 1);
         setCls(a.port, "bad", bad);
-        let hy, dir;
-        if (typeof headAt === "number") {
-          hy = lerp(a.up ? yTop : yBot, a.up ? yBot : yTop, headAt);
-          dir = headAt < 0.5 ? (a.up ? -1 : 1) : a.up ? 1 : -1;
-        } else {
-          hy = headAt === "top" ? yTop : yBot;
-          dir = headAt === "top" ? -1 : 1;
-        }
-        const headL =
-          typeof headAt === "number"
-            ? headAt < 0.5
-              ? a.up
-                ? topL
-                : botL
-              : a.up
-                ? botL
-                : topL
-            : headAt === "top"
-              ? topL
-              : botL;
+        const atTop =
+          typeof headAt === "number" ? headAt < 0.5 === a.up : headAt === "top";
+        const hy =
+            typeof headAt === "number"
+              ? lerp(a.up ? yTop : yBot, a.up ? yBot : yTop, headAt)
+              : atTop
+                ? yTop
+                : yBot,
+          dir = atTop ? -1 : 1,
+          headL = atTop ? topL : botL;
         const headHost = PL[headL].heads;
         if (a.head.parentNode !== headHost) {
           headHost.appendChild(a.head);
@@ -1340,17 +1324,7 @@ export function mount(
               "stroke-dashoffset",
               (a.faceLen * (1 - pf)).toFixed(1),
             );
-            setAttr(
-              a.face,
-              "marker-end",
-              pf > 0.97
-                ? bad
-                  ? "url(#mk-head-bad)"
-                  : hotA
-                    ? "url(#mk-head-hot)"
-                    : "url(#mk-head)"
-                : "none",
-            );
+            setAttr(a.face, "marker-end", pf > 0.97 ? mark(bad, hotA) : "none");
           }
         }
         setAttr(a.face, "opacity", faceOn && pv >= 1 ? 1 : 0);
@@ -1387,21 +1361,17 @@ export function mount(
         }
         continue;
       }
-      if (!e || t < e.t0) {
+      let p = 0;
+      if (e && t >= e.t0)
+        p =
+          a.remove && t >= a.remove.t0
+            ? 1 - EASE_IO(prog(t, a.remove.t0, a.remove.t1))
+            : EASE_IO(prog(t, e.t0, e.t1));
+      if (!e || p <= 0) {
         setStyle(a.path, "opacity", 0);
         setAttr(a.port0, "opacity", 0);
         setAttr(a.port1, "opacity", 0);
         continue;
-      }
-      let p = EASE_IO(prog(t, e.t0, e.t1));
-      if (a.remove && t >= a.remove.t0) {
-        p = 1 - EASE_IO(prog(t, a.remove.t0, a.remove.t1));
-        if (p <= 0) {
-          setStyle(a.path, "opacity", 0);
-          setAttr(a.port0, "opacity", 0);
-          setAttr(a.port1, "opacity", 0);
-          continue;
-        }
       }
       if (colA > 0) p *= 1 - colA;
       setStyle(a.path, "opacity", 1);
@@ -1411,17 +1381,7 @@ export function mount(
       setCls(a.path, "hot", hotA);
       setCls(a.port0, "bad", bad);
       setCls(a.port1, "bad", bad);
-      setAttr(
-        a.path,
-        "marker-end",
-        p < 0.985
-          ? "none"
-          : bad
-            ? "url(#mk-head-bad)"
-            : hotA
-              ? "url(#mk-head-hot)"
-              : "url(#mk-head)",
-      );
+      setAttr(a.path, "marker-end", p < 0.985 ? "none" : mark(bad, hotA));
       setAttr(a.path, "stroke-dashoffset", (a.len * (1 - p)).toFixed(1));
       setAttr(a.port0, "opacity", p > 0 ? 1 : 0);
       const done = t >= e.t1;
@@ -1691,8 +1651,7 @@ export function mount(
       let o = show ? 1 : 0;
       if (ep.mode === "C" && show && dep < 0)
         o = clamp(0, 1, (t - ep.tests!.t0) / 0.2);
-      if (ep.collapse && t >= ep.collapse.t0)
-        o *= 1 - EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3));
+      o *= 1 - col(0.3);
       setText(chipOkTxt, txt);
       setCls(chipOk, "running", cls === "running");
       setCls(chipOk, "failing", cls === "failing");
@@ -1712,10 +1671,7 @@ export function mount(
     }
     // git log --graph: each row slides down as newer ones arrive above it, fades past the 6th
     {
-      const out =
-        ep.collapse && t >= ep.collapse.t0
-          ? EASE_IO(prog(t, ep.collapse.t0, ep.collapse.t0 + 0.3))
-          : 0;
+      const out = col(0.3);
       const pres = (r: LogRow) =>
         SLIDE(prog(t, r.t0, r.t0 + dIn)) *
         (r.t1 === Infinity ? 1 : 1 - SLIDE(prog(t, r.t1, r.t1 + dIn)));
@@ -1866,26 +1822,11 @@ export function mount(
         const txt = bubbleText(say.key, t),
           bw = txt.length * 6.6 + 18,
           bh = 22;
-        const rectFor = (left: boolean) =>
-          left
-            ? {
-                x0: pos.x - 4 - bw,
-                x1: pos.x - 4,
-                y0: pos.y + 37,
-                y1: pos.y + 37 + bh,
-              }
-            : {
-                x0: pos.x + 13,
-                x1: pos.x + 13 + bw,
-                y0: pos.y + 37,
-                y1: pos.y + 37 + bh,
-              };
-        const covers = (r: {
-          x0: number;
-          x1: number;
-          y0: number;
-          y1: number;
-        }) =>
+        const rectFor = (left: boolean): Box => {
+          const x0 = left ? pos.x - 4 - bw : pos.x + 13;
+          return { x0, x1: x0 + bw, y0: pos.y + 37, y1: pos.y + 37 + bh };
+        };
+        const covers = (r: Box) =>
           ep.nodes.some(
             (n) =>
               n.cx != null &&
@@ -2049,7 +1990,6 @@ export function mount(
     ep = buildEpisode(
       seed,
       index,
-      index >= 2,
       UI.fb.pos && index > 0 ? { sx: UI.fb.pos.x, sy: UI.fb.pos.y } : null,
       textW,
       lsGet(),
@@ -2116,7 +2056,6 @@ export function mount(
       ease: target > from ? [0.3, 0, 0.1, 1] : [0.22, 1, 0.36, 1],
       onUpdate: (v: number) => {
         S.speed = v;
-        S.visual = v;
         if (master) master.speed = v;
       },
     });
@@ -2127,7 +2066,7 @@ export function mount(
     boost = false,
     ended = false;
   const applySpeed = () => setSpeed(boost ? 4 : hover ? 2 : 1);
-  const toStage = (e: { clientX: number; clientY: number }) => {
+  const toStage = (e: PointerEvent) => {
     const r = stage.getBoundingClientRect(),
       s = r.width / STAGE_W;
     return { x: (e.clientX - r.left) / s, y: (e.clientY - r.top) / s };
@@ -2268,13 +2207,10 @@ export function mount(
   };
   on(mobile, "change", restart);
   resetView();
-  const fontsReady = document.fonts?.ready
-    ? Promise.race([
-        document.fonts.ready,
-        new Promise((r) => setTimeout(r, 1500)),
-      ])
-    : Promise.resolve();
-  fontsReady.then(() => {
+  Promise.race([
+    document.fonts.ready,
+    new Promise((r) => setTimeout(r, 1500)),
+  ]).then(() => {
     if (signal.aborted) return;
     measureCache.clear();
     applyLang(L);
@@ -2286,31 +2222,13 @@ export function mount(
   const w = window as unknown as Record<string, unknown>;
   if (dev || w.__HERO_TEST__) {
     w.__hero = {
-      sample,
-      nextSeed,
-      fmix32,
       get ep() {
         return ep;
       },
       get seed() {
         return ep && ep.seed;
       },
-      next: () => {
-        epCount = 0;
-        startEpisode(nextSeed(ep.seed), 0);
-      },
-      play: (s: number) => {
-        epCount = 0;
-        startEpisode(s >>> 0, 0);
-      },
-      render,
       P,
-      VIEW,
-      PX,
-      get master() {
-        return master;
-      },
-      setSpeed,
       get speed() {
         return S.speed;
       },

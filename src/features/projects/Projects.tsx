@@ -10,7 +10,7 @@ export function Projects() {
   const t = useTranslations("Projects");
   return (
     <section id="projects" aria-labelledby="projects-title" className={s.pj}>
-      <div className={s.inner}>
+      <div className={x.inner}>
         <header className={s.head}>
           <h2 id="projects-title" className={x.xt}>
             <span className={x.a}>{t("titleA")}</span>

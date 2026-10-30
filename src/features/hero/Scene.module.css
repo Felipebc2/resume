@@ -483,8 +483,7 @@
   white-space: pre;
 }
 @media (min-width: 1024px) {
-  .scene :global(.glog),
-  .scene :global(.bars) {
+  .scene :global(.glog) {
     display: block;
   }
 }

@@ -36,8 +36,6 @@ type Token =
   | "panel"
   | "fg"
   | "dim"
-  | "faint"
-  | "line"
   | "l1"
   | "l3"
   | "cover"

@@ -2,17 +2,11 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import Lenis from "lenis";
-import {
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type CSSProperties,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { profile } from "@/content/profile";
 import type { Stat } from "@/content/stats";
 import { clamp, ease, easeOut } from "@/lib/math";
-import { useStill } from "@/lib/motion";
+import { useMedia, useStill } from "@/lib/motion";
 import { Clock } from "./Clock";
 import { formatStat } from "./format";
 import { buildGrid, levelsAt, twinkle } from "./grid";
@@ -24,12 +18,6 @@ const GRIDS = { coarse: buildGrid("coarse"), fine: buildGrid("fine") };
 /* the graph keeps breathing: every TICK ms a few commits flicker a shade for FLICKER ms */
 const TICK = 140;
 const FLICKER = 700;
-const WIDE = "(min-width: 761px)";
-const onWide = (cb: () => void) => {
-  const mq = matchMedia(WIDE);
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
-};
 const LEVELS = [0, 1, 2, 3, 4] as const;
 
 type Step = -1 | 0 | 1;
@@ -53,11 +41,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
   const locale = useLocale();
   const still = useStill();
   const [step, setStep] = useState<Step>(-1);
-  const wide = useSyncExternalStore(
-    onWide,
-    () => matchMedia(WIDE).matches,
-    () => true,
-  );
+  const wide = useMedia("(min-width: 761px)", true);
   const G = wide ? GRIDS.fine : GRIDS.coarse;
 
   const section = useRef<HTMLElement>(null);

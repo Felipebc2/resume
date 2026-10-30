@@ -217,7 +217,7 @@ export function Case({
                   <span className={s.tip}>{t("case.tip")}</span>
                 </>
               ) : (
-                <p className={item[k] ? undefined : s.ph}>{item[k] || tbd}</p>
+                <p>{item[k]}</p>
               )}
             </section>
           ))}

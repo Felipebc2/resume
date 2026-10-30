@@ -164,7 +164,7 @@ describe("episode generator", () => {
     let seed = 1;
     for (let i = 0; i < 200; i++, seed = nextSeed(seed)) {
       resetView();
-      const ep = buildEpisode(seed, 0, false, null, textW, "");
+      const ep = buildEpisode(seed, 0, null, textW, "");
       expect(ep.commits.map((c) => c.key).sort()).toEqual(
         [...ep.errors].sort(),
       );
@@ -191,7 +191,7 @@ describe("git log", () => {
     let seed = 1;
     for (let i = 0; i < 200; i++, seed = nextSeed(seed)) {
       resetView();
-      const ep = buildEpisode(seed, 0, false, null, textW, "");
+      const ep = buildEpisode(seed, 0, null, textW, "");
       const rows = gitLog(ep);
       const fixes = rows.filter((r) => r.kind === "fix");
       expect(fixes.map((r) => r.t0)).toEqual(

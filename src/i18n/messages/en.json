@@ -188,7 +188,6 @@
     }
   },
   "Experience": {
-    "label": "Experience",
     "titleA": "My unique way",
     "titleB": "to show",
     "titleC": "Experience",
@@ -485,10 +484,8 @@
       "tip": "click a stack to search for it"
     },
     "auto": {
-      "client": "Client",
       "notes": "Notes",
       "entry": "entry",
-      "layer": "layer",
       "coursework": "coursework"
     },
     "lab": {

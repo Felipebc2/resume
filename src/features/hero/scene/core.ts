@@ -4,6 +4,7 @@
 import { clamp, cubicBezier, spring } from "motion";
 import {
   DOMAINS,
+  LAYER_SHORT,
   LAYER_TITLES,
   type DomainKey,
   type IconKey,
@@ -235,13 +236,8 @@ function drawParams(seed: number, last: string) {
   return { R, domainKey, errors, micros, mode };
 }
 export const sample = (s: number) => {
-  const p = drawParams(s >>> 0, "");
-  return {
-    domain: p.domainKey,
-    errors: p.errors,
-    micros: p.micros,
-    mode: p.mode,
-  };
+  const { domainKey: domain, errors, micros, mode } = drawParams(s >>> 0, "");
+  return { domain, errors, micros, mode };
 };
 
 /* =====================================================================
@@ -287,9 +283,7 @@ interface Rect {
   y: number;
   w: number;
   h: number;
-  pad?: number;
 }
-export type Obstacles = Rect[] & { bounds?: Rect };
 /** what the router needs of a node: centre (px/py, else x/y) and width */
 interface Routable {
   px?: number;
@@ -314,34 +308,31 @@ const SIDE_N: Record<Side, [number, number]> = {
   right: [1, 0],
 };
 const SIDE_D: Record<Side, number> = { right: 0, left: 1, bottom: 2, top: 3 };
-export function makeRouter(obstacles: Obstacles) {
+/** obstacles are blocked (with a 10 px margin); outside bounds is blocked, its border penalised */
+export function makeRouter(obstacles: Rect[], f: Rect) {
   const blocked = new Uint8Array(COLS * ROWS),
     used = new Uint8Array(COLS * ROWS);
-  const block = (x: number, y: number, w: number, h: number, pad: number) => {
-    const c0 = Math.max(0, Math.floor((x - pad) / CELL)),
-      c1 = Math.min(COLS - 1, Math.floor((x + w + pad) / CELL)),
-      r0 = Math.max(0, Math.floor((y - pad) / CELL)),
-      r1 = Math.min(ROWS - 1, Math.floor((y + h + pad) / CELL));
+  for (const { x, y, w, h } of obstacles) {
+    const c0 = Math.max(0, Math.floor((x - 10) / CELL)),
+      c1 = Math.min(COLS - 1, Math.floor((x + w + 10) / CELL)),
+      r0 = Math.max(0, Math.floor((y - 10) / CELL)),
+      r1 = Math.min(ROWS - 1, Math.floor((y + h + 10) / CELL));
     for (let r = r0; r <= r1; r++)
       for (let c = c0; c <= c1; c++) blocked[r * COLS + c] = 1;
-  };
-  obstacles.forEach((o) => block(o.x, o.y, o.w, o.h, o.pad ?? 10));
+  }
   // soft penalty for cells hugging the plate border (keeps arrows away from the edge)
   const edge = new Uint8Array(COLS * ROWS);
-  if (obstacles.bounds) {
-    const f = obstacles.bounds;
-    for (let r = 0; r < ROWS; r++)
-      for (let c = 0; c < COLS; c++) {
-        const cx = c * CELL + CELL / 2,
-          cy = r * CELL + CELL / 2;
-        if (cx < f.x || cx > f.x + f.w || cy < f.y || cy > f.y + f.h) {
-          blocked[r * COLS + c] = 1;
-          continue;
-        }
-        const d = Math.min(cx - f.x, f.x + f.w - cx, cy - f.y, f.y + f.h - cy);
-        edge[r * COLS + c] = d < 14 ? 6 : d < 24 ? 2 : 0;
+  for (let r = 0; r < ROWS; r++)
+    for (let c = 0; c < COLS; c++) {
+      const cx = c * CELL + CELL / 2,
+        cy = r * CELL + CELL / 2;
+      if (cx < f.x || cx > f.x + f.w || cy < f.y || cy > f.y + f.h) {
+        blocked[r * COLS + c] = 1;
+        continue;
       }
-  }
+      const d = Math.min(cx - f.x, f.x + f.w - cx, cy - f.y, f.y + f.h - cy);
+      edge[r * COLS + c] = d < 14 ? 6 : d < 24 ? 2 : 0;
+    }
   const cellOf = (p: XY) => [
     clamp(0, COLS - 1, Math.floor(p.x / CELL)),
     clamp(0, ROWS - 1, Math.floor(p.y / CELL)),
@@ -606,6 +597,45 @@ export function zRoute(a: Routable & XY, b: Routable & XY) {
   const my = (sp.y + tp.y) / 2;
   return [sp, { x: sp.x, y: my }, { x: tp.x, y: my }, tp];
 }
+type Router = ReturnType<typeof makeRouter>;
+/** routes a same-plate arrow around the plate's other nodes (`keep` filters them further), a Z when
+    boxed in. Pass `routers` to share one router per plate, so lanes spread. */
+export function routeOnPlate(
+  a: Arrow,
+  layer: Layer,
+  nodes: SNode[],
+  keep: (n: SNode) => boolean = () => true,
+  routers?: Partial<Record<Layer, Router>>,
+) {
+  let router = routers?.[layer];
+  if (!router) {
+    const Pl = PLATES[layer];
+    router = makeRouter(
+      nodes
+        .filter(
+          (n) =>
+            !n.extra &&
+            n.layer === layer &&
+            n !== a.from &&
+            n !== a.to &&
+            keep(n),
+        )
+        .map((n) => ({ x: n.lx - n.w / 2, y: n.ly - NH / 2, w: n.w, h: NH })),
+      { x: 0, y: 0, w: Pl.w, h: Pl.h },
+    );
+    if (routers) routers[layer] = router;
+  }
+  nodes.forEach((n) => {
+    n.px = n.lx;
+    n.py = n.ly;
+  });
+  const r = router.route(
+    a.from,
+    a.to,
+    sideCandidates({ x: a.from.lx, y: a.from.ly }, { x: a.to.lx, y: a.to.ly }),
+  );
+  return r ? r.pts : zRoute(a.from as SNode & XY, a.to as SNode & XY);
+}
 
 /* =====================================================================
    Episode generator — seeded. Produces nodes, arrows and a declarative
@@ -615,7 +645,6 @@ export interface Span {
   t0: number;
   t1: number;
 }
-type Cur = Pt3 & { dz?: number };
 export interface SNode {
   id: string;
   label: string;
@@ -632,7 +661,7 @@ export interface SNode {
   sLayer: Layer;
   slx: number;
   sly: number;
-  cur: Cur;
+  cur: Pt3;
   spans: [number, number][];
   types: { t0: number; t1: number; frames: string[]; edit?: number }[];
   moves: {
@@ -704,7 +733,6 @@ export interface Move {
   to: Pt;
   c?: Pt;
   ease?: Ease;
-  human?: boolean;
   arrow?: Arrow;
   follow?: SNode;
   dx?: number;
@@ -753,13 +781,13 @@ export type Episode = ReturnType<typeof buildEpisode>;
 export function buildEpisode(
   seed: number,
   index: number,
-  isFinal: boolean,
   fbStart: Scr | null,
   textW: (s: string) => number,
   last: string,
 ) {
   const PR = drawParams(seed, last),
-    R = PR.R;
+    R = PR.R,
+    isFinal = index >= 2;
   const domainKey = PR.domainKey,
     D = DOMAINS[domainKey];
   const errors = PR.errors;
@@ -777,52 +805,50 @@ export function buildEpisode(
     Math.round(
       32 + Math.max(textW(n.label), textW(n.typed || "")) + (n.icon ? 30 : 0),
     );
-  const routers: Partial<Record<Layer, ReturnType<typeof makeRouter>>> = {};
+  const routers: Partial<Record<Layer, Router>> = {};
 
   /* ---- nodes ---- */
-  const nodes = (
-    [
-      { id: "ent1", label: D.ent[0], layer: "en", band: "mid", slot: 0 },
-      { id: "ent2", label: D.ent[1], layer: "en", band: "mid", slot: 1 },
-      { id: "uc1", label: D.uc[0], layer: "uc", band: "top", slot: 0 },
-      { id: "uc2", label: D.uc[1], layer: "uc", band: "bottom", slot: 0 },
-      { id: "ctrl", label: D.ctrl, layer: "ia", band: "top", slot: 0 },
-      { id: "repo", label: D.repo, layer: "ia", band: "bottom", slot: 0 },
-      { id: "pres", label: D.pres, layer: "ia", band: "bottom", slot: 1 },
-      {
-        id: "web",
-        label: "Web UI",
-        icon: "next",
-        layer: "fw",
-        band: "top",
-        slot: 0,
-      },
-      {
-        id: "api",
-        label: "REST API",
-        icon: "fastapi",
-        layer: "fw",
-        band: "top",
-        slot: 1,
-      },
-      {
-        id: "db",
-        label: "PostgreSQL",
-        icon: "postgres",
-        layer: "fw",
-        band: "bottom",
-        slot: 0,
-      },
-      {
-        id: "cache",
-        label: "Redis",
-        icon: "redis",
-        layer: "fw",
-        band: "bottom",
-        slot: 1,
-      },
-    ] as Partial<SNode>[]
-  ).map((n) => n as SNode);
+  const nodes = [
+    { id: "ent1", label: D.ent[0], layer: "en", band: "mid", slot: 0 },
+    { id: "ent2", label: D.ent[1], layer: "en", band: "mid", slot: 1 },
+    { id: "uc1", label: D.uc[0], layer: "uc", band: "top", slot: 0 },
+    { id: "uc2", label: D.uc[1], layer: "uc", band: "bottom", slot: 0 },
+    { id: "ctrl", label: D.ctrl, layer: "ia", band: "top", slot: 0 },
+    { id: "repo", label: D.repo, layer: "ia", band: "bottom", slot: 0 },
+    { id: "pres", label: D.pres, layer: "ia", band: "bottom", slot: 1 },
+    {
+      id: "web",
+      label: "Web UI",
+      icon: "next",
+      layer: "fw",
+      band: "top",
+      slot: 0,
+    },
+    {
+      id: "api",
+      label: "REST API",
+      icon: "fastapi",
+      layer: "fw",
+      band: "top",
+      slot: 1,
+    },
+    {
+      id: "db",
+      label: "PostgreSQL",
+      icon: "postgres",
+      layer: "fw",
+      band: "bottom",
+      slot: 0,
+    },
+    {
+      id: "cache",
+      label: "Redis",
+      icon: "redis",
+      layer: "fw",
+      band: "bottom",
+      slot: 1,
+    },
+  ] as SNode[];
   const N: Record<string, SNode> = Object.fromEntries(
     nodes.map((n) => [n.id, n]),
   );
@@ -958,29 +984,8 @@ export function buildEpisode(
       a.topLayer = a.up ? a.to.layer : a.from.layer;
       a.bottomLayer = a.up ? a.from.layer : a.to.layer;
     } else {
-      const layer = a.from.layer,
-        Pl = PLATES[layer];
-      const obstacles: Obstacles = nodes
-        .filter(
-          (n) => !n.extra && n.layer === layer && n !== a.from && n !== a.to,
-        )
-        .map((n) => ({ x: n.lx - n.w / 2, y: n.ly - NH / 2, w: n.w, h: NH }));
-      obstacles.bounds = { x: 0, y: 0, w: Pl.w, h: Pl.h };
-      if (!routers[layer]) routers[layer] = makeRouter(obstacles);
-      nodes.forEach((n) => {
-        n.px = n.lx;
-        n.py = n.ly;
-      });
-      const r = routers[layer]!.route(
-        a.from,
-        a.to,
-        sideCandidates(
-          { x: a.from.lx, y: a.from.ly },
-          { x: a.to.lx, y: a.to.ly },
-        ),
-      );
-      a.pts = r ? r.pts : zRoute(a.from as SNode & XY, a.to as SNode & XY);
-      a.layer = layer;
+      a.pts = routeOnPlate(a, a.from.layer, nodes, undefined, routers);
+      a.layer = a.from.layer;
     }
   }
   // risers from nodes that move first (wrongLayer / marquee / guides) use the FINAL anchor — they are drawn after the move
@@ -1015,7 +1020,6 @@ export function buildEpisode(
     nodes,
     N,
     arrows,
-    AR,
     chips: [] as Chip[],
     sels: [] as { node: SNode; t0: number; t1: number }[],
     toasts: [] as { t0: number; t1: number; c: Commit }[],
@@ -1048,7 +1052,6 @@ export function buildEpisode(
       vy1: number;
     },
     tests: null as null | {
-      mode: string;
       t0: number;
       t1: number;
       fail: { t: number } | null;
@@ -1095,24 +1098,17 @@ export function buildEpisode(
     k: "ia" | "fb",
     to: Pt,
     dur: number,
-    o: {
-      c?: Pt;
-      bend?: number;
-      ease?: Ease;
-      noHuman?: boolean;
-      raw?: boolean;
-    } = {},
+    o: { bend?: number; ease?: Ease } = {},
   ) {
     const from = { ...pos(k) };
-    dur = o.raw ? dur : R.J(dur);
+    dur = R.J(dur);
     ACT[k].moves.push({
       t0: now,
       t1: now + dur,
       from,
       to,
-      c: o.c || ctrlFor(k, from, to, o.bend),
+      c: ctrlFor(k, from, to, o.bend),
       ease: o.ease || EASE_MOVE,
-      human: !o.c && !o.noHuman,
     });
     now += dur;
     return to;
@@ -1173,11 +1169,7 @@ export function buildEpisode(
     );
     return clamp(0.2, 0.38, a.len / 600);
   };
-  function drawArrow(
-    k: "ia" | "fb",
-    a: Arrow,
-    o: { pre?: number; dur?: number } = {},
-  ) {
+  function drawArrow(k: "ia" | "fb", a: Arrow, o: { pre?: number } = {}) {
     const start: Pt3 = a.riser
       ? { layer: a.anchor.layer, lx: a.anchor.lx, ly: a.anchor.ly }
       : { layer: a.layer, lx: a.pts[0].x, ly: a.pts[0].y };
@@ -1194,7 +1186,7 @@ export function buildEpisode(
           ly: a.pts[a.pts.length - 1].y,
         };
     moveTo(k, start, o.pre ?? 0.3);
-    const dur = R.J(o.dur ?? drawT(a));
+    const dur = R.J(drawT(a));
     a.draw = { t0: now, t1: now + dur };
     ACT[k].moves.push({
       t0: now,
@@ -1207,10 +1199,10 @@ export function buildEpisode(
     now += dur;
     if (a.kind === "bad") a.bad = { t0: now + 0.05, t1: Infinity };
   }
-  function removeArrow(a: Arrow, dur = 0.26) {
-    a.remove = { t0: now, t1: now + dur };
+  function removeArrow(a: Arrow) {
+    a.remove = { t0: now, t1: now + 0.26 };
     if (a.bad) a.bad.t1 = now;
-    now += dur;
+    now += 0.26;
   }
   function chip(key: string, n: SNode, t0: number, t1: number, dx = 0, dy = 0) {
     ep.chips.push({
@@ -1448,19 +1440,10 @@ export function buildEpisode(
   if (E.orphan) FL.orphan = flag("orphan", N[E.orphan], "orphan");
   say("fb", R.chance(0.5) ? "notright" : "close", now + 0.15, now + 1.5);
   // review hover: fb drifts to the first flagged thing
-  const firstBad = E.wrongLayer
-    ? N.repo
-    : E.dup
-      ? N.dup
-      : N.hal
-        ? N.hal
-        : E.typo
-          ? N[E.typo]
-          : E.naming
-            ? N[E.naming]
-            : E.orphan
-              ? N[E.orphan]
-              : N.uc1;
+  const firstBad =
+    [E.wrongLayer, E.dup && "dup", "hal", E.typo, E.naming, E.orphan]
+      .map((id) => (id ? N[id] : undefined))
+      .find(Boolean) ?? N.uc1;
   moveTo("fb", off(nodeCursor(firstBad), -30, 44), 0.85, { bend: 0.1 });
   if (hasM("pin")) {
     // comment pin on a quiet node
@@ -1596,10 +1579,7 @@ export function buildEpisode(
     click("fb", { pause: 0 });
     const tEnd = typing(n, n.typed!, n.label, now + 0.08, R.range(14, 18));
     FL[kind]!.f!.t1 = now + 0.08 + 0.3;
-    commit(
-      kind,
-      vars(n.typed!, n.label, n.layer === "uc" ? "use-cases" : "adapters"),
-    );
+    commit(kind, vars(n.typed!, n.label, LAYER_SHORT[n.layer]));
     now = tEnd + 0.25;
   }
 
@@ -1693,7 +1673,6 @@ export function buildEpisode(
   moveTo("fb", SPOT.fbTest, 0.5, { bend: -0.1 });
   // tests
   const T = (ep.tests = {
-    mode,
     t0: now,
     t1: now + R.J(1.1),
     fail: null as { t: number } | null,

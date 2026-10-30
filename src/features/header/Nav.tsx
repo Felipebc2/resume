@@ -15,16 +15,12 @@ export function Nav() {
   const prog = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    /* section → how far up the viewport its top must pass to light its link;
+    /* section (id = link key) → how far up the viewport its top must pass to light its link;
        stack starts one viewport down, so 0.45 lights it before the nav shows at 0.6 */
-    const marks = (
-      [
-        ["stack", 0.45],
-        ["experience", 0.5],
-        ["projects", 0.5],
-        ["contact", 0.5],
-      ] as const
-    ).map(([id, at]) => [document.getElementById(id), at] as const);
+    const marks = sections.map(
+      ([id]) =>
+        [document.getElementById(id), id === "stack" ? 0.45 : 0.5] as const,
+    );
     const el = nav.current;
     const read = () => {
       const vh = innerHeight;

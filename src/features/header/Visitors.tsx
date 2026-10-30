@@ -28,7 +28,7 @@ export function Visitors({ code, count }: { code: string; count?: number }) {
   if (!count) return null;
   return (
     <p className={s.visitors}>
-      <CountUp to={count} delay={0.4} /> {t("visitors", { count })}
+      <CountUp to={count} /> {t("visitors", { count })}
     </p>
   );
 }

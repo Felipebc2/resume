@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
@@ -26,19 +27,25 @@ export const token = (t: `--${string}`) => root().getPropertyValue(t).trim();
 
 export const useStill = () => useContext(MotionContext);
 
-const QUERY = "(prefers-reduced-motion: reduce)";
-const subscribe = (cb: () => void) => {
-  const mq = matchMedia(QUERY);
-  mq.addEventListener("change", cb);
-  return () => mq.removeEventListener("change", cb);
-};
+/** live `matchMedia(query).matches`; `server` is the value during SSR and hydration */
+export function useMedia(query: string, server: boolean) {
+  const subscribe = useCallback(
+    (cb: () => void) => {
+      const mq = matchMedia(query);
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    [query],
+  );
+  return useSyncExternalStore(
+    subscribe,
+    () => matchMedia(query).matches,
+    () => server,
+  );
+}
 
 export function MotionProvider({ children }: { children: ReactNode }) {
-  const prefersReduced = useSyncExternalStore(
-    subscribe,
-    () => matchMedia(QUERY).matches,
-    () => false,
-  );
+  const prefersReduced = useMedia("(prefers-reduced-motion: reduce)", false);
   const [override, setStill] = useState<boolean | null>(null);
   const [dismissed, setDismissed] = useState(false);
   const still = override ?? prefersReduced;
