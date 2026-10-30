@@ -32,9 +32,12 @@ export function Hero({ mobile }: { mobile: ReactNode }) {
     <section className={s.hero} id="top" aria-label={t("label")}>
       <HeroLeft>
         <h1 className={s.title}>
-          {t("titleTop")}
-          <br />
-          <em>{t("titleEm")}</em>
+          <span className={s.top}>{t("titleTop")}</span>{" "}
+          <em>
+            {t.rich("titleEm", {
+              dot: (c) => <span className={s.dot}>{c}</span>,
+            })}
+          </em>
         </h1>
         <div className={s.links}>
           <a href={links.linkedin} target="_blank" rel="noopener">

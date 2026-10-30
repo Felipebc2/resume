@@ -27,7 +27,8 @@
   flex-direction: column;
   justify-content: center;
   gap: clamp(var(--s-5), 4vh, var(--s-7));
-  padding: var(--s-9) 4vw var(--s-9) max(5.4vw, var(--gut-l));
+  padding: var(--s-9) var(--s-6) var(--s-9) max(5.4vw, var(--gut-l));
+  container-type: inline-size;
   transform-origin: left center;
   transform: translateY(calc(var(--p) * 22svh))
     scale(calc(1 - 0.04 * var(--copy)));
@@ -40,21 +41,36 @@
 }
 .title {
   margin: 0;
-  font-family: var(--font-serif);
   font-weight: 400;
   line-height: var(--lh-display);
-  letter-spacing: -0.01em;
   font-size: var(--t-hero);
   white-space: nowrap;
 }
+.top {
+  display: block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.55em;
+  letter-spacing: -0.01em;
+  color: var(--color-dim);
+}
 .title em {
-  display: inline-block;
+  display: block;
   font-style: normal;
   font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: 0.01em;
-  font-size: 1.08em;
-  line-height: var(--lh-display);
+  /* a step past fg, away from the page: near white on dark, near black on light */
+  color: color-mix(in srgb, var(--color-fg) 40%, light-dark(#000, #fff));
+}
+/* the full stop as a solid block; the "." stays in the text for readers */
+.dot {
+  display: inline-block;
+  width: 0.19em;
+  height: 0.19em;
+  margin-left: 0.03em;
+  overflow: hidden;
+  color: transparent;
+  background: var(--color-primary-text);
 }
 .links {
   display: flex;
@@ -226,6 +242,10 @@
 @media (min-width: 1024px) {
   .hero {
     grid-template-columns: 2fr 3fr;
+  }
+  /* BUILD. spills past the seam into the scene's empty left corner */
+  .title {
+    font-size: min(50cqi, 34svh);
   }
 }
 

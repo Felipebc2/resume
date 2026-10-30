@@ -35,7 +35,8 @@
   --gut-r: max(20px, env(safe-area-inset-right, 0px));
 
   /* type: 4 display levels + card, body and mono roles */
-  --t-hero: clamp(64px, 12vw, 180px); /* Born to BUILD. */
+  /* BUILD. spans its column (.left is the container) */
+  --t-hero: min(42.5cqi, 34svh);
   --t-moment: clamp(56px, 9vw, 132px); /* "Hi, I'm Felipe." */
   --t-title: clamp(
     44px,
