@@ -104,7 +104,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
      passes through freely until they stop; stopping inside the gap settles on the
      nearest step. Keys get the same treatment; anchors bypass it. */
   const still_ = useRef(still);
-  const arriving = useRef(false);
+  const veiled = useRef(false);
   const lenis = useRef<Lenis | null>(null);
   useEffect(() => {
     const sec = section.current;
@@ -155,16 +155,16 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       const id = ++run;
       busy = true;
       landed = passing = false;
-      /* pulled off the hero: the greeting waits for the landing to say hello */
-      arriving.current = p === sec.offsetTop && l.animatedScroll < p;
+      /* pulled off the hero, the greeting waits for the landing to say hello */
+      veiled.current = p === sec.offsetTop && l.animatedScroll < p;
       l.scrollTo(p, {
         lock: true,
         force: true,
         duration: STEP_S,
         immediate: still_.current,
         onComplete: () => {
-          if (arriving.current) {
-            arriving.current = false;
+          if (veiled.current) {
+            veiled.current = false;
             setStep(0);
           }
           landed = true;
@@ -224,7 +224,7 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       if (!el) return;
       e.preventDefault();
       anchoring = true;
-      arriving.current = false;
+      veiled.current = false;
       l.scrollTo(el, {
         force: true,
         immediate: still_.current,
@@ -259,8 +259,11 @@ export function StackStory({ stats }: { stats: Stat[] }) {
       if (!r) return;
       const vh = innerHeight;
       const at = r.top > vh * 0.5 ? -1 : -r.top < vh * 0.5 ? 0 : 1;
-      setStep(at === 0 && arriving.current ? -1 : at);
-      greetEl.current?.style.setProperty("--lift", `${clamp(r.top, 0, vh)}px`);
+      if (r.top <= vh * 0.03) veiled.current = false; // say hello over the glide's eased tail
+      setStep(at === 0 && veiled.current ? -1 : at);
+      const g = greetEl.current?.style;
+      g?.setProperty("--lift", `${clamp(r.top, 0, vh)}px`);
+      g?.setProperty("--gone", clamp(r.top / (vh * 0.2), 0, 1).toFixed(3));
       document.documentElement.toggleAttribute(
         "data-scrolled",
         -r.top > vh + 4,

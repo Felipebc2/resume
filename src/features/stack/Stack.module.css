@@ -29,6 +29,9 @@
   /* held at the viewport centre while the section rises (StackStory sets --lift),
      so the hero leaves over a greeting that is already in place */
   transform: translateY(calc(-1 * var(--lift, 0px)));
+  /* and gone as soon as the hero shows again (--gone, 0 → 1 over the first 20vh of it),
+     so on the way back up it never sits over the hero */
+  opacity: calc(1 - var(--gone, 0));
 }
 .greet h2 {
   margin: 0;
