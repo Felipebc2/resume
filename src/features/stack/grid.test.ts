@@ -13,18 +13,18 @@ test("letter cells are bright and the grid is deterministic", () => {
   expect(buildGrid().level).toEqual(g.level);
 });
 
-test("the fine grid spells the word with 1-cell strokes inside its frame", () => {
+test("the fine grid spells the word with 2-cell strokes inside its frame", () => {
   const f = buildGrid("fine");
-  expect(f.level).toHaveLength(88 * 16);
+  expect(f.level).toHaveLength(94 * 17);
   const at = (i: number) => [i % f.cols, Math.floor(i / f.cols)];
   f.letter.forEach((v, i) => {
     if (!v) return;
     expect(f.level[i]).toBeGreaterThanOrEqual(3);
     const [x, y] = at(i);
-    expect(x).toBeGreaterThanOrEqual(4);
-    expect(x).toBeLessThan(84);
+    expect(x).toBeGreaterThanOrEqual(3);
+    expect(x).toBeLessThan(91);
     expect(y).toBeGreaterThanOrEqual(3);
-    expect(y).toBeLessThan(13);
+    expect(y).toBeLessThan(14);
   });
 });
 

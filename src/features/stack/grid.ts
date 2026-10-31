@@ -109,10 +109,11 @@ const FONT7: Record<string, string[]> = {
   ],
 };
 
-/** coarse: phones. fine: desktop, same card height with ~1.5× the cells per side */
+/** coarse: phones. fine: desktop, same card height with ~1.5× the cells per side;
+    `pen` is the stroke width in cells (each glyph pixel paints pen × pen) */
 export const GRIDS = {
-  coarse: { cols: 59, rows: 11, font: FONT5, x0: 3, y0: 2, step: 6 },
-  fine: { cols: 88, rows: 16, font: FONT7, x0: 4, y0: 3, step: 9 },
+  coarse: { cols: 59, rows: 11, font: FONT5, x0: 3, y0: 2, step: 6, pen: 1 },
+  fine: { cols: 94, rows: 17, font: FONT7, x0: 3, y0: 3, step: 10, pen: 2 },
 } as const;
 export type GridKind = keyof typeof GRIDS;
 
@@ -120,10 +121,10 @@ export type GridKind = keyof typeof GRIDS;
  * A fake contribution graph that spells a word.
  * `level` is each cell's final shade (0–4); `key` is when it lights up during the
  * 0→1 draw, so letters sweep left to right while the noise fills in at random.
- * The fine grid's noise is quieter, so the 1-cell strokes stay readable.
+ * The fine grid's noise is quieter, so its finer cells stay readable.
  */
 export function buildGrid(kind: GridKind = "coarse") {
-  const { cols, rows, font, x0, y0, step } = GRIDS[kind];
+  const { cols, rows, font, x0, y0, step, pen } = GRIDS[kind];
   const n = cols * rows;
   const level = new Uint8Array(n);
   const key = new Float32Array(n);
@@ -131,7 +132,10 @@ export function buildGrid(kind: GridKind = "coarse") {
   [..."FELIPEBC2"].forEach((ch, li) =>
     font[ch].forEach((row, y) =>
       [...row].forEach((v, x) => {
-        if (v === "#") letter[(y0 + y) * cols + x0 + li * step + x] = 1;
+        if (v !== "#") return;
+        const at = (y0 + y) * cols + x0 + li * step + x;
+        for (let dy = 0; dy < pen; dy++)
+          for (let dx = 0; dx < pen; dx++) letter[at + dy * cols + dx] = 1;
       }),
     ),
   );
