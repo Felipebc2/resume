@@ -22,7 +22,7 @@ export function StackList() {
           e.target.classList.add(s.in);
           reveal.unobserve(e.target);
         }),
-      { rootMargin: "0px 0px -12% 0px" },
+      /* no inset: the cell is still shifted down while hidden, so any inset lags the scroll */
     );
     cats.forEach((c) => reveal.observe(c));
     const close = new IntersectionObserver(

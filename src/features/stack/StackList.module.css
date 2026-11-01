@@ -5,8 +5,6 @@
   position: relative;
   margin-left: var(--flow-left, 20px);
   width: var(--flow-w, calc(100% - 40px));
-  /* outside the frame, so its bottom rule closes right under the last row */
-  margin-bottom: clamp(var(--s-6), 6vh, var(--s-8));
 }
 .sides {
   position: absolute;
