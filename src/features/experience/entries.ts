@@ -1,5 +1,6 @@
 import {
   academic,
+  type Art,
   lab,
   work,
   type EntryId,
@@ -21,14 +22,14 @@ export const span = (start: number, end: number | null, now: number) => {
 };
 
 export type Entry =
-  | { kind: "head"; id: "head"; place: Place; art: string }
+  | { kind: "head"; id: "head"; place: Place; art: Art }
   | (Work & { kind: "work" })
   | (Lab & { kind: "lab" })
   | (typeof academic & { kind: "init" });
 
 /** git log order: HEAD, then work and lab newest first (lab sorts above work of the same month), then the degree as the root commit */
 export const entries: Entry[] = [
-  { kind: "head", id: "head", place: "rem", art: "→" },
+  { kind: "head", id: "head", place: "rem", art: { icon: "globe" } },
   ...[
     ...work.map((w) => ({
       e: { ...w, kind: "work" as const },

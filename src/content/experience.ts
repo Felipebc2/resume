@@ -7,6 +7,9 @@ export type LabId = keyof M["lab"];
 export type EntryId = WorkId | LabId | "head" | "idp";
 export type Place = "rem" | "bsb" | "bue" | "sv";
 
+/** card art: a short label (≤ 6 chars, the same in every locale) or a pictogram, dithered into dots */
+export type Art = string | { icon: "globe" };
+
 /** dates are "YYYY-MM"; end undefined = still running */
 export type Work = {
   id: WorkId;
@@ -15,7 +18,7 @@ export type Work = {
   start: string;
   end?: string;
   place: Place;
-  /** text dithered into the card art */
+  /** card art label, ≤ 6 chars */
   art: string;
   rank?: number;
   tags: string[];
@@ -38,7 +41,7 @@ export const work: Work[] = [
     cmd: "software-architect-tech-lead",
     start: "2026-08",
     place: "rem",
-    art: "NX",
+    art: "NEX",
     tags: ["AWS", "LLMs", "ADRs", "Multi-agent"],
   },
   {
@@ -46,7 +49,7 @@ export const work: Work[] = [
     cmd: "head-of-it",
     start: "2026-08",
     place: "bsb",
-    art: "NXR",
+    art: "HEAD",
     tags: ["Next.js", "React", "Motion", "i18n"],
   },
   {
@@ -63,7 +66,7 @@ export const work: Work[] = [
     start: "2026-04",
     end: "2026-06",
     place: "bsb",
-    art: "JUS",
+    art: "1ST",
     rank: 1,
     tags: ["FastAPI", "PostgreSQL", "Docker", "S3"],
   },
@@ -82,7 +85,7 @@ export const work: Work[] = [
     start: "2025-05",
     end: "2025-10",
     place: "bsb",
-    art: "OFC",
+    art: "N1",
     tags: ["Azure", "Docker", "Python"],
   },
 ];
@@ -96,24 +99,30 @@ export const lab: Lab[] = [
     art: "4TH",
     rank: 4,
   },
-  { id: "ctfw", type: "event", date: "2026-08", place: "bsb", art: "WS" },
-  { id: "hack3", type: "event", date: "2026-03", place: "bsb", art: "HCK" },
+  { id: "ctfw", type: "event", date: "2026-08", place: "bsb", art: "CTF" },
+  { id: "hack3", type: "event", date: "2024-06", place: "bsb", art: "HACK" },
   {
     id: "ta",
     type: "role",
     date: "2026-02",
     end: "2026-06",
     place: "bsb",
-    art: "TA",
+    art: "OPS",
   },
-  { id: "ctf6", type: "competition", date: "2025-10", art: "CTF" },
-  { id: "cp", type: "event", date: "2025-08", art: "CP" },
+  {
+    id: "ctf6",
+    type: "competition",
+    date: "2025-10",
+    art: "FLAG",
+    rank: 4,
+  },
+  { id: "cp", type: "event", date: "2025-08", art: "72H" },
   {
     id: "rob",
     type: "competition",
     date: "2025-08",
     place: "bsb",
-    art: "1ST",
+    art: "ROB",
     rank: 1,
   },
   {
@@ -122,7 +131,7 @@ export const lab: Lab[] = [
     date: "2025-08",
     end: "2026-06",
     place: "bsb",
-    art: "FAP",
+    art: "ORBIT",
   },
   {
     id: "idph",
@@ -132,8 +141,14 @@ export const lab: Lab[] = [
     art: "1ST",
     rank: 1,
   },
-  { id: "demo", type: "event", date: "2025-05", place: "bsb", art: "DD" },
-  { id: "sprint7", type: "event", date: "2025-03", place: "bsb", art: "144" },
+  { id: "demo", type: "event", date: "2025-07", place: "bsb", art: "DEMO" },
+  {
+    id: "sprint7",
+    type: "event",
+    date: "2026-03",
+    place: "bsb",
+    art: "SPRINT",
+  },
   { id: "go", type: "event", date: "2024-07", place: "sv", art: "GO" },
   {
     id: "pod",
@@ -141,7 +156,7 @@ export const lab: Lab[] = [
     date: "2024-02",
     end: "2024-06",
     place: "bsb",
-    art: "POD",
+    art: "REC",
   },
 ];
 
@@ -151,7 +166,7 @@ export const academic = {
   end: "2027-08",
   semester: 7,
   place: "bsb",
-  art: "IDP",
+  art: "INIT",
 } as const;
 
 /** shelf order; caption and reveal text live under Experience.trophies.<id> */

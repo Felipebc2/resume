@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import type { EntryId } from "@/content/experience";
+import type { Art, EntryId } from "@/content/experience";
 import { themeRgb } from "@/lib/theme";
 import { entries } from "./entries";
 import { useRepaint } from "./useFrames";
@@ -17,8 +17,35 @@ const BAYER = [
 ];
 const PX = 3;
 
-/** card art: the entry's short text over a radial glow, 1-bit dithered at 3px cells */
-function paintArt(cv: HTMLCanvasElement, art: string, seed: number) {
+/** globe in white: rim, two meridians, the axis and three parallels; sizes are for a 520×390 art */
+function globe(o: CanvasRenderingContext2D, w: number, h: number) {
+  const k = h / 390;
+  const r = h * 0.38;
+  const cx = w / 2,
+    cy = h / 2;
+  o.strokeStyle = "#fff";
+  o.lineWidth = 22 * k;
+  o.beginPath();
+  o.arc(cx, cy, r, 0, Math.PI * 2);
+  o.stroke();
+  o.lineWidth = 16 * k;
+  o.beginPath();
+  for (const rx of [0.45, 0.85]) {
+    o.moveTo(cx + r * rx, cy);
+    o.ellipse(cx, cy, r * rx, r, 0, 0, Math.PI * 2);
+  }
+  o.moveTo(cx, cy - r);
+  o.lineTo(cx, cy + r);
+  for (const f of [-0.5, 0, 0.5]) {
+    const half = r * Math.sqrt(1 - f * f);
+    o.moveTo(cx - half, cy + f * r);
+    o.lineTo(cx + half, cy + f * r);
+  }
+  o.stroke();
+}
+
+/** card art: the entry's label (or pictogram) over a radial glow, 1-bit dithered at 3px cells */
+function paintArt(cv: HTMLCanvasElement, art: Art, seed: number) {
   const r = cv.getBoundingClientRect();
   if (!r.width || !r.height) return;
   const w = Math.ceil(r.width / PX);
@@ -38,12 +65,21 @@ function paintArt(cv: HTMLCanvasElement, art: string, seed: number) {
   g.addColorStop(1, "#040404");
   o.fillStyle = g;
   o.fillRect(0, 0, w, h);
-  const fs = Math.min(h * 0.5, (w * 0.9) / Math.max(1, art.length * 0.5));
-  o.fillStyle = "#fff";
-  o.font = `400 ${Math.round(fs)}px ${getComputedStyle(cv).fontFamily}`;
-  o.textAlign = "center";
-  o.textBaseline = "middle";
-  o.fillText(art, w / 2, h * 0.54);
+  if (typeof art === "string") {
+    const family = getComputedStyle(cv).fontFamily;
+    let fs = Math.min(h * 0.5, (w * 0.9) / Math.max(1, art.length * 0.5));
+    o.font = `400 ${Math.round(fs)}px ${family}`;
+    /* long labels (ORBIT, SPRINT) shrink until they fit whole */
+    const tw = o.measureText(art).width;
+    if (tw > w * 0.86) {
+      fs *= (w * 0.86) / tw;
+      o.font = `400 ${Math.floor(fs)}px ${family}`;
+    }
+    o.fillStyle = "#fff";
+    o.textAlign = "center";
+    o.textBaseline = "middle";
+    o.fillText(art, w / 2, h * 0.54);
+  } else globe(o, w, h);
   const img = o.getImageData(0, 0, w, h);
   const ink = themeRgb("fg"),
     paper = themeRgb("panel");
@@ -80,14 +116,28 @@ export function Deck({ order, now }: { order: EntryId[]; now: number }) {
       </div>
       <div ref={deck} className={s.stackOf} aria-live="polite">
         {entries.map((e) => (
-          <DeckCard key={e.id} depth={order.indexOf(e.id)} c={card(e)} />
+          <DeckCard
+            key={e.id}
+            depth={order.indexOf(e.id)}
+            c={card(e)}
+            artLabel={typeof e.art === "string" ? undefined : t("globe")}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function DeckCard({ depth, c }: { depth: number; c: Card }) {
+function DeckCard({
+  depth,
+  c,
+  artLabel,
+}: {
+  depth: number;
+  c: Card;
+  /** pictograms carry meaning, so they are announced; text labels repeat the card */
+  artLabel?: string;
+}) {
   return (
     <article
       className={s.card}
@@ -126,7 +176,11 @@ function DeckCard({ depth, c }: { depth: number; c: Card }) {
           </div>
         )}
       </div>
-      <canvas aria-hidden="true" />
+      {artLabel ? (
+        <canvas role="img" aria-label={artLabel} />
+      ) : (
+        <canvas aria-hidden="true" />
+      )}
     </article>
   );
 }

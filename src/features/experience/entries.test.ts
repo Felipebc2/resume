@@ -9,6 +9,12 @@ test("git log runs HEAD → newest → root commit", () => {
   expect(new Set(ids).size).toBe(ids.length);
 });
 
+test("every deck card has its art: a 1–6 character label or a pictogram", () => {
+  for (const e of entries)
+    if (typeof e.art === "string") expect(e.art, e.id).toMatch(/^\S{1,6}$/);
+    else expect(e.art.icon, e.id).toBe("globe");
+});
+
 test("spans count both ends and roll months into years", () => {
   expect(span(mi("2026-04"), mi("2026-06"), 0)).toEqual({ y: 0, m: 3 });
   expect(span(mi("2023-08"), null, mi("2026-10"))).toEqual({ y: 3, m: 3 });
