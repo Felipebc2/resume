@@ -10,8 +10,6 @@ export type Tool = {
 
 export type Category = {
   key: keyof typeof messages.Stack.categories;
-  /** spans both bento columns */
-  full?: boolean;
   tools: Tool[];
 };
 
@@ -37,7 +35,6 @@ const t = (icon: string, label: string): Tool => ({ icon, label });
 export const stack: Category[] = [
   {
     key: "languages",
-    full: true,
     tools: [
       t("python", "Python"),
       t("typescript", "TypeScript"),
@@ -124,7 +121,7 @@ export const stack: Category[] = [
       t("wireshark", "Wireshark"),
       t("burpsuite", "Burp Suite"),
       t("qemu", "QEMU"),
-      { label: "Ghidra", text: "GH" },
+      t("ghidra", "Ghidra"),
       { label: "GDB", text: "gdb" },
       { label: "pwntools", text: "pwn" },
       t("ethereum", "Web3 / EVM"),

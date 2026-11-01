@@ -2,19 +2,9 @@
 
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type CSSProperties } from "react";
 import { invertedIcons, stack } from "@/content/stack";
 import s from "./StackList.module.css";
-
-/** Half-width categories pair up side by side; full rows reset the pairing. */
-const rightColumn = stack.reduce<{ col: number; right: boolean[] }>(
-  (acc, cat) => {
-    acc.right.push(!cat.full && acc.col === 1);
-    acc.col = cat.full ? 0 : (acc.col + 1) % 2;
-    return acc;
-  },
-  { col: 0, right: [] },
-).right;
 
 export function StackList() {
   const t = useTranslations("Stack");
@@ -52,20 +42,15 @@ export function StackList() {
         <span className={s.sides} aria-hidden="true" />
         <div className={s.cats}>
           {stack.map((cat, ci) => {
-            const cls = [
-              s.cat,
-              cat.full && s.full,
-              ci === 0 && s.first,
-              rightColumn[ci] && s.r,
-            ];
             return (
-              <div key={cat.key} className={cls.filter(Boolean).join(" ")}>
+              <div
+                key={cat.key}
+                className={s.cat}
+                style={{ "--n": cat.tools.length } as CSSProperties}
+              >
                 <div className={s.head}>
                   <span className={s.n}>{String(ci + 1).padStart(2, "0")}</span>
                   <h3>{t(`categories.${cat.key}`)}</h3>
-                  <span className={s.count}>
-                    {t("tools", { count: cat.tools.length })}
-                  </span>
                 </div>
                 <ul className={s.tiles}>
                   {cat.tools.map((tool) => (
@@ -77,8 +62,8 @@ export function StackList() {
                           <Image
                             src={`/icons/${tool.icon}.svg`}
                             alt=""
-                            width={22}
-                            height={22}
+                            width={26}
+                            height={26}
                             unoptimized
                           />
                         ) : (

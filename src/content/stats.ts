@@ -1,6 +1,6 @@
 import type messages from "@/i18n/messages/en.json";
 
-export type StatFormat = "int" | "plus" | "neg" | "ord";
+export type StatFormat = "int" | "plus" | "times";
 
 export type Stat = {
   key: keyof typeof messages.Stack.results;
@@ -13,7 +13,6 @@ export const stats: Stat[] = [
   { key: "contributions", value: 923, format: "int" },
   { key: "repos", value: 33, format: "int" },
   { key: "years", value: 3, format: "plus" },
-  { key: "adrs", value: 20, format: "plus" },
-  { key: "jusbrasil", value: 99.8, format: "neg" },
-  { key: "ctf", value: 4, format: "ord" },
+  { key: "docs", value: 50, format: "plus" },
+  { key: "wins", value: 3, format: "times" },
 ];

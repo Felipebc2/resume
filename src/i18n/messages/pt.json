@@ -169,12 +169,10 @@
       "contributions": "contribuições no último ano",
       "repos": "repositórios públicos no GitHub",
       "years": "anos construindo em tecnologia",
-      "adrs": "registros de decisão de arquitetura",
-      "jusbrasil": "tempo de tarefa na JusBrasil (1º lugar)",
-      "ctf": "Ekoparty CTF 2026 · Buenos Aires"
+      "docs": "documentos de arquitetura escritos",
+      "wins": "1º lugar em campeonatos"
     },
     "listLabel": "Stack por categoria",
-    "tools": "{count} ferramentas",
     "categories": {
       "languages": "Linguagens",
       "frontend": "Frontend",

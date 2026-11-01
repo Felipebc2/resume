@@ -5,7 +5,8 @@
   position: relative;
   margin-left: var(--flow-left, 20px);
   width: var(--flow-w, calc(100% - 40px));
-  padding-bottom: clamp(var(--s-6), 6vh, var(--s-8));
+  /* outside the frame, so its bottom rule closes right under the last row */
+  margin-bottom: clamp(var(--s-6), 6vh, var(--s-8));
 }
 .sides {
   position: absolute;
@@ -45,17 +46,25 @@
   transform: scaleX(1);
 }
 
+/* proportional bento: each category starts as wide as its --n tools and grows to close its row,
+   so cells pair up without empty corners; narrow screens just wrap them one per row */
 .cats {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  /* the first row's top rule sits on the results band's bottom one */
+  margin-top: -1px;
 }
 .cat {
+  --pitch: 72px;
+  flex: var(--n) 1 calc(var(--n) * var(--pitch) + 2 * var(--s-6));
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-content: start;
   gap: var(--s-4);
   min-width: 0;
-  padding: var(--s-6) var(--s-6) var(--s-6);
+  padding: var(--s-5) var(--s-6) var(--s-6);
   border-top: 1px solid var(--color-line);
+  border-left: 1px solid var(--color-line);
   opacity: 0;
   transform: translateY(26px);
   transition:
@@ -71,43 +80,17 @@
   transform: translateY(26px);
   transition-duration: var(--d-2);
 }
-.full {
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
-  gap: var(--s-4) var(--s-6);
-}
-.first {
-  border-top: 0;
-  padding-top: clamp(var(--s-5), 4vh, var(--s-7));
-}
-.r {
-  border-left: 1px solid var(--color-line);
-}
 
 .head {
-  display: grid;
-  gap: var(--s-2);
-  align-content: start;
-}
-.cat:not(.full) .head {
   display: flex;
   align-items: baseline;
   gap: var(--s-3);
   flex-wrap: wrap;
 }
-.cat:not(.full) .count {
-  margin-left: auto;
-}
-.n,
-.count {
+.n {
   font-family: var(--font-mono);
   font-size: var(--t-mono);
-}
-.n {
   color: var(--color-faint);
-}
-.count {
-  color: var(--color-dim);
 }
 .head h3 {
   margin: 0;
@@ -117,24 +100,24 @@
   line-height: var(--lh-title);
 }
 
+/* auto-fit drops the empty tracks, so the tiles spread across the cell, capped for a lone row */
 .tiles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-4) var(--s-2);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(68px, 1fr));
+  max-width: calc(var(--n) * 112px);
+  gap: var(--s-3) var(--s-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .tile {
-  /* fits a 10-character label at --t-label on one line */
-  width: 72px;
   display: grid;
   justify-items: center;
   gap: var(--s-2);
 }
 .sq {
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   display: grid;
   place-items: center;
   border: 1px solid var(--color-line);
@@ -146,8 +129,8 @@
     border-color var(--d-2) var(--ease-out);
 }
 .sq img {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   object-fit: contain;
   filter: grayscale(1) brightness(var(--icon-b));
   opacity: 0.8;
@@ -166,7 +149,6 @@
   color: color-mix(in srgb, var(--color-fg) 59%, var(--color-dim));
 }
 .label {
-  max-width: 72px;
   font-family: var(--font-mono);
   font-size: var(--t-label);
   line-height: var(--lh-body);
@@ -191,22 +173,14 @@
 }
 
 @media (max-width: 760px) {
-  .cats {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .cat,
-  .full {
-    grid-template-columns: minmax(0, 1fr);
+  .cat {
     padding: var(--s-5) var(--s-4);
   }
-  .r {
-    border-left: 0;
-  }
-  .tile {
-    width: 58px;
+  .tiles {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
   }
   .sq {
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
   }
 }
