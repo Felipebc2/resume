@@ -440,9 +440,22 @@
   white-space: nowrap;
   text-decoration: none;
 }
+/* facts (tags, languages) are flat squared labels; actions are outlined pills that light up */
+span.chip {
+  border-color: transparent;
+  border-radius: var(--r-xs);
+  background: color-mix(in srgb, var(--color-fg) 6%, transparent);
+}
+a.chip {
+  color: color-mix(in srgb, var(--color-fg) 72%, var(--color-dim));
+  border-color: var(--color-line-2);
+  transition:
+    color var(--d-1) var(--ease-out),
+    border-color var(--d-1) var(--ease-out);
+}
 a.chip:hover {
   color: var(--color-fg);
-  border-color: var(--color-line-2);
+  border-color: color-mix(in srgb, var(--color-fg) 45%, transparent);
 }
 .card canvas {
   width: 100%;
@@ -617,12 +630,16 @@ a.chip:hover {
     grid-template-areas: "title" "trophy" "git" "deck" "map" "htop";
     grid-template-rows: auto;
   }
-  .deck {
-    min-height: 470px;
+  /* one column: the cards share one grid cell, so the deck is as tall as its longest card and never clips */
+  .stackOf {
+    display: grid;
   }
   .card {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: minmax(0, 1fr) 88px;
+    grid-template-rows: auto 88px;
   }
   .card canvas {
     border-left: 0;

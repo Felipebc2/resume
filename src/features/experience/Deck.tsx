@@ -44,7 +44,7 @@ function globe(o: CanvasRenderingContext2D, w: number, h: number) {
   o.stroke();
 }
 
-/** card art: the entry's label (or pictogram) over a radial glow, 1-bit dithered at 3px cells */
+/** card art: a radial glow 1-bit dithered at 3px cells, with the entry's label (or pictogram) solid on top (colours: --color-art*) */
 function paintArt(cv: HTMLCanvasElement, art: Art, seed: number) {
   const r = cv.getBoundingClientRect();
   if (!r.width || !r.height) return;
@@ -65,6 +65,9 @@ function paintArt(cv: HTMLCanvasElement, art: Art, seed: number) {
   g.addColorStop(1, "#040404");
   o.fillStyle = g;
   o.fillRect(0, 0, w, h);
+  const glow = o.getImageData(0, 0, w, h);
+  /* the art goes on a clear canvas: its alpha is the mask for the primary colour */
+  o.clearRect(0, 0, w, h);
   if (typeof art === "string") {
     const family = getComputedStyle(cv).fontFamily;
     let fs = Math.min(h * 0.5, (w * 0.9) / Math.max(1, art.length * 0.5));
@@ -80,19 +83,20 @@ function paintArt(cv: HTMLCanvasElement, art: Art, seed: number) {
     o.textBaseline = "middle";
     o.fillText(art, w / 2, h * 0.54);
   } else globe(o, w, h);
-  const img = o.getImageData(0, 0, w, h);
-  const ink = themeRgb("fg"),
-    paper = themeRgb("panel");
-  const d = img.data;
+  const mask = o.getImageData(0, 0, w, h).data;
+  const ink = themeRgb("art-dots"),
+    paper = themeRgb("panel"),
+    mark = themeRgb("art");
+  const d = glow.data;
   for (let y = 0; y < h; y++)
     for (let x = 0; x < w; x++) {
       const k = (y * w + x) * 4;
       const l = (d[k] * 0.3 + d[k + 1] * 0.59 + d[k + 2] * 0.11) / 255;
       const on = l > (BAYER[(y % 8) * 8 + (x % 8)] + 0.5) / 64;
-      [d[k], d[k + 1], d[k + 2]] = on ? ink : paper;
+      [d[k], d[k + 1], d[k + 2]] = mask[k + 3] > 127 ? mark : on ? ink : paper;
       d[k + 3] = 255;
     }
-  o.putImageData(img, 0, 0);
+  o.putImageData(glow, 0, 0);
 }
 
 export function Deck({ order, now }: { order: EntryId[]; now: number }) {
@@ -154,13 +158,18 @@ function DeckCard({
             <li key={p}>{p}</li>
           ))}
         </ul>
-        {(c.tags.length > 0 || c.links.length > 0) && (
+        {c.tags.length > 0 && (
           <div className={s.tg}>
             {c.tags.map((x) => (
               <span key={x} className={s.chip}>
                 {x}
               </span>
             ))}
+          </div>
+        )}
+        {/* actions on their own row, so a fact chip never reads as a link */}
+        {c.links.length > 0 && (
+          <div className={s.tg}>
             {c.links.map(([label, href]) => (
               <a
                 key={href}

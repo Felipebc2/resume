@@ -40,7 +40,9 @@ type Token =
   | "l3"
   | "cover"
   | "primary-text"
-  | "secondary-text";
+  | "secondary-text"
+  | "art"
+  | "art-dots";
 
 const cache: Partial<Record<Token, number[]>> = {};
 

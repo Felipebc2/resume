@@ -50,9 +50,11 @@ export function useEntryText(now: number) {
           s: t("head.sub"),
           m: t("head.meta"),
           pts: t.raw("head.pts") as string[],
+          tags: t.raw("head.tags") as string[],
           links: [
             [t("links.linkedin"), profile.links.linkedin],
             [t("links.github"), profile.links.github],
+            [t("links.cv"), profile.links.cv],
           ],
         };
       case "work": {

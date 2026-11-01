@@ -244,15 +244,19 @@
     },
     "links": {
       "linkedin": "LinkedIn ↗",
-      "github": "GitHub ↗"
+      "github": "GitHub ↗",
+      "cv": "CV ↓"
     },
     "head": {
       "title": "Aberto a novas vagas",
-      "sub": "Full-stack · Arquitetura de software · Engenharia de LLM",
-      "meta": "Remoto ou mudança de cidade",
+      "sub": "Vagas de full-stack, arquitetura de software ou tech lead",
+      "meta": "Disponível agora · remoto ou realocação",
       "pts": [
-        "Busco vagas em que eu seja dono de sistemas de ponta a ponta, da arquitetura à produção."
-      ]
+        "Um time em que eu seja dono de uma parte do produto, da arquitetura à produção.",
+        "Experiência entregando produtos com LLM, pipelines de dados e interfaces calmas e rápidas.",
+        "Decisões por escrito (ADRs), PRs pequenos e revisados, à vontade com trabalho assíncrono."
+      ],
+      "tags": ["Inglês · fluente", "Português · nativo"]
     },
     "work": {
       "nexai": {

@@ -131,6 +131,9 @@ html {
     var(--color-bg)
   );
   --color-l4: var(--color-primary-text);
+  /* deck card art: the mark in the primary, the dithered glow in the secondary */
+  --color-art: var(--color-primary-text);
+  --color-art-dots: var(--color-secondary-text);
   --color-cover: color-mix(
     in srgb,
     var(--color-primary-text) 28%,
@@ -324,6 +327,11 @@ html[data-theme="lemon"][data-mode="light"] {
 }
 html[data-theme="deep"][data-mode="dark"] {
   --hero-ia: #eaaa00;
+}
+/* Deep dark: the muted mauve primary sinks into the vivid gold dots, so the card art swaps them */
+html[data-theme="deep"][data-mode="dark"] {
+  --color-art: var(--color-secondary-text);
+  --color-art-dots: var(--color-primary-text);
 }
 html[data-theme="deep"][data-mode="light"] {
   --hero-ia: #3a0f34;

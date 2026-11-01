@@ -244,15 +244,19 @@
     },
     "links": {
       "linkedin": "LinkedIn ↗",
-      "github": "GitHub ↗"
+      "github": "GitHub ↗",
+      "cv": "CV ↓"
     },
     "head": {
       "title": "Open to new roles",
-      "sub": "Full-stack · Software architecture · LLM engineering",
-      "meta": "Remote or relocation",
+      "sub": "Full-stack, software architecture or tech lead roles",
+      "meta": "Available now · remote or relocation",
       "pts": [
-        "Looking for roles where I can own systems end to end, from architecture to production."
-      ]
+        "A team where I can own a product slice, from architecture to production.",
+        "Experience shipping LLM products, data pipelines and calm, fast interfaces.",
+        "Decisions in writing (ADRs), small reviewed PRs, comfortable working async."
+      ],
+      "tags": ["English · fluent", "Portuguese · native"]
     },
     "work": {
       "nexai": {
