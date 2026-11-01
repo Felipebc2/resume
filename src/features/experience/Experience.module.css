@@ -9,8 +9,10 @@
 .bento {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.38fr);
-  grid-template-areas: "title trophy" "git deck" "git map" "htop htop";
-  grid-template-rows: auto minmax(372px, auto) minmax(290px, auto) auto;
+  /* the left column runs title → git log on its own; the trophy shelf spans beside both rows */
+  grid-template-areas: "title trophy" "git trophy" "git deck" "git map" "htop htop";
+  /* deck and map rows are the flexible ones, so the tall git log stretches them, not the shelf's row */
+  grid-template-rows: auto auto minmax(372px, 1fr) minmax(290px, 1fr) auto;
   gap: var(--s-4);
 }
 .xb {
@@ -53,9 +55,9 @@
   border: 0;
   background: none;
   border-radius: 0;
-  padding: var(--s-1) var(--s-1) var(--s-1);
+  padding: 0 var(--s-1) var(--s-1);
   display: grid;
-  align-content: end;
+  align-content: start;
   gap: var(--s-4);
   overflow: visible;
 }

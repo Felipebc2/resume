@@ -117,10 +117,8 @@ export function Trophies({
       </div>
       <div ref={shelfEl} className={s.shelf}>
         {trophies.map(({ id }, i) => {
-          const open = () => {
-            setBurst(i);
-            select(id);
-          };
+          /* hover and focus only reveal; picking the card in the deck takes a click */
+          const open = () => setBurst(i);
           const close = () => setBurst((b) => (b === i ? null : b));
           return (
             <button
@@ -132,7 +130,10 @@ export function Trophies({
               onPointerLeave={close}
               onFocus={open}
               onBlur={close}
-              onClick={() => (burst === i ? close() : open())}
+              onClick={() => {
+                open();
+                select(id);
+              }}
             >
               <canvas aria-hidden="true" />
               <span className={s.rv} aria-hidden="true">
