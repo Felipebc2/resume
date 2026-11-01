@@ -11,8 +11,8 @@
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.38fr);
   /* the left column runs title → git log on its own; the trophy shelf spans beside both rows */
   grid-template-areas: "title trophy" "git trophy" "git deck" "git map" "htop htop";
-  /* deck and map rows are the flexible ones, so the tall git log stretches them, not the shelf's row */
-  grid-template-rows: auto auto minmax(372px, 1fr) minmax(290px, 1fr) auto;
+  /* the deck sizes to its tallest card; the map row is the flexible one, so it alone soaks up the git log's height */
+  grid-template-rows: auto auto minmax(372px, auto) minmax(290px, 1fr) auto;
   gap: var(--s-4);
 }
 .xb {
@@ -342,14 +342,16 @@
 }
 
 /* deck */
+/* the cards share one grid cell, so the deck is as tall as its longest card and never clips */
 .stackOf {
   position: relative;
+  display: grid;
   flex: 1 1 auto;
   margin: 26px 16px 16px;
 }
 .card {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  grid-area: 1 / 1;
   border: 1px solid var(--color-line-2);
   border-radius: var(--r-m);
   background: color-mix(in srgb, var(--color-block) 50%, var(--color-panel));
@@ -632,14 +634,7 @@ a.chip:hover {
     grid-template-areas: "title" "trophy" "git" "deck" "map" "htop";
     grid-template-rows: auto;
   }
-  /* one column: the cards share one grid cell, so the deck is as tall as its longest card and never clips */
-  .stackOf {
-    display: grid;
-  }
   .card {
-    position: relative;
-    inset: auto;
-    grid-area: 1 / 1;
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto 88px;
   }
