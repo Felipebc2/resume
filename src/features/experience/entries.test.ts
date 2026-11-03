@@ -5,7 +5,7 @@ test("git log runs HEAD → newest → root commit", () => {
   const ids = entries.map((e) => e.id);
   expect(ids[0]).toBe("head");
   expect(ids.at(-1)).toBe("idp");
-  expect(ids.slice(1, 4)).toEqual(["eko", "ctfw", "nexai"]);
+  expect(ids.slice(1, 4)).toEqual(["eko", "ctfw", "nexara"]);
   expect(new Set(ids).size).toBe(ids.length);
 });
 

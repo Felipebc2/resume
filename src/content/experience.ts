@@ -33,24 +33,19 @@ export type Lab = {
   place?: Place;
   art: string;
   rank?: number;
+  tags?: string[];
+  /** public repo, linked from the card */
+  repo?: string;
 };
 
 export const work: Work[] = [
-  {
-    id: "nexai",
-    cmd: "software-architect-tech-lead",
-    start: "2026-08",
-    place: "rem",
-    art: "NEX",
-    tags: ["AWS", "LLMs", "ADRs", "Multi-agent"],
-  },
   {
     id: "nexara",
     cmd: "head-of-it",
     start: "2026-08",
     place: "bsb",
     art: "HEAD",
-    tags: ["Next.js", "React", "Motion", "i18n"],
+    tags: ["AWS", "LLMs", "Multi-agent", "Next.js"],
   },
   {
     id: "mec",
@@ -58,7 +53,7 @@ export const work: Work[] = [
     start: "2026-06",
     place: "bsb",
     art: "MEC",
-    tags: ["KPIs", "Jurimetrics", "BPMN 2.0"],
+    tags: ["Django", "PostgreSQL", "HTMX", "BPMN 2.0"],
   },
   {
     id: "jus",
@@ -68,7 +63,7 @@ export const work: Work[] = [
     place: "bsb",
     art: "1ST",
     rank: 1,
-    tags: ["FastAPI", "PostgreSQL", "Docker", "S3"],
+    tags: ["Next.js", "FastAPI", "Celery", "Ollama"],
   },
   {
     id: "ize",
@@ -77,7 +72,7 @@ export const work: Work[] = [
     end: "2025-12",
     place: "bsb",
     art: "IZE",
-    tags: ["Airflow", "Selenium", "PostgreSQL"],
+    tags: ["Python", "Airflow", "Selenium", "Power BI"],
   },
   {
     id: "ofc",
@@ -98,6 +93,7 @@ export const lab: Lab[] = [
     place: "bue",
     art: "4TH",
     rank: 4,
+    repo: "https://github.com/Felipebc2/Ekoparty2026-CTF",
   },
   { id: "ctfw", type: "event", date: "2026-08", place: "bsb", art: "CTF" },
   { id: "hack3", type: "event", date: "2024-06", place: "bsb", art: "HACK" },
@@ -108,15 +104,24 @@ export const lab: Lab[] = [
     end: "2026-06",
     place: "bsb",
     art: "OPS",
+    tags: ["Docker", "Docker Compose", "Linux", "CI/CD"],
   },
   {
     id: "ctf6",
     type: "competition",
     date: "2025-10",
+    place: "bsb",
     art: "FLAG",
     rank: 4,
+    repo: "https://github.com/Felipebc2/MonoRepo-Hackathons/tree/main/Hackathon-CTF",
   },
-  { id: "cp", type: "event", date: "2025-08", art: "72H" },
+  {
+    id: "cp",
+    type: "event",
+    date: "2025-08",
+    art: "72H",
+    tags: ["React Native", "Flask", "MongoDB", "Docker"],
+  },
   {
     id: "rob",
     type: "competition",
@@ -142,13 +147,6 @@ export const lab: Lab[] = [
     rank: 1,
   },
   { id: "demo", type: "event", date: "2025-07", place: "bsb", art: "DEMO" },
-  {
-    id: "sprint7",
-    type: "event",
-    date: "2026-03",
-    place: "bsb",
-    art: "SPRINT",
-  },
   { id: "go", type: "event", date: "2024-07", place: "sv", art: "GO" },
   {
     id: "pod",
@@ -186,4 +184,4 @@ export const pins = {
 } as const;
 
 /** entry selected when the section loads */
-export const firstEntry: EntryId = "nexai";
+export const firstEntry: EntryId = "nexara";

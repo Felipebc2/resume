@@ -80,6 +80,8 @@ export function useEntryText(now: number) {
             (e.rank ? ` · ${t("rankPlace", { rank: e.rank })}` : ""),
           m: e.end ? period(e.date, e.end) : fmt(e.date),
           pts: t.raw(`lab.${e.id}.pts`) as string[],
+          tags: e.tags ?? [],
+          links: e.repo ? [[t("links.writeups"), e.repo]] : [],
         };
       case "init":
         return {

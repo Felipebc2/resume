@@ -245,34 +245,28 @@
     "links": {
       "linkedin": "LinkedIn ↗",
       "github": "GitHub ↗",
-      "cv": "CV ↓"
+      "cv": "CV ↓",
+      "writeups": "Writeups ↗"
     },
     "head": {
       "title": "Open to new roles",
       "sub": "Full-stack, software architecture or tech lead roles",
       "meta": "Available now · remote or relocation",
       "pts": [
-        "A team where I can own a product slice, from architecture to production.",
+        "End-to-end delivery: I take a feature from architecture to production.",
         "Experience shipping LLM products, data pipelines and calm, fast interfaces.",
         "Decisions in writing (ADRs), small reviewed PRs, comfortable working async."
       ],
       "tags": ["English · fluent", "Portuguese · native"]
     },
     "work": {
-      "nexai": {
-        "org": "Nex AI",
-        "role": "Software Architect & Tech Lead",
-        "pts": [
-          "Leads architecture and technical direction of an AI product with multi-agent orchestration and human review gates.",
-          "20+ ADRs and an AWS edge with CloudFront, WAF, ALB and S3."
-        ]
-      },
       "nexara": {
         "org": "Nexara",
-        "role": "Head of IT · prev. Digital Marketing Manager",
+        "role": "Head of IT · Software Architect & Tech Lead",
         "pts": [
-          "Leads architecture, technical direction and the dev team, also shipping as full-stack.",
-          "Built the Nexara/NexAI website and product mockup in three languages."
+          "Leads architecture, technical direction and the dev team of an AI product: multi-agent LLM orchestration with human review gates.",
+          "40+ architecture documents for a complex solution, with an event-driven core: DAG-based parallelism, durable commands and events.",
+          "Also ships as full-stack: built the company website and product mockup in three languages."
         ]
       },
       "mec": {
@@ -280,22 +274,25 @@
         "role": "Full-Stack Developer",
         "pts": [
           "Sole developer at the Internal Affairs Office, from requirements to deployment.",
-          "Raw case data turned into KPIs, document redaction and predictive jurimetrics."
+          "Building its data platform: scattered spreadsheets consolidated into one traceable source, beside the official case systems.",
+          "18 strategic KPIs across 8 axes, plus document redaction and predictive jurimetrics."
         ]
       },
       "jus": {
         "org": "JusBrasil · IDP Sprint",
         "role": "Tech Lead & Full-Stack",
         "pts": [
-          "Asynchronous pipeline that classifies thousands of legal records.",
-          "Cut task time by 99.8% in 12 weeks. 1st place in Innovation."
+          "Led a team of three building NormAI: legal spreadsheets cleaned and classified, ready for Power BI.",
+          "Deterministic rules first at no AI cost; a local LLM classifies only what rules can't map, so sensitive data stays in-house.",
+          "A week of work now takes 5 minutes, for a ~300% higher monthly ROI. 1st place in Innovation."
         ]
       },
       "ize": {
         "org": "Ize Gestão Empresarial",
         "role": "Data Intern",
         "pts": [
-          "Econometric indicators for financial consultancies: ETL with Airflow and scraping with Selenium."
+          "Econometric indicators for financial consultancies: ETL with Airflow and scraping with Selenium.",
+          "Part of the BI team, delivering the indicators in Power BI dashboards."
         ]
       },
       "ofc": {
@@ -308,17 +305,29 @@
       "eko": {
         "name": "Ekoparty CTF 2026",
         "detail": "Main CTF · team nop (2 players)",
-        "pts": ["Web3 specialist: 11 solves, 3320 pts, 2 first bloods."]
+        "pts": [
+          "Took the Web3 track and cleared all 5 smart-contract challenges: 11 solves, 3320 pts, 2 first bloods.",
+          "Prepared weeks ahead: a searchable library of 75 problem-to-method patterns.",
+          "Every solve written up on one template, in English, Spanish and Portuguese."
+        ]
       },
       "ctf6": {
         "name": "CTF Hackathon, 6th ed.",
-        "detail": "Pwn · Rev · Crypto · Web · Net",
-        "pts": ["Pwn, Rev, Crypto, Jail, Web, Net and Stego challenges."]
+        "detail": "24-hour CTF · team of 4",
+        "pts": [
+          "43 challenges across 11 categories, from pwn and jail to hardware and OSINT.",
+          "My solves spanned web, PPC, OSINT, crypto and misc, mostly scripted in Python.",
+          "Kept solving after the clock stopped and wrote up the solutions."
+        ]
       },
       "cp": {
         "name": "Campus Party Hackathon",
-        "detail": "72h build",
-        "pts": ["72-hour build of an incident heat map for women’s safety."]
+        "detail": "72-hour hackathon · team of 5",
+        "pts": [
+          "SafeMap: a mobile app mapping crime hot spots, with tools for women’s safety.",
+          "Heat maps from police reports and anonymous community reports, weighted by a hidden reputation score.",
+          "Safer-route suggestions that steer around high-risk streets."
+        ]
       },
       "rob": {
         "name": "Brasília+IT Robotics",
@@ -342,7 +351,11 @@
       "ctfw": {
         "name": "CTF Competitions Workshop",
         "detail": "IDP extension",
-        "pts": ["Extension workshop on competitive CTF play at IDP."]
+        "pts": [
+          "Strategy on the clock: map the board, take quick wins first, time-box what stalls.",
+          "Reading the challenge text as the attack vector, and spotting each category's signals.",
+          "Where AI pays off (heavy reverse, boilerplate scripts) and where doing it by hand is faster."
+        ]
       },
       "hack3": {
         "name": "IDP Hackathon, 3rd ed.",
@@ -353,8 +366,8 @@
         "name": "Teaching Assistant · DevOps",
         "detail": "Beginner DevOps · Docker",
         "pts": [
-          "Taught beginners to build, run and ship apps with Docker.",
-          "Ran the hands-on Docker workshop."
+          "Assisted the professor in class in a beginner DevOps course.",
+          "Answered students' questions on Docker and DevOps."
         ]
       },
       "fapdf": {
@@ -369,11 +382,6 @@
         "name": "IDP Demo Day",
         "detail": "Project showcase",
         "pts": ["Presented a project at the IDP Demo Day."]
-      },
-      "sprint7": {
-        "name": "IDP Sprint, 7th ed.",
-        "detail": "144-hour sprint",
-        "pts": ["144-hour product sprint at IDP."]
       },
       "pod": {
         "name": "Empreenda BSB Podcast",
@@ -1053,7 +1061,7 @@
       "kicker": "About",
       "zone": "{city} · UTC−3",
       "title": "Software engineer from {city}, building for anywhere.",
-      "p1": "I’m <b>Felipe</b>, a Software Engineering student at IDP in my final semesters, already shipping in production: Head of IT at <b>Nexara</b>, Software Architect & Tech Lead at <b>Nex AI</b>, and the sole developer at the Ministry of Education’s Internal Affairs Office.",
+      "p1": "I’m <b>Felipe</b>, a Software Engineering student at IDP in my final semesters, already shipping in production: Head of IT, Software Architect & Tech Lead at <b>Nexara</b>, and the sole developer at the Ministry of Education’s Internal Affairs Office.",
       "p2": "I like owning the whole path: requirements, architecture, code, tests and deploy. Lately that means <b>LLM products</b>, data pipelines and calm interfaces. Off the clock: hackathons, CTFs, Linux tinkering and homebrew tabletop RPG campaigns."
     },
     "signature": {
